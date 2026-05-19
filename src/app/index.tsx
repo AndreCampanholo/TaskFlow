@@ -1,11 +1,9 @@
-import CadastroButton from "../components/CadastroButton";
-import LoginButton from "../components/LoginButton";
+import Login from "./(auth)/Login";
 
 export default function Index() {
   return (
     <>
-      <LoginButton />
-      <CadastroButton />
+      <Login />
     </>
   );
 }

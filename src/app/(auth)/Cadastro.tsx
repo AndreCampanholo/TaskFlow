@@ -1,3 +1,4 @@
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -154,12 +155,7 @@ export default function Cadastro() {
             style={styles.textinput}
           />
 
-          <TouchableOpacity
-            onPress={() => handleCadastro()}
-            style={styles.buttonStyle}
-          >
-            <Text style={styles.buttonText}>Criar conta →</Text>
-          </TouchableOpacity>
+          <BotaoAzulEscuro text="Criar conta →" action={handleCadastro} />
 
           <View style={styles.loginLine}>
             <Text style={styles.loginLineText}>Já tem uma conta?</Text>

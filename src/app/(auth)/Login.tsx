@@ -1,3 +1,4 @@
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -18,7 +19,7 @@ export default function Login() {
   const [senha, setSenha] = useState("");
 
   function handleLogin() {
-    console.log({ identifier, senha });
+    router.push("/AlterarSenha");
   }
 
   return (
@@ -59,12 +60,7 @@ export default function Login() {
           <Text style={styles.esqueciSenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.buttonContainer}
-          onPress={() => handleLogin()}
-        >
-          <Text style={styles.buttonText}>Entrar →</Text>
-        </TouchableOpacity>
+        <BotaoAzulEscuro text="Entrar →" action={handleLogin} />
 
         <View style={styles.cadastroLine}>
           <Text style={styles.cadastroLineText}>Não tem uma conta?</Text>
