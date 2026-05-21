@@ -28,6 +28,7 @@ export default function Cadastro() {
 
   const handleCadastro = () => {
     console.log({ nome, dataNascimento, cpf, email, senha });
+    router.replace("/tarefas/Tasks" as any);
   };
 
   const onChange = (event: any, selectedDate?: Date) => {

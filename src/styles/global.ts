@@ -8,6 +8,8 @@ export const colors = {
   verde: "#10B981",
   vermelho_atrasado: "#BA1A1A",
   preto: "#000000",
+  branco: "#FFFFFF",
+  background: "#C5C5D3",
 };
 
 export const globalStyles = StyleSheet.create({

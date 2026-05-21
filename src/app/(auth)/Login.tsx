@@ -19,7 +19,7 @@ export default function Login() {
   const [senha, setSenha] = useState("");
 
   function handleLogin() {
-    router.push("/AlterarSenha");
+    router.replace("/tarefas/Tasks" as any);
   }
 
   return (
