@@ -19,7 +19,7 @@ export default function BotaoAzulClaro({
 
   return (
     <TouchableOpacity style={styles.buttonStyle} onPress={handlePress}>
-      <Text style={styles.buttonText}>{text}</Text>
+      <Text style={globalStyles.primaryButtonText}>{text}</Text>
     </TouchableOpacity>
   );
 }
@@ -30,10 +30,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.azul_claro,
     width: "100%",
     marginTop: 24,
-  },
-  buttonText: {
-    ...globalStyles.primaryButtonText,
-    fontSize: 16,
-    fontWeight: "600" as any,
   },
 });

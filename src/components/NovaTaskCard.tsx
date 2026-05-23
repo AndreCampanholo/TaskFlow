@@ -1,6 +1,7 @@
 import { colors, globalStyles } from "@/src/styles/global";
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -12,28 +13,82 @@ import {
 } from "react-native";
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import BotaoCancelar from "@/src/components/BotaoCancelar";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import {
+  fromDateInputValue,
+  fromTimeInputValue,
+  mergeTaskDateTime,
+  toDateInputValue,
+  toTimeInputValue,
+  updateTaskTime,
+} from "@/src/utils/taskDates";
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onCreate: (title: string, due: string, state: "em-andamento" | "concluida" | "atrasada") => void;
+  onCreate: (
+    title: string,
+    description: string,
+    dueDate: Date,
+    state: "em-andamento" | "concluida" | "atrasada",
+  ) => void;
 };
 
 export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
   const [title, setTitle] = useState("");
-  const [due, setDue] = useState("");
+  const [description, setDescription] = useState("");
+  const [dueDate, setDueDate] = useState<Date>(new Date());
   const [state, setState] = useState<"em-andamento" | "concluida" | "atrasada">("em-andamento");
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     if (!visible) {
       setTitle("");
-      setDue("");
+      setDescription("");
+      setDueDate(new Date());
+      setState("em-andamento");
+      setShowDatePicker(false);
+      setShowTimePicker(false);
     }
   }, [visible]);
 
   function handleSave() {
-    if (!title.trim()) return; // validation handled by caller if needed
-    onCreate(title.trim(), due.trim(), state);
+    if (!title.trim()) {
+      if (Platform.OS === "web") {
+        window.alert("Digite um título");
+      } else {
+        Alert.alert("Erro", "Digite um título");
+      }
+      return;
+    }
+
+    if (!description.trim()) {
+      if (Platform.OS === "web") {
+        window.alert("Digite uma descrição");
+      } else {
+        Alert.alert("Erro", "Digite uma descrição");
+      }
+      return;
+    }
+
+    onCreate(title.trim(), description.trim(), dueDate, state);
+  }
+
+  function handleDateChange(_event: any, selectedDate?: Date) {
+    if (selectedDate) {
+      setDueDate((current) => mergeTaskDateTime(current, selectedDate));
+    }
+
+    if (Platform.OS === "android") setShowDatePicker(false);
+  }
+
+  function handleTimeChange(_event: any, selectedDate?: Date) {
+    if (selectedDate) {
+      setDueDate((current) => updateTaskTime(current, selectedDate));
+    }
+
+    if (Platform.OS === "android") setShowTimePicker(false);
   }
 
   return (
@@ -43,7 +98,7 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
       animationType="fade"
       onRequestClose={onClose}
     >
-      <Pressable style={styles.backdrop} onPress={onClose}>
+      <Pressable style={globalStyles.modalBackdrop} onPress={onClose}>
         <Pressable style={styles.card} onPress={() => null}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -55,57 +110,106 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               onChangeText={setTitle}
               style={styles.input}
             />
+
             <TextInput
-              placeholder="Prazo (opcional)"
-              value={due}
-              onChangeText={setDue}
-              style={styles.input}
+              placeholder="Descrição"
+              value={description}
+              onChangeText={setDescription}
+              style={[styles.input, styles.descriptionInput]}
+              multiline
             />
+
+            <Text style={styles.stateLabel}>Prazo</Text>
+            {Platform.OS === "web" ? (
+              <View style={styles.webDateRow}>
+                <input
+                  type="date"
+                  value={toDateInputValue(dueDate)}
+                  onChange={(event: any) => {
+                    setDueDate((current) =>
+                      mergeTaskDateTime(
+                        current,
+                        fromDateInputValue(event.target.value, current),
+                      ),
+                    );
+                  }}
+                  style={styles.webInput as any}
+                />
+                <input
+                  type="time"
+                  value={toTimeInputValue(dueDate)}
+                  onChange={(event: any) => {
+                    setDueDate((current) =>
+                      updateTaskTime(
+                        current,
+                        fromTimeInputValue(event.target.value, current),
+                      ),
+                    );
+                  }}
+                  style={styles.webInput as any}
+                />
+              </View>
+            ) : (
+              <View style={styles.dateRow}>
+                <Pressable style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
+                  <Text style={styles.dateText}>{dueDate.toLocaleDateString("pt-BR")}</Text>
+                </Pressable>
+                <Pressable style={styles.dateButton} onPress={() => setShowTimePicker(true)}>
+                  <Text style={styles.dateText}>{dueDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</Text>
+                </Pressable>
+              </View>
+            )}
+
+            {showDatePicker && Platform.OS !== "web" ? (
+              <DateTimePicker
+                value={dueDate}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            ) : null}
+
+            {showTimePicker && Platform.OS !== "web" ? (
+              <DateTimePicker
+                value={dueDate}
+                mode="time"
+                display="default"
+                onChange={handleTimeChange}
+              />
+            ) : null}
 
             <Text style={styles.stateLabel}>Status</Text>
             <View style={styles.stateRow}>
               <Pressable
                 style={[
-                  styles.statePill,
+                  globalStyles.pill,
                   state === "em-andamento" && { backgroundColor: colors.azul_em_progresso },
                 ]}
                 onPress={() => setState("em-andamento")}
               >
-                <Text
-                  style={
-                    state === "em-andamento" ? styles.stateTextActive : styles.stateText
-                  }
-                >
+                <Text style={state === "em-andamento" ? globalStyles.pillTextActive : globalStyles.pillText}>
                   Em andamento
                 </Text>
               </Pressable>
               <Pressable
                 style={[
-                  styles.statePill,
+                  globalStyles.pill,
                   state === "concluida" && { backgroundColor: colors.verde },
                 ]}
                 onPress={() => setState("concluida")}
               >
-                <Text
-                  style={
-                    state === "concluida" ? styles.stateTextActive : styles.stateText
-                  }
-                >
+                <Text style={state === "concluida" ? globalStyles.pillTextActive : globalStyles.pillText}>
                   Concluída
                 </Text>
               </Pressable>
               <Pressable
                 style={[
-                  styles.statePill,
+                  globalStyles.pill,
                   state === "atrasada" && { backgroundColor: colors.vermelho_atrasado },
                 ]}
                 onPress={() => setState("atrasada")}
               >
-                <Text
-                  style={
-                    state === "atrasada" ? styles.stateTextActive : styles.stateText
-                  }
-                >
+                <Text style={state === "atrasada" ? globalStyles.pillTextActive : globalStyles.pillText}>
                   Atrasada
                 </Text>
               </Pressable>
@@ -127,42 +231,44 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.45)",
-    justifyContent: "center",
-    padding: 20,
+  card: { ...globalStyles.cardSurface },
+  title: { ...globalStyles.sectionTitle, marginBottom: 8 },
+  input: { ...globalStyles.textInput, ...globalStyles.field },
+  descriptionInput: {
+    minHeight: 84,
+    textAlignVertical: "top",
   },
-  card: { backgroundColor: colors.branco, borderRadius: 14, padding: 16 },
-  title: { ...globalStyles.headerText, fontSize: 18, marginBottom: 8 },
-  input: { ...globalStyles.textInput, marginBottom: 8 },
   actions: { flexDirection: "row", gap: 8, marginTop: 8 },
-  actionItem: { flex: 1, marginRight: 8 },
-  btnPrimary: {
-    flex: 1,
-    backgroundColor: colors.azul_escuro,
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  btnTextPrimary: { color: colors.branco, fontWeight: "700" },
-  btnSecondary: {
-    flex: 1,
-    backgroundColor: "#EEF2FF",
-    padding: 12,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  btnTextSecondary: { color: colors.azul_escuro, fontWeight: "700" },
+  actionItem: { flex: 1 },
   stateLabel: { marginTop: 8, marginBottom: 6, color: "rgba(0,0,0,0.7)" },
   stateRow: { flexDirection: "row", gap: 8 },
-  statePill: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-    backgroundColor: "#F3F4F6",
+  dateRow: { flexDirection: "row", gap: 8 },
+  dateButton: {
+    ...globalStyles.textInput,
+    ...globalStyles.field,
+    flex: 1,
+    marginVertical: 0,
+    justifyContent: "center",
   },
-  statePillActive: { backgroundColor: colors.azul_escuro },
-  stateText: { color: "rgba(0,0,0,0.8)" },
-  stateTextActive: { color: colors.branco, fontWeight: "700" },
+  dateText: {
+    color: "rgba(0,0,0,1)",
+    fontSize: 16,
+  },
+  webDateRow: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 8,
+  },
+  webInput: {
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.3)",
+    borderRadius: 5,
+    padding: 8,
+    background: "transparent",
+    color: "rgba(0,0,0,1)",
+    fontSize: 16,
+    fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI'",
+    width: "100%",
+    boxSizing: "border-box",
+  },
 });

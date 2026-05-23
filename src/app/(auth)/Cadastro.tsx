@@ -31,8 +31,7 @@ export default function Cadastro() {
     router.replace("/tarefas/Tasks" as any);
   };
 
-  const onChange = (event: any, selectedDate?: Date) => {
-    const current = selectedDate ?? dataNascimento;
+  const onChange = (_event: any, selectedDate?: Date) => {
     if (selectedDate) setDataNascimento(selectedDate);
     // on Android the picker stays open; close it after selection/dismiss
     if (Platform.OS === "android") setMostrarSeletor(false);
@@ -172,9 +171,10 @@ export default function Cadastro() {
 
 const styles = StyleSheet.create({
   screen: {
-    ...globalStyles.screen,
-    width: "100%",
+    ...globalStyles.fullScreen,
     paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headerContainer: {
     width: "100%",
@@ -182,41 +182,26 @@ const styles = StyleSheet.create({
     paddingTop: 8,
   },
   content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
+    ...globalStyles.centeredContent,
   },
   container: {
     ...globalStyles.screenContainer,
-    alignItems: "center",
-    minWidth: 0,
-    maxWidth: 380,
   },
   title: {
-    ...globalStyles.headerText,
+    ...globalStyles.sectionTitle,
     marginBottom: 8,
-    textAlign: "center",
   },
   subtitle: {
-    ...globalStyles.bodyText,
-    textAlign: "center",
+    ...globalStyles.sectionSubtitle,
     marginBottom: 20,
-    color: "rgba(0,0,0,0.7)",
   },
   textinput: {
     ...globalStyles.textInput,
-    width: "100%",
-    marginVertical: 10,
+    ...globalStyles.field,
   },
   datePickerButton: {
-    borderStyle: "solid" as const,
-    borderColor: "rgba(0, 0, 0, 0.3)",
-    borderWidth: 1,
-    borderRadius: 5,
-    padding: 8,
-    marginVertical: 10,
-    width: "100%",
+    ...globalStyles.textInput,
+    ...globalStyles.field,
   },
   dateText: {
     color: "rgba(0,0,0,1)",
@@ -225,21 +210,8 @@ const styles = StyleSheet.create({
   datePlaceholder: {
     color: "rgba(0,0,0,0.3)",
   },
-  buttonStyle: {
-    ...globalStyles.primaryButton,
-    width: "100%",
-    marginTop: 24,
-  },
-  buttonText: {
-    ...globalStyles.primaryButtonText,
-    fontSize: 16,
-    fontWeight: "600" as any,
-  },
   loginLine: {
-    flexDirection: "row" as any,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 16,
+    ...globalStyles.linkRow,
   },
   loginLineText: {
     fontSize: 14,

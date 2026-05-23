@@ -1,5 +1,4 @@
 import { globalStyles } from "@/src/styles/global";
-import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 export default function ListaVazia({
@@ -33,14 +32,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   title: {
-    ...globalStyles.headerText,
-    fontSize: 18,
+    ...globalStyles.sectionTitle,
     marginBottom: 8,
-    textAlign: "center",
   },
   subtitle: {
-    ...globalStyles.bodyText,
-    textAlign: "center",
+    ...globalStyles.sectionSubtitle,
     color: "rgba(0,0,0,0.62)",
   },
 });

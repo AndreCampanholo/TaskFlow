@@ -1,7 +1,7 @@
 import { colors } from "@/src/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type Props = {
   id: string;
@@ -10,6 +10,8 @@ type Props = {
   state: "em-andamento" | "concluida" | "atrasada";
   completed: boolean;
   onToggle: (id: string) => void;
+  onPressTask?: (id: string) => void;
+  onLongPressTask?: (id: string) => void;
 };
 
 export default function TaskCard({
@@ -19,6 +21,8 @@ export default function TaskCard({
   state,
   completed,
   onToggle,
+  onPressTask,
+  onLongPressTask,
 }: Props) {
   const accent =
     state === "concluida"
@@ -28,30 +32,30 @@ export default function TaskCard({
         : colors.azul_claro;
 
   return (
-    <View style={[styles.card, { borderLeftColor: accent }]}>
-      <TouchableOpacity
-        onPress={() => onToggle(id)}
-        style={styles.checkWrapper}
-      >
-        <View
-          style={[styles.checkCircle, completed && styles.checkCircleChecked]}
-        >
-          {completed ? (
-            <Ionicons name="checkmark" size={12} color={colors.verde} />
-          ) : null}
+    <Pressable
+      style={({ pressed }) => [
+        styles.card,
+        { borderLeftColor: accent },
+        pressed && styles.cardPressed,
+      ]}
+      onPress={() => onPressTask?.(id)}
+      onLongPress={() => onLongPressTask?.(id)}
+      delayLongPress={400}
+      accessibilityRole="button"
+    >
+      <TouchableOpacity onPress={() => onToggle(id)} style={styles.checkWrapper}>
+        <View style={[styles.checkCircle, completed && styles.checkCircleChecked]}>
+          {completed ? <Ionicons name="checkmark" size={12} color={colors.verde} /> : null}
         </View>
       </TouchableOpacity>
 
       <View style={styles.body}>
-        <Text
-          style={[styles.title, completed && styles.titleDone]}
-          numberOfLines={2}
-        >
+        <Text style={[styles.title, completed && styles.titleDone]} numberOfLines={2}>
           {title}
         </Text>
         <Text style={styles.due}>{dueLabel}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -64,6 +68,10 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
     borderLeftWidth: 3,
+  },
+  cardPressed: {
+    opacity: 0.9,
+    transform: [{ scale: 0.995 }],
   },
   checkWrapper: {
     paddingRight: 8,

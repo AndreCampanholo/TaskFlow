@@ -18,42 +18,61 @@ export const globalStyles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  fullScreen: {
+    flex: 1,
+    width: "100%",
+  },
+  centeredContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
   screenContainer: {
-    borderStyle: "solid" as const,
+    width: "100%",
+    maxWidth: 380,
+    minWidth: 0,
+    padding: 30,
+    borderStyle: "solid",
     borderColor: colors.preto,
     borderWidth: 2,
     borderRadius: 10,
-    padding: 20,
-  },
-  authContainer: {
-    width: 400,
-    maxWidth: "100%" as any,
-    padding: 30,
-    borderStyle: "solid" as const,
-    borderWidth: 2,
-    borderColor: "rgba(0, 0, 0, 0.3)",
-    borderRadius: 10,
-    justifyContent: "center",
     alignItems: "center",
   },
   headerText: {
     color: colors.azul_escuro,
     fontFamily: "Inter",
     fontSize: 30,
-    fontWeight: "700" as any,
+    fontWeight: "700",
   },
   bodyText: {
     color: colors.preto,
     fontSize: 14,
   },
   textInput: {
-    borderStyle: "solid" as const,
+    borderStyle: "solid",
     borderColor: "rgba(0, 0, 0, 0.3)",
     borderWidth: 1,
     borderRadius: 5,
     padding: 8,
     marginVertical: 8,
     color: "rgba(0,0,0,1)",
+  },
+  field: {
+    width: "100%",
+    marginVertical: 10,
+  },
+  sectionTitle: {
+    color: colors.azul_escuro,
+    fontFamily: "Inter",
+    fontSize: 18,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  sectionSubtitle: {
+    color: "rgba(0,0,0,0.7)",
+    fontSize: 14,
+    textAlign: "center",
   },
   primaryButton: {
     backgroundColor: colors.azul_escuro,
@@ -69,16 +88,48 @@ export const globalStyles = StyleSheet.create({
     textAlign: "center" as any,
   },
   linkText: {
-    fontWeight: "500" as any,
+    fontWeight: "500",
     color: colors.azul_escuro,
     marginLeft: 4,
   },
   forgotPasswordText: {
     color: colors.azul_claro,
   },
-  inlineRow: {
-    marginTop: 10,
+  linkRow: {
     flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
+    marginTop: 16,
+    gap: 4,
+  },
+  cardSurface: {
+    backgroundColor: colors.branco,
+    borderRadius: 14,
+    padding: 16,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.45)",
+    justifyContent: "center",
+    padding: 20,
+  },
+  pill: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 999,
+    backgroundColor: "#F3F4F6",
+  },
+  pillText: {
+    color: "rgba(0,0,0,0.7)",
+  },
+  pillTextActive: {
+    color: colors.branco,
+    fontWeight: "700",
+  },
+  neutralButton: {
+    backgroundColor: "#EEF2FF",
+  },
+  neutralButtonText: {
+    color: colors.azul_escuro,
   },
 });

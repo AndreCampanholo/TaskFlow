@@ -1,3 +1,4 @@
+import { colors } from "@/src/styles/global";
 import { Stack } from "expo-router";
 import React from "react";
 
@@ -6,18 +7,24 @@ export default function PerfilLayout() {
     <Stack
       screenOptions={{
         headerShown: true,
+        headerShadowVisible: false,
+        headerStyle: { backgroundColor: colors.branco },
+        headerTintColor: colors.azul_escuro,
+        headerTitleStyle: {
+          color: colors.azul_escuro,
+          fontFamily: "Inter",
+          fontWeight: "700",
+        },
       }}
     >
       <Stack.Screen name="Tasks" options={{ title: "Tarefas" }} />
       <Stack.Screen
-        name="DetalhesTarefa"
+        name="TarefaDetalhes"
         options={{ title: "Detalhes da Tarefa" }}
       />
-      <Stack.Screen name="CriarTarefa" options={{ title: "Criar Tarefa" }} />
-      <Stack.Screen name="EditarTarefa" options={{ title: "Editar Tarefa" }} />
       <Stack.Screen
-        name="ExcluirTarefa"
-        options={{ title: "Excluir Tarefa" }}
+        name="TarefaEditar"
+        options={{ title: "Editar Tarefa" }}
       />
     </Stack>
   );

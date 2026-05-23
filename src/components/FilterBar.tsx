@@ -1,5 +1,4 @@
-import { colors } from "@/src/styles/global";
-import React from "react";
+import { colors, globalStyles } from "@/src/styles/global";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type Props = {
@@ -12,38 +11,35 @@ export default function FilterBar({ filter, setFilter }: Props) {
     <View style={styles.container}>
       <Pressable
         onPress={() => setFilter("all")}
-        style={[styles.pill, filter === "all" && styles.TodasActive]}
+        style={[globalStyles.pill, filter === "all" && styles.TodasActive]}
       >
-        <Text style={filter === "all" ? styles.textActive : styles.text}>
+        <Text style={filter === "all" ? globalStyles.pillTextActive : globalStyles.pillText}>
           Todas
         </Text>
       </Pressable>
       <Pressable
         onPress={() => setFilter("em-andamento")}
-        style={[
-          styles.pill,
-          filter === "em-andamento" && styles.EmAndamentoActive,
-        ]}
+        style={[globalStyles.pill, filter === "em-andamento" && styles.EmAndamentoActive]}
       >
         <Text
-          style={filter === "em-andamento" ? styles.textActive : styles.text}
+          style={filter === "em-andamento" ? globalStyles.pillTextActive : globalStyles.pillText}
         >
           Em andamento
         </Text>
       </Pressable>
       <Pressable
         onPress={() => setFilter("concluida")}
-        style={[styles.pill, filter === "concluida" && styles.ConcluidasActive]}
+        style={[globalStyles.pill, filter === "concluida" && styles.ConcluidasActive]}
       >
-        <Text style={filter === "concluida" ? styles.textActive : styles.text}>
+        <Text style={filter === "concluida" ? globalStyles.pillTextActive : globalStyles.pillText}>
           Concluídas
         </Text>
       </Pressable>
       <Pressable
         onPress={() => setFilter("atrasada")}
-        style={[styles.pill, filter === "atrasada" && styles.AtrasadasActive]}
+        style={[globalStyles.pill, filter === "atrasada" && styles.AtrasadasActive]}
       >
-        <Text style={filter === "atrasada" ? styles.textActive : styles.text}>
+        <Text style={filter === "atrasada" ? globalStyles.pillTextActive : globalStyles.pillText}>
           Atrasadas
         </Text>
       </Pressable>
@@ -53,16 +49,8 @@ export default function FilterBar({ filter, setFilter }: Props) {
 
 const styles = StyleSheet.create({
   container: { flexDirection: "row", gap: 8, marginBottom: 10 },
-  pill: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 999,
-    backgroundColor: "#F3F4F6",
-  },
   TodasActive: { backgroundColor: colors.azul_escuro },
   EmAndamentoActive: { backgroundColor: colors.azul_em_progresso },
   ConcluidasActive: { backgroundColor: colors.verde },
   AtrasadasActive: { backgroundColor: colors.vermelho_atrasado },
-  text: { color: "rgba(0,0,0,0.7)" },
-  textActive: { color: colors.branco, fontWeight: "700" },
 });

@@ -53,10 +53,7 @@ export default function Login() {
           style={styles.textinput}
         />
 
-        <TouchableOpacity
-          style={styles.esqueciSenhaContainer}
-          onPress={() => router.push("/RecuperarSenha")}
-        >
+        <TouchableOpacity style={styles.esqueciSenhaContainer} onPress={() => router.push("/RecuperarSenha")}>
           <Text style={styles.esqueciSenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
 
@@ -75,34 +72,29 @@ export default function Login() {
 
 const styles = StyleSheet.create({
   screen: {
-    ...globalStyles.screen,
-    width: "100%",
+    ...globalStyles.fullScreen,
     paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
   container: {
     ...globalStyles.screenContainer,
-    alignItems: "center",
-    minWidth: 0,
-    maxWidth: 380,
   },
   icon: {
     marginBottom: 16,
   },
   header: {
-    ...globalStyles.headerText,
+    ...globalStyles.sectionTitle,
+    fontSize: 30,
     marginBottom: 8,
-    textAlign: "center",
   },
   subtitle: {
-    ...globalStyles.bodyText,
-    textAlign: "center",
+    ...globalStyles.sectionSubtitle,
     marginBottom: 20,
-    color: "rgba(0,0,0,0.7)",
   },
   textinput: {
     ...globalStyles.textInput,
-    width: "100%",
-    marginVertical: 12,
+    ...globalStyles.field,
   },
   esqueciSenhaContainer: {
     width: "100%",
@@ -112,22 +104,8 @@ const styles = StyleSheet.create({
     ...globalStyles.forgotPasswordText,
     marginBottom: 16,
   },
-  buttonContainer: {
-    ...globalStyles.primaryButton,
-    width: "100%",
-    marginTop: 24,
-  },
-  buttonText: {
-    ...globalStyles.primaryButtonText,
-    fontSize: 16,
-    fontWeight: "600",
-  },
   cadastroLine: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 16,
-    gap: 4,
+    ...globalStyles.linkRow,
   },
   cadastroLineText: {
     fontSize: 14,

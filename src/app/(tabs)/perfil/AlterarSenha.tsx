@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
   useWindowDimensions,
 } from "react-native";
@@ -25,16 +24,6 @@ export default function AlterarSenha() {
 
   return (
     <View style={globalStyles.screen}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <MaterialCommunityIcons
-            name="arrow-left"
-            size={24}
-            color={colors.azul_escuro}
-          />
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.content}>
         <View style={[styles.container, { width: cardWidth }]}>
           <MaterialCommunityIcons
@@ -71,31 +60,19 @@ export default function AlterarSenha() {
 
 const styles = StyleSheet.create({
   content: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  headerContainer: {
-    width: "100%",
-    paddingHorizontal: 16,
-    paddingTop: 8,
+    ...globalStyles.centeredContent,
   },
   container: {
     ...globalStyles.screenContainer,
-    alignItems: "center",
-    minWidth: 0,
-    maxWidth: 380,
+    backgroundColor: "#FFFFFF",
   },
   title: {
-    ...globalStyles.headerText,
+    ...globalStyles.sectionTitle,
     marginBottom: 8,
-    textAlign: "center",
   },
   textinput: {
     ...globalStyles.textInput,
-    width: "100%",
-    marginVertical: 10,
+    ...globalStyles.field,
   },
   icon: {
     marginBottom: 16,

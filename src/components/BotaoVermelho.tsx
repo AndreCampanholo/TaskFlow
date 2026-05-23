@@ -1,8 +1,8 @@
 import { RelativePathString, router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { globalStyles } from "@/src/styles/global";
+import { colors, globalStyles } from "../styles/global";
 
-export default function BotaoCancelar({
+export default function BotaoVermelho({
   text,
   action,
 }: {
@@ -19,7 +19,7 @@ export default function BotaoCancelar({
 
   return (
     <TouchableOpacity style={styles.buttonStyle} onPress={handlePress}>
-      <Text style={[globalStyles.primaryButtonText, globalStyles.neutralButtonText]}>{text}</Text>
+      <Text style={globalStyles.primaryButtonText}>{text}</Text>
     </TouchableOpacity>
   );
 }
@@ -27,7 +27,7 @@ export default function BotaoCancelar({
 const styles = StyleSheet.create({
   buttonStyle: {
     ...globalStyles.primaryButton,
-    ...globalStyles.neutralButton,
+    backgroundColor: colors.vermelho_atrasado,
     width: "100%",
     marginTop: 24,
   },

@@ -16,22 +16,18 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="Tasks"
+        name="tarefas"
         options={{
           title: "Tarefas",
-          tabBarLabel: "Tarefas",
-          tabBarLabelStyle: { textTransform: "capitalize" },
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="list-outline" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="Perfil"
+        name="perfil"
         options={{
           title: "Perfil",
-          tabBarLabel: "Perfil",
-          tabBarLabelStyle: { textTransform: "capitalize" },
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-outline" size={size} color={color} />
           ),
