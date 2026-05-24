@@ -5,7 +5,7 @@ import TaskStatusBar from "@/src/components/TaskStatusBar";
 import useTasks from "@/src/hooks/useTasks";
 import { colors, globalStyles } from "@/src/styles/global";
 import { router, useLocalSearchParams } from "expo-router";
-import React from "react";
+import React, { useEffect } from "react";
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -17,6 +17,12 @@ export default function TarefaDetalhes() {
 
   const taskId = Array.isArray(id) ? id[0] : id;
   const task = taskId ? getTaskById(taskId) : null;
+
+  useEffect(() => {
+    if (taskId && !task) {
+      router.back();
+    }
+  }, [task, taskId]);
 
   function handleDeleteTask() {
     if (!task) return;
