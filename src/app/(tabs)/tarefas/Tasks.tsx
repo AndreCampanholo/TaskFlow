@@ -7,7 +7,14 @@ import useTasks from "@/src/hooks/useTasks";
 import { globalStyles } from "@/src/styles/global";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 export default function Tasks() {
   // Keep UI focused on rendering. Task logic is in `useTasks`.
@@ -45,7 +52,7 @@ export default function Tasks() {
     setOpen(false);
   }
 
-  function openTaskDetails(id: string) {
+  function handleTaskPress(id: string) {
     router.push({
       pathname: "/(tabs)/tarefas/TarefaDetalhes",
       params: { id },
@@ -53,7 +60,10 @@ export default function Tasks() {
   }
 
   function handleTaskLongPress(id: string) {
-    openTaskDetails(id);
+    router.push({
+      pathname: "/(tabs)/tarefas/TarefaEditar",
+      params: { id },
+    });
   }
 
   const visibleTasks = getFiltered(filter);
@@ -81,7 +91,7 @@ export default function Tasks() {
                 state={t.state}
                 completed={t.completed}
                 onToggle={toggleTask}
-                onPressTask={openTaskDetails}
+                onPressTask={handleTaskPress}
                 onLongPressTask={handleTaskLongPress}
               />
             ))}

@@ -4,6 +4,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -19,6 +21,34 @@ export default function Login() {
   const [senha, setSenha] = useState("");
 
   function handleLogin() {
+    if (!identifier.trim() || !senha.trim()) {
+      if (Platform.OS === "web") {
+        window.alert("Todos os campos devem ser preenchidos.");
+      } else {
+        Alert.alert(
+          "Cadastro inválido",
+          "Todos os campos devem ser preenchidos.",
+          [{ text: "Ok", style: "cancel" }],
+        );
+      }
+      return;
+    }
+
+    const value = identifier.trim();
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    const isEmail = emailRegex.test(value);
+    const digits = value.replace(/\D/g, "");
+    const isCpf = /^\d{11}$/.test(digits);
+    if (!isEmail && !isCpf) {
+      const msg = "Informe um E-mail válido ou um CPF com 11 dígitos.";
+      if (Platform.OS === "web") {
+        window.alert(msg);
+      } else {
+        Alert.alert("Erro", msg, [{ text: "Ok", style: "cancel" }]);
+      }
+      return;
+    }
+
     router.replace("/tarefas/Tasks" as any);
   }
 
@@ -53,7 +83,10 @@ export default function Login() {
           style={styles.textinput}
         />
 
-        <TouchableOpacity style={styles.esqueciSenhaContainer} onPress={() => router.push("/RecuperarSenha")}>
+        <TouchableOpacity
+          style={styles.esqueciSenhaContainer}
+          onPress={() => router.push("/RecuperarSenha")}
+        >
           <Text style={styles.esqueciSenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
 

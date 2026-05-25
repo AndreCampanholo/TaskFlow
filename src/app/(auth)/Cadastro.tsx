@@ -5,6 +5,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
   Platform,
   StyleSheet,
   Text,
@@ -27,7 +28,89 @@ export default function Cadastro() {
   const [confirmSenha, setConfirmSenha] = useState("");
 
   const handleCadastro = () => {
-    console.log({ nome, dataNascimento, cpf, email, senha });
+    if (
+      !nome.trim() ||
+      !cpf.trim() ||
+      !email.trim() ||
+      !senha.trim() ||
+      !confirmSenha.trim() ||
+      !dataNascimento
+    ) {
+      if (Platform.OS === "web") {
+        window.alert("Todos os campos devem ser preenchidos.");
+      } else {
+        Alert.alert(
+          "Cadastro inválido",
+          "Todos os campos devem ser preenchidos.",
+          [{ text: "Ok", style: "cancel" }],
+        );
+      }
+      return;
+    }
+
+    if (dataNascimento.getTime() > new Date().setHours(23, 59, 59, 999)) {
+      if (Platform.OS === "web") {
+        window.alert("Data de nascimento inválida.");
+      } else {
+        Alert.alert("Cadastro inválido", "Data de nascimento inválida.", [
+          { text: "Ok", style: "cancel" },
+        ]);
+      }
+      return;
+    }
+
+    if (senha.trim() !== confirmSenha.trim()) {
+      if (Platform.OS === "web") {
+        window.alert("A senha confirmada difere da informada.");
+      } else {
+        Alert.alert(
+          "Cadastro inválido",
+          "A senha confirmada difere da senha informada.",
+          [{ text: "Ok", style: "cancel" }],
+        );
+      }
+      return;
+    }
+
+    const emailInformado = email.trim();
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    const isEmail = emailRegex.test(emailInformado);
+    const cpfInformado = cpf.trim();
+    const digits = cpfInformado.replace(/\D/g, "");
+    const isCpf = /^\d{11}$/.test(digits);
+    if (!isEmail && !isCpf) {
+      if (Platform.OS === "web") {
+        window.alert("Informe um E-mail válido e um CPF com 11 dígitos.");
+      } else {
+        Alert.alert(
+          "Erro",
+          "Informe um E-mail válido e um CPF com 11 dígitos.",
+          [{ text: "Ok", style: "cancel" }],
+        );
+      }
+      return;
+    }
+    if (!isEmail) {
+      if (Platform.OS === "web") {
+        window.alert("Informe um E-mail válido.");
+      } else {
+        Alert.alert("Erro", "Informe um E-mail válido.", [
+          { text: "Ok", style: "cancel" },
+        ]);
+      }
+      return;
+    }
+    if (!isCpf) {
+      if (Platform.OS === "web") {
+        window.alert("Informe CPF válido com 11 dígitos.");
+      } else {
+        Alert.alert("Erro", "Informe CPF válido com 11 dígitos.", [
+          { text: "Ok", style: "cancel" },
+        ]);
+      }
+      return;
+    }
+
     router.replace("/tarefas/Tasks" as any);
   };
 
@@ -73,6 +156,7 @@ export default function Cadastro() {
                   e.target.value ? new Date(e.target.value) : null,
                 )
               }
+              max={new Date().toISOString().slice(0, 10)}
               placeholder="dd/mm/aaaa"
               style={{
                 borderWidth: 1,

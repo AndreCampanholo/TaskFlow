@@ -1,10 +1,12 @@
 import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
 import ProfileAvatar from "@/src/components/ProfileAvatar";
-import { colors } from "@/src/styles/global";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
+  Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,14 +17,61 @@ import {
 export default function EditarPerfil() {
   const [avatarUri, setAvatarUri] = useState<string | null>(null);
   const [name, setName] = useState("");
-  const [dataNascimento, setDataNascimento] = useState("");
+  const [dataNascimento, setDataNascimento] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
 
   function handleEditarPerfil() {
-    if (!name.trim()) return Alert.alert("Erro", "Digite seu nome completo");
+    if (!name.trim() && !dataNascimento && !cpf.trim() && !email.trim()) {
+      if (Platform.OS === "web") {
+        window.alert("Nenhuma alteração feita.");
+      } else {
+        Alert.alert("Aviso", "Nenhuma alteração feita.", [
+          { text: "Ok", style: "cancel" },
+        ]);
+      }
+      router.back();
+      return;
+    }
+
+    if (email.trim()) {
+      const emailInformado = email.trim();
+      const emailRegex = /^\S+@\S+\.\S+$/;
+      const isEmail = emailRegex.test(emailInformado);
+      if (!isEmail) {
+        if (Platform.OS === "web") {
+          window.alert("Informe um E-mail válido.");
+        } else {
+          Alert.alert("Erro", "Informe um E-mail válido.", [
+            { text: "Ok", style: "cancel" },
+          ]);
+        }
+        return;
+      }
+    }
+    if (cpf.trim()) {
+      const cpfInformado = cpf.trim();
+      const digits = cpfInformado.replace(/\D/g, "");
+      const isCpf = /^\d{11}$/.test(digits);
+      if (!isCpf) {
+        if (Platform.OS === "web") {
+          window.alert("Informe CPF válido com 11 dígitos.");
+        } else {
+          Alert.alert("Erro", "Informe CPF válido com 11 dígitos.", [
+            { text: "Ok", style: "cancel" },
+          ]);
+        }
+        return;
+      }
+    }
 
     router.back();
+  }
+
+  function handleDateChange(_event: any, selectedDate?: Date) {
+    if (selectedDate) setDataNascimento(selectedDate);
+    if (Platform.OS === "android") setShowDatePicker(false);
   }
 
   return (
@@ -42,13 +91,61 @@ export default function EditarPerfil() {
         />
 
         <Text style={styles.label}>Data de Nascimento</Text>
-        <TextInput
-          style={styles.input}
-          value={dataNascimento}
-          onChangeText={setDataNascimento}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
-          placeholder="dd/mm/aaaa"
-        />
+        {Platform.OS === "web" ? (
+          <input
+            type="date"
+            value={
+              dataNascimento ? dataNascimento.toISOString().slice(0, 10) : ""
+            }
+            onChange={(e: any) =>
+              setDataNascimento(
+                e.target.value ? new Date(e.target.value) : null,
+              )
+            }
+            max={new Date().toISOString().slice(0, 10)}
+            placeholder="dd/mm/aaaa"
+            style={{
+              borderWidth: 1,
+              borderColor: "rgba(0, 0, 0, 0.3)",
+              borderRadius: 5,
+              padding: 8,
+              marginTop: 0,
+              marginBottom: 12,
+              background: "transparent",
+              color: dataNascimento ? "rgba(0,0,0,1)" : "rgba(0,0,0,0.3)",
+              fontSize: 16,
+              fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI'",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
+          />
+        ) : (
+          <Pressable
+            style={styles.dateButton}
+            onPress={() => setShowDatePicker(true)}
+          >
+            <Text
+              style={[
+                styles.dateButtonText,
+                !dataNascimento && styles.datePlaceholder,
+              ]}
+            >
+              {dataNascimento
+                ? dataNascimento.toLocaleDateString("pt-BR")
+                : "dd/mm/aaaa"}
+            </Text>
+          </Pressable>
+        )}
+
+        {showDatePicker && Platform.OS !== "web" ? (
+          <DateTimePicker
+            value={dataNascimento ?? new Date()}
+            mode="date"
+            display="default"
+            maximumDate={new Date()}
+            onChange={handleDateChange}
+          />
+        ) : null}
 
         <Text style={styles.label}>CPF</Text>
         <TextInput
@@ -99,5 +196,22 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginBottom: 12,
     backgroundColor: "#fff",
+  },
+  dateButton: {
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.15)",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 12,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+  },
+  dateButtonText: {
+    color: "rgba(0,0,0,0.6)",
+    fontWeight: "400",
+  },
+  datePlaceholder: {
+    color: "rgba(0,0,0,0.6)",
   },
 });

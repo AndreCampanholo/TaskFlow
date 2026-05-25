@@ -1,4 +1,15 @@
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
+import BotaoCancelar from "@/src/components/BotaoCancelar";
 import { colors, globalStyles } from "@/src/styles/global";
+import {
+  fromDateInputValue,
+  fromTimeInputValue,
+  mergeTaskDateTime,
+  toDateInputValue,
+  toTimeInputValue,
+  updateTaskTime,
+} from "@/src/utils/taskDates";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
 import {
   Alert,
@@ -11,17 +22,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
-import BotaoCancelar from "@/src/components/BotaoCancelar";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import {
-  fromDateInputValue,
-  fromTimeInputValue,
-  mergeTaskDateTime,
-  toDateInputValue,
-  toTimeInputValue,
-  updateTaskTime,
-} from "@/src/utils/taskDates";
 
 type Props = {
   visible: boolean;
@@ -38,7 +38,9 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState<Date>(new Date());
-  const [state, setState] = useState<"em-andamento" | "concluida" | "atrasada">("em-andamento");
+  const [state, setState] = useState<"em-andamento" | "concluida" | "atrasada">(
+    "em-andamento",
+  );
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
@@ -151,11 +153,24 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               </View>
             ) : (
               <View style={styles.dateRow}>
-                <Pressable style={styles.dateButton} onPress={() => setShowDatePicker(true)}>
-                  <Text style={styles.dateText}>{dueDate.toLocaleDateString("pt-BR")}</Text>
+                <Pressable
+                  style={styles.dateButton}
+                  onPress={() => setShowDatePicker(true)}
+                >
+                  <Text style={styles.dateText}>
+                    {dueDate.toLocaleDateString("pt-BR")}
+                  </Text>
                 </Pressable>
-                <Pressable style={styles.dateButton} onPress={() => setShowTimePicker(true)}>
-                  <Text style={styles.dateText}>{dueDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</Text>
+                <Pressable
+                  style={styles.dateButton}
+                  onPress={() => setShowTimePicker(true)}
+                >
+                  <Text style={styles.dateText}>
+                    {dueDate.toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </Text>
                 </Pressable>
               </View>
             )}
@@ -183,11 +198,19 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               <Pressable
                 style={[
                   globalStyles.pill,
-                  state === "em-andamento" && { backgroundColor: colors.azul_em_progresso },
+                  state === "em-andamento" && {
+                    backgroundColor: colors.azul_em_progresso,
+                  },
                 ]}
                 onPress={() => setState("em-andamento")}
               >
-                <Text style={state === "em-andamento" ? globalStyles.pillTextActive : globalStyles.pillText}>
+                <Text
+                  style={
+                    state === "em-andamento"
+                      ? globalStyles.pillTextActive
+                      : globalStyles.pillText
+                  }
+                >
                   Em andamento
                 </Text>
               </Pressable>
@@ -198,18 +221,32 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
                 ]}
                 onPress={() => setState("concluida")}
               >
-                <Text style={state === "concluida" ? globalStyles.pillTextActive : globalStyles.pillText}>
+                <Text
+                  style={
+                    state === "concluida"
+                      ? globalStyles.pillTextActive
+                      : globalStyles.pillText
+                  }
+                >
                   Concluída
                 </Text>
               </Pressable>
               <Pressable
                 style={[
                   globalStyles.pill,
-                  state === "atrasada" && { backgroundColor: colors.vermelho_atrasado },
+                  state === "atrasada" && {
+                    backgroundColor: colors.vermelho_atrasado,
+                  },
                 ]}
                 onPress={() => setState("atrasada")}
               >
-                <Text style={state === "atrasada" ? globalStyles.pillTextActive : globalStyles.pillText}>
+                <Text
+                  style={
+                    state === "atrasada"
+                      ? globalStyles.pillTextActive
+                      : globalStyles.pillText
+                  }
+                >
                   Atrasada
                 </Text>
               </Pressable>
@@ -264,7 +301,7 @@ const styles = StyleSheet.create({
     borderColor: "rgba(0, 0, 0, 0.3)",
     borderRadius: 5,
     padding: 8,
-    background: "transparent",
+    backgroundColor: "transparent",
     color: "rgba(0,0,0,1)",
     fontSize: 16,
     fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI'",
