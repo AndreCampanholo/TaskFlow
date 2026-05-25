@@ -1,8 +1,10 @@
 import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
-import ProfileAvatar from "@/src/components/ProfileAvatar";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import AvatarPerfil from "@/src/components/ProfileAvatar";
+import DateTimePicker, {
+  type DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   Platform,
@@ -14,78 +16,69 @@ import {
   View,
 } from "react-native";
 
+function exibirAlerta(titulo: string, mensagem: string) {
+  if (Platform.OS === "web") {
+    window.alert(`${titulo}\n\n${mensagem}`);
+    return;
+  }
+
+  Alert.alert(titulo, mensagem, [{ text: "Ok", style: "cancel" }]);
+}
+
 export default function EditarPerfil() {
-  const [avatarUri, setAvatarUri] = useState<string | null>(null);
-  const [name, setName] = useState("");
+  const [uriAvatar, setUriAvatar] = useState<string | null>(null);
+  const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState<Date | null>(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
 
+  const temAlteracao = Boolean(
+    nome.trim() || dataNascimento || cpf.trim() || email.trim(),
+  );
+
   function handleEditarPerfil() {
-    if (!name.trim() && !dataNascimento && !cpf.trim() && !email.trim()) {
-      if (Platform.OS === "web") {
-        window.alert("Nenhuma alteração feita.");
-      } else {
-        Alert.alert("Aviso", "Nenhuma alteração feita.", [
-          { text: "Ok", style: "cancel" },
-        ]);
-      }
+    if (!temAlteracao) {
+      exibirAlerta("Aviso", "Nenhuma alteração feita.");
       router.back();
       return;
     }
 
-    if (email.trim()) {
-      const emailInformado = email.trim();
-      const emailRegex = /^\S+@\S+\.\S+$/;
-      const isEmail = emailRegex.test(emailInformado);
-      if (!isEmail) {
-        if (Platform.OS === "web") {
-          window.alert("Informe um E-mail válido.");
-        } else {
-          Alert.alert("Erro", "Informe um E-mail válido.", [
-            { text: "Ok", style: "cancel" },
-          ]);
-        }
-        return;
-      }
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      exibirAlerta("Erro", "Informe um e-mail válido.");
+      return;
     }
-    if (cpf.trim()) {
-      const cpfInformado = cpf.trim();
-      const digits = cpfInformado.replace(/\D/g, "");
-      const isCpf = /^\d{11}$/.test(digits);
-      if (!isCpf) {
-        if (Platform.OS === "web") {
-          window.alert("Informe CPF válido com 11 dígitos.");
-        } else {
-          Alert.alert("Erro", "Informe CPF válido com 11 dígitos.", [
-            { text: "Ok", style: "cancel" },
-          ]);
-        }
-        return;
-      }
+
+    if (cpf.trim() && !/^\d{11}$/.test(cpf.replace(/\D/g, ""))) {
+      exibirAlerta("Erro", "Informe um CPF válido com 11 dígitos.");
+      return;
     }
 
     router.back();
   }
 
-  function handleDateChange(_event: any, selectedDate?: Date) {
-    if (selectedDate) setDataNascimento(selectedDate);
-    if (Platform.OS === "android") setShowDatePicker(false);
+  function handleDateChange(_event: DateTimePickerEvent, selectedDate?: Date) {
+    if (selectedDate) {
+      setDataNascimento(selectedDate);
+    }
+
+    if (Platform.OS === "android") {
+      setSeletorDataAberto(false);
+    }
   }
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
       <View style={styles.avatarWrap}>
-        <ProfileAvatar uri={avatarUri} onChange={setAvatarUri} size={110} />
+        <AvatarPerfil uri={uriAvatar} aoAlterar={setUriAvatar} tamanho={110} />
       </View>
 
       <View style={styles.form}>
         <Text style={styles.label}>Nome completo</Text>
         <TextInput
           style={styles.input}
-          value={name}
-          onChangeText={setName}
+          value={nome}
+          onChangeText={setNome}
           placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
           placeholder="Nome completo"
         />
@@ -122,7 +115,7 @@ export default function EditarPerfil() {
         ) : (
           <Pressable
             style={styles.dateButton}
-            onPress={() => setShowDatePicker(true)}
+            onPress={() => setSeletorDataAberto(true)}
           >
             <Text
               style={[
@@ -137,7 +130,7 @@ export default function EditarPerfil() {
           </Pressable>
         )}
 
-        {showDatePicker && Platform.OS !== "web" ? (
+        {seletorDataAberto && Platform.OS !== "web" ? (
           <DateTimePicker
             value={dataNascimento ?? new Date()}
             mode="date"
@@ -166,7 +159,7 @@ export default function EditarPerfil() {
           keyboardType="email-address"
         />
 
-        <BotaoAzulClaro text="Salvar Alterações" action={handleEditarPerfil} />
+        <BotaoAzulClaro texto="Salvar Alterações" acao={handleEditarPerfil} />
       </View>
     </ScrollView>
   );

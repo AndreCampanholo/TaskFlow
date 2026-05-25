@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
-export default function BotaoNovaTask({ onPress }: { onPress: () => void }) {
+export default function BotaoNovaTarefa({ onPress }: { onPress: () => void }) {
   return (
     <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.85}>
       <Ionicons name="add" size={24} color={colors.branco} />
