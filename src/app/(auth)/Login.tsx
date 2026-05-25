@@ -1,6 +1,7 @@
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -53,7 +54,11 @@ export default function Login() {
   }
 
   return (
-    <View style={styles.screen}>
+    <LinearGradient
+      colors={["#C5D8F5", "#FFFFFF", "#B8F0D8"]}
+      locations={[0, 0.5, 1]}
+      style={styles.screen}
+    >
       <View style={[styles.container, { width: cardWidth }]}>
         <MaterialCommunityIcons
           name="check-circle"
@@ -99,7 +104,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
