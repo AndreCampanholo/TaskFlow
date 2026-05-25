@@ -1,40 +1,47 @@
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import BotaoVermelho from "@/src/components/BotaoVermelho";
-import TaskPrazoDisplay from "@/src/components/TaskPrazoDisplay";
+import ExibicaoPrazoTarefa from "@/src/components/TaskPrazoDisplay";
 import TaskStatusBar from "@/src/components/TaskStatusBar";
-import useTasks from "@/src/hooks/useTasks";
+import useTarefas from "@/src/hooks/useTasks";
 import { colors, globalStyles } from "@/src/styles/global";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
-import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function TarefaDetalhes() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { getTaskById, deleteTask } = useTasks();
+  const { obterTarefaPorId, excluirTarefa } = useTarefas();
 
-  const taskId = Array.isArray(id) ? id[0] : id;
-  const task = taskId ? getTaskById(taskId) : null;
+  const tarefaId = Array.isArray(id) ? id[0] : id;
+  const tarefa = tarefaId ? obterTarefaPorId(tarefaId) : null;
 
   useEffect(() => {
-    if (taskId && !task) {
+    if (tarefaId && !tarefa) {
       router.back();
     }
-  }, [task, taskId]);
+  }, [tarefa, tarefaId]);
 
-  function handleDeleteTask() {
-    if (!task) return;
+  function handleExcluirTarefa() {
+    if (!tarefa) return;
 
-    const confirmDelete =
+    const confirmarExclusao =
       Platform.OS === "web"
         ? window.confirm("Deseja excluir esta tarefa?")
         : false;
 
     if (Platform.OS === "web") {
-      if (confirmDelete) {
-        deleteTask(task.id);
+      if (confirmarExclusao) {
+        excluirTarefa(tarefa.id);
         router.back();
       }
       return;
@@ -46,26 +53,40 @@ export default function TarefaDetalhes() {
         text: "Excluir",
         style: "destructive",
         onPress: () => {
-          deleteTask(task.id);
+          excluirTarefa(tarefa.id);
           router.back();
         },
       },
     ]);
   }
 
-  function handleEditTask() {
-    if (!task) return;
-    router.push({ pathname: "/(tabs)/tarefas/TarefaEditar", params: { id: task.id } });
+  function handleEditarTarefa() {
+    if (!tarefa) return;
+    router.push({
+      pathname: "/(tabs)/tarefas/TarefaEditar",
+      params: { id: tarefa.id },
+    });
   }
 
-  if (!task) {
+  if (!tarefa) {
     return (
-      <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
+      <View
+        style={[
+          styles.screen,
+          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 },
+        ]}
+      >
         <View style={styles.emptyCard}>
-          <MaterialCommunityIcons name="clipboard-alert-outline" size={56} color={colors.azul_escuro} />
+          <MaterialCommunityIcons
+            name="clipboard-alert-outline"
+            size={56}
+            color={colors.azul_escuro}
+          />
           <Text style={styles.emptyTitle}>Tarefa não encontrada</Text>
-          <Text style={styles.emptyText}>Volte para a lista e tente abrir a tarefa novamente.</Text>
-          <BotaoAzulEscuro text="Voltar" action={() => router.back()} />
+          <Text style={styles.emptyText}>
+            Volte para a lista e tente abrir a tarefa novamente.
+          </Text>
+          <BotaoAzulEscuro texto="Voltar" acao={() => router.back()} />
         </View>
       </View>
     );
@@ -73,31 +94,38 @@ export default function TarefaDetalhes() {
 
   return (
     <Pressable
-      style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}
+      style={[
+        styles.screen,
+        { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 },
+      ]}
       onPress={() => router.back()}
     >
       <Pressable style={styles.card} onPress={() => null}>
         <View style={styles.headerRow}>
           <View style={styles.iconWrap}>
-            <MaterialCommunityIcons name="clipboard-text-outline" size={42} color={colors.amarelo_em_andamento} />
+            <MaterialCommunityIcons
+              name="clipboard-text-outline"
+              size={42}
+              color={colors.amarelo_em_andamento}
+            />
           </View>
 
           <View style={styles.headerCopy}>
             <Text style={styles.title} numberOfLines={2}>
-              {task.title}
+              {tarefa.title}
             </Text>
-            <TaskStatusBar status={task.state} />
+            <TaskStatusBar status={tarefa.state} />
           </View>
         </View>
 
-        <Text style={styles.description}>{task.description}</Text>
+        <Text style={styles.description}>{tarefa.description}</Text>
 
-        <TaskPrazoDisplay dueDate={task.dueDate} />
+        <ExibicaoPrazoTarefa dueDate={tarefa.dueDate} />
       </Pressable>
 
       <View style={styles.actions}>
-        <BotaoAzulEscuro text="Editar tarefa" action={handleEditTask} />
-        <BotaoVermelho text="Excluir tarefa" action={handleDeleteTask} />
+        <BotaoAzulEscuro texto="Editar tarefa" acao={handleEditarTarefa} />
+        <BotaoVermelho texto="Excluir tarefa" acao={handleExcluirTarefa} />
       </View>
     </Pressable>
   );

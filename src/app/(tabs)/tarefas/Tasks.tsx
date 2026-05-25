@@ -1,9 +1,9 @@
-import BotaoNovaTask from "@/src/components/BotaoNovaTask";
-import FilterBar from "@/src/components/FilterBar";
+import BotaoNovaTarefa from "@/src/components/BotaoNovaTask";
+import BarraFiltro from "@/src/components/FilterBar";
 import ListaVazia from "@/src/components/ListaVazia";
-import NovaTaskCard from "@/src/components/NovaTaskCard";
-import TaskCard from "@/src/components/TaskCard";
-import useTasks from "@/src/hooks/useTasks";
+import CartaoNovaTarefa from "@/src/components/NovaTaskCard";
+import CartaoTarefa from "@/src/components/TaskCard";
+import useTarefas from "@/src/hooks/useTasks";
 import { globalStyles } from "@/src/styles/global";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -16,11 +16,10 @@ import {
   View,
 } from "react-native";
 
-export default function Tasks() {
-  // Keep UI focused on rendering. Task logic is in `useTasks`.
-  const { tasks, createTask, toggleTask, getFiltered } = useTasks();
-  const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState<
+export default function Tarefas() {
+  const { tarefas, criarTarefa, alternarTarefa, obterFiltradas } = useTarefas();
+  const [modalAberto, setModalAberto] = useState(false);
+  const [filtro, setFiltro] = useState<
     "all" | "em-andamento" | "concluida" | "atrasada"
   >("all");
 
@@ -48,8 +47,8 @@ export default function Tasks() {
       return;
     }
 
-    createTask({ title, description, dueDate, stateFromModal });
-    setOpen(false);
+    criarTarefa({ title, description, dueDate, stateFromModal });
+    setModalAberto(false);
   }
 
   function handleTaskPress(id: string) {
@@ -66,33 +65,33 @@ export default function Tasks() {
     });
   }
 
-  const visibleTasks = getFiltered(filter);
+  const tarefasVisiveis = obterFiltradas(filtro);
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>TaskFlow</Text>
 
-      <FilterBar filter={filter} setFilter={setFilter} />
+      <BarraFiltro filtro={filtro} setFiltro={setFiltro} />
 
       <View style={styles.card}>
-        {tasks.length === 0 ? (
+        {tarefas.length === 0 ? (
           <ListaVazia
             title="Nenhuma tarefa por aqui"
             subtitle="Toque no + para criar sua primeira tarefa e começar a organizar seu dia."
           />
         ) : (
           <ScrollView contentContainerStyle={styles.list}>
-            {visibleTasks.map((t) => (
-              <TaskCard
-                key={t.id}
-                id={t.id}
-                title={t.title}
-                dueLabel={t.dueLabel}
-                state={t.state}
-                completed={t.completed}
-                onToggle={toggleTask}
-                onPressTask={handleTaskPress}
-                onLongPressTask={handleTaskLongPress}
+            {tarefasVisiveis.map((tarefa) => (
+              <CartaoTarefa
+                key={tarefa.id}
+                id={tarefa.id}
+                titulo={tarefa.title}
+                prazo={tarefa.dueLabel}
+                estado={tarefa.state}
+                concluida={tarefa.completed}
+                alternarConclusao={alternarTarefa}
+                aoPressionarTarefa={handleTaskPress}
+                aoManterPressionado={handleTaskLongPress}
               />
             ))}
           </ScrollView>
@@ -100,13 +99,13 @@ export default function Tasks() {
       </View>
 
       <View style={styles.fabWrap}>
-        <BotaoNovaTask onPress={() => setOpen(true)} />
+        <BotaoNovaTarefa onPress={() => setModalAberto(true)} />
       </View>
 
-      <NovaTaskCard
-        visible={open}
-        onClose={() => setOpen(false)}
-        onCreate={handleCreate}
+      <CartaoNovaTarefa
+        visivel={modalAberto}
+        aoFechar={() => setModalAberto(false)}
+        aoCriar={handleCreate}
       />
     </View>
   );

@@ -1,3 +1,19 @@
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
+import BotaoCancelar from "@/src/components/BotaoCancelar";
+import BotaoVermelho from "@/src/components/BotaoVermelho";
+import useTarefas, { EstadoTarefa } from "@/src/hooks/useTasks";
+import { colors, globalStyles } from "@/src/styles/global";
+import {
+  atualizarHora,
+  formatarDataParaInput,
+  formatarHoraParaInput,
+  mesclarDataHora,
+  obterDataDoInput,
+  obterHoraDoInput,
+} from "@/src/utils/taskDates";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -10,31 +26,19 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { colors, globalStyles } from "@/src/styles/global";
-import useTasks, { TaskState } from "@/src/hooks/useTasks";
-import BotaoCancelar from "@/src/components/BotaoCancelar";
-import BotaoVermelho from "@/src/components/BotaoVermelho";
-import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
-import {
-  fromDateInputValue,
-  fromTimeInputValue,
-  mergeTaskDateTime,
-  toDateInputValue,
-  toTimeInputValue,
-  updateTaskTime,
-} from "@/src/utils/taskDates";
 
-const STATUS_OPTIONS: { value: TaskState; label: string; color: string }[] = [
-  { value: "em-andamento", label: "Em andamento", color: colors.amarelo_em_andamento },
-  { value: "concluida",    label: "Concluída",    color: colors.verde },
-  { value: "atrasada",     label: "Atrasada",     color: colors.vermelho_atrasado },
+const OPCOES_STATUS: { value: EstadoTarefa; label: string; color: string }[] = [
+  {
+    value: "em-andamento",
+    label: "Em andamento",
+    color: colors.amarelo_em_andamento,
+  },
+  { value: "concluida", label: "Concluída", color: colors.verde },
+  { value: "atrasada", label: "Atrasada", color: colors.vermelho_atrasado },
 ];
 
-const webInputStyle = {
+const estiloInputWeb = {
   border: "1px solid rgba(0,0,0,0.2)",
   borderRadius: "8px",
   padding: "10px 12px",
@@ -50,31 +54,40 @@ const webInputStyle = {
 export default function TarefaEditar() {
   const insets = useSafeAreaInsets();
   const { id } = useLocalSearchParams<{ id?: string }>();
-  const { getTaskById, updateTask, deleteTask } = useTasks();
+  const { obterTarefaPorId, atualizarTarefa, excluirTarefa } = useTarefas();
 
-  const taskId = Array.isArray(id) ? id[0] : id;
-  const task = taskId ? getTaskById(taskId) : null;
+  const tarefaId = Array.isArray(id) ? id[0] : id;
+  const tarefa = tarefaId ? obterTarefaPorId(tarefaId) : null;
 
-  const [title, setTitle]             = useState(task?.title ?? "");
-  const [description, setDescription] = useState(task?.description ?? "");
-  const [dueDate, setDueDate]         = useState<Date>(task?.dueDate ? new Date(task.dueDate) : new Date());
-  const [status, setStatus]           = useState<TaskState>(task?.state ?? "em-andamento");
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [titulo, setTitulo] = useState(tarefa?.title ?? "");
+  const [descricao, setDescricao] = useState(tarefa?.description ?? "");
+  const [dataVencimento, setDataVencimento] = useState<Date>(
+    tarefa?.dueDate ? new Date(tarefa.dueDate) : new Date(),
+  );
+  const [estado, setEstado] = useState<EstadoTarefa>(
+    tarefa?.state ?? "em-andamento",
+  );
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
+  const [seletorHoraAberto, setSeletorHoraAberto] = useState(false);
 
-  if (!task) {
+  if (!tarefa) {
     return (
-      <View style={[styles.screen, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}>
+      <View
+        style={[
+          styles.screen,
+          { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 },
+        ]}
+      >
         <View style={styles.emptyCard}>
           <Text style={globalStyles.sectionTitle}>Tarefa não encontrada</Text>
-          <BotaoAzulEscuro text="Voltar" action={() => router.back()} />
+          <BotaoAzulEscuro texto="Voltar" acao={() => router.back()} />
         </View>
       </View>
     );
   }
 
-  function handleSave() {
-    if (!title.trim()) {
+  function handleSalvar() {
+    if (!titulo.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite um título");
       } else {
@@ -82,14 +95,20 @@ export default function TarefaEditar() {
       }
       return;
     }
-    updateTask(taskId!, { title: title.trim(), description: description.trim(), dueDate, state: status, completed: status === "concluida" });
+    atualizarTarefa(tarefaId!, {
+      title: titulo.trim(),
+      description: descricao.trim(),
+      dueDate: dataVencimento,
+      state: estado,
+      completed: estado === "concluida",
+    });
     router.navigate("/(tabs)/tarefas/Tasks");
   }
 
-  function handleDelete() {
+  function handleExcluir() {
     if (Platform.OS === "web") {
       if (window.confirm("Deseja excluir esta tarefa?")) {
-        deleteTask(taskId!);
+        excluirTarefa(tarefaId!);
         router.navigate("/(tabs)/tarefas/Tasks");
       }
       return;
@@ -100,7 +119,7 @@ export default function TarefaEditar() {
         text: "Excluir",
         style: "destructive",
         onPress: () => {
-          deleteTask(taskId!);
+          excluirTarefa(tarefaId!);
           router.navigate("/(tabs)/tarefas/Tasks");
         },
       },
@@ -108,13 +127,15 @@ export default function TarefaEditar() {
   }
 
   function handleDateChange(_event: any, selectedDate?: Date) {
-    if (selectedDate) setDueDate((cur) => mergeTaskDateTime(cur, selectedDate));
-    if (Platform.OS === "android") setShowDatePicker(false);
+    if (selectedDate)
+      setDataVencimento((atual) => mesclarDataHora(atual, selectedDate));
+    if (Platform.OS === "android") setSeletorDataAberto(false);
   }
 
   function handleTimeChange(_event: any, selectedDate?: Date) {
-    if (selectedDate) setDueDate((cur) => updateTaskTime(cur, selectedDate));
-    if (Platform.OS === "android") setShowTimePicker(false);
+    if (selectedDate)
+      setDataVencimento((atual) => atualizarHora(atual, selectedDate));
+    if (Platform.OS === "android") setSeletorHoraAberto(false);
   }
 
   return (
@@ -131,11 +152,14 @@ export default function TarefaEditar() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.card}>
-
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.iconWrap}>
-              <MaterialCommunityIcons name="pencil-outline" size={26} color={colors.azul_claro} />
+              <MaterialCommunityIcons
+                name="pencil-outline"
+                size={26}
+                color={colors.azul_claro}
+              />
             </View>
             <Text style={styles.headerTitle}>Editar tarefa</Text>
           </View>
@@ -144,8 +168,8 @@ export default function TarefaEditar() {
           <Text style={styles.fieldLabel}>Nome</Text>
           <TextInput
             style={styles.input}
-            value={title}
-            onChangeText={setTitle}
+            value={titulo}
+            onChangeText={setTitulo}
             placeholder="Nome escolhido"
             placeholderTextColor="rgba(0,0,0,0.35)"
           />
@@ -154,8 +178,8 @@ export default function TarefaEditar() {
           <Text style={styles.fieldLabel}>Descrição</Text>
           <TextInput
             style={[styles.input, styles.descriptionInput]}
-            value={description}
-            onChangeText={setDescription}
+            value={descricao}
+            onChangeText={setDescricao}
             placeholder="Descrição adicionada aqui com mais detalhes da tarefa."
             placeholderTextColor="rgba(0,0,0,0.35)"
             multiline
@@ -171,22 +195,32 @@ export default function TarefaEditar() {
                 <Text style={styles.dateSubLabel}>Data</Text>
                 <input
                   type="date"
-                  value={toDateInputValue(dueDate)}
+                  value={formatarDataParaInput(dataVencimento)}
                   onChange={(e: any) =>
-                    setDueDate((cur) => mergeTaskDateTime(cur, fromDateInputValue(e.target.value, cur)))
+                    setDataVencimento((atual) =>
+                      mesclarDataHora(
+                        atual,
+                        obterDataDoInput(e.target.value, atual),
+                      ),
+                    )
                   }
-                  style={webInputStyle}
+                  style={estiloInputWeb}
                 />
               </View>
               <View style={styles.dateFieldWrap}>
                 <Text style={styles.dateSubLabel}>Hora</Text>
                 <input
                   type="time"
-                  value={toTimeInputValue(dueDate)}
+                  value={formatarHoraParaInput(dataVencimento)}
                   onChange={(e: any) =>
-                    setDueDate((cur) => updateTaskTime(cur, fromTimeInputValue(e.target.value, cur)))
+                    setDataVencimento((atual) =>
+                      atualizarHora(
+                        atual,
+                        obterHoraDoInput(e.target.value, atual),
+                      ),
+                    )
                   }
-                  style={webInputStyle}
+                  style={estiloInputWeb}
                 />
               </View>
             </View>
@@ -194,49 +228,93 @@ export default function TarefaEditar() {
             <View style={styles.dateRow}>
               <View style={styles.dateFieldWrap}>
                 <Text style={styles.dateSubLabel}>Data</Text>
-                <Pressable style={styles.nativeDateInput} onPress={() => setShowDatePicker(true)}>
-                  <Text style={styles.dateText}>{dueDate.toLocaleDateString("pt-BR")}</Text>
-                  <MaterialCommunityIcons name="calendar-outline" size={18} color="rgba(0,0,0,0.4)" />
+                <Pressable
+                  style={styles.nativeDateInput}
+                  onPress={() => setSeletorDataAberto(true)}
+                >
+                  <Text style={styles.dateText}>
+                    {dataVencimento.toLocaleDateString("pt-BR")}
+                  </Text>
+                  <MaterialCommunityIcons
+                    name="calendar-outline"
+                    size={18}
+                    color="rgba(0,0,0,0.4)"
+                  />
                 </Pressable>
               </View>
               <View style={styles.dateFieldWrap}>
                 <Text style={styles.dateSubLabel}>Hora</Text>
-                <Pressable style={styles.nativeDateInput} onPress={() => setShowTimePicker(true)}>
+                <Pressable
+                  style={styles.nativeDateInput}
+                  onPress={() => setSeletorHoraAberto(true)}
+                >
                   <Text style={styles.dateText}>
-                    {dueDate.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                    {dataVencimento.toLocaleTimeString("pt-BR", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </Text>
-                  <MaterialCommunityIcons name="clock-outline" size={18} color="rgba(0,0,0,0.4)" />
+                  <MaterialCommunityIcons
+                    name="clock-outline"
+                    size={18}
+                    color="rgba(0,0,0,0.4)"
+                  />
                 </Pressable>
               </View>
             </View>
           )}
 
-          {showDatePicker && Platform.OS !== "web" && (
-            <DateTimePicker value={dueDate} mode="date" display="default" onChange={handleDateChange} />
+          {seletorDataAberto && Platform.OS !== "web" && (
+            <DateTimePicker
+              value={dataVencimento}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+            />
           )}
-          {showTimePicker && Platform.OS !== "web" && (
-            <DateTimePicker value={dueDate} mode="time" display="default" onChange={handleTimeChange} />
+          {seletorHoraAberto && Platform.OS !== "web" && (
+            <DateTimePicker
+              value={dataVencimento}
+              mode="time"
+              display="default"
+              onChange={handleTimeChange}
+            />
           )}
 
           {/* Status */}
           <Text style={styles.fieldLabel}>Status</Text>
           <View style={styles.statusRow}>
-            {STATUS_OPTIONS.map((opt) => {
-              const selected = status === opt.value;
+            {OPCOES_STATUS.map((opcao) => {
+              const selected = estado === opcao.value;
               return (
                 <Pressable
-                  key={opt.value}
+                  key={opcao.value}
                   style={[
                     styles.statusPill,
                     selected
-                      ? { backgroundColor: opt.color, borderColor: opt.color }
-                      : { borderColor: opt.color },
+                      ? {
+                          backgroundColor: opcao.color,
+                          borderColor: opcao.color,
+                        }
+                      : { borderColor: opcao.color },
                   ]}
-                  onPress={() => setStatus(opt.value)}
+                  onPress={() => setEstado(opcao.value)}
                 >
-                  <View style={[styles.statusDot, { backgroundColor: selected ? colors.branco : opt.color }]} />
-                  <Text style={[styles.statusPillText, selected && { color: colors.branco }]}>
-                    {opt.label}
+                  <View
+                    style={[
+                      styles.statusDot,
+                      {
+                        backgroundColor: selected ? colors.branco : opcao.color,
+                      },
+                    ]}
+                  />
+                  <Text
+                    style={[
+                      styles.statusPillText,
+                      selected && { color: colors.branco },
+                    ]}
+                  >
+                    {opcao.label}
                   </Text>
                 </Pressable>
               );
@@ -245,17 +323,16 @@ export default function TarefaEditar() {
 
           {/* Ações */}
           <View style={styles.actions}>
-            <View style={[styles.actionItem, { flex: 1.3}]}>
-              <BotaoCancelar text="Cancelar" action={() => router.back()} />
+            <View style={[styles.actionItem, { flex: 1.3 }]}>
+              <BotaoCancelar texto="Cancelar" acao={() => router.back()} />
             </View>
             <View style={styles.actionItem}>
-              <BotaoVermelho text="Excluir tarefa" action={handleDelete} />
+              <BotaoVermelho texto="Excluir tarefa" acao={handleExcluir} />
             </View>
             <View style={[styles.actionItem, { flex: 1.5 }]}>
-              <BotaoAzulEscuro text="Salvar alterações" action={handleSave} />
+              <BotaoAzulEscuro texto="Salvar alterações" acao={handleSalvar} />
             </View>
           </View>
-
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

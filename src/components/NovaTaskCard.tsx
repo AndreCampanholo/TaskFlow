@@ -2,12 +2,12 @@ import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import BotaoCancelar from "@/src/components/BotaoCancelar";
 import { colors, globalStyles } from "@/src/styles/global";
 import {
-  fromDateInputValue,
-  fromTimeInputValue,
-  mergeTaskDateTime,
-  toDateInputValue,
-  toTimeInputValue,
-  updateTaskTime,
+  atualizarHora,
+  formatarDataParaInput,
+  formatarHoraParaInput,
+  mesclarDataHora,
+  obterDataDoInput,
+  obterHoraDoInput,
 } from "@/src/utils/taskDates";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import React, { useEffect, useState } from "react";
@@ -24,9 +24,9 @@ import {
 } from "react-native";
 
 type Props = {
-  visible: boolean;
-  onClose: () => void;
-  onCreate: (
+  visivel: boolean;
+  aoFechar: () => void;
+  aoCriar: (
     title: string,
     description: string,
     dueDate: Date,
@@ -34,29 +34,29 @@ type Props = {
   ) => void;
 };
 
-export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState<Date>(new Date());
-  const [state, setState] = useState<"em-andamento" | "concluida" | "atrasada">(
+export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) {
+  const [titulo, setTitulo] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [dataVencimento, setDataVencimento] = useState<Date>(new Date());
+  const [estado, setEstado] = useState<"em-andamento" | "concluida" | "atrasada">(
     "em-andamento",
   );
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
+  const [seletorHoraAberto, setSeletorHoraAberto] = useState(false);
 
   useEffect(() => {
-    if (!visible) {
-      setTitle("");
-      setDescription("");
-      setDueDate(new Date());
-      setState("em-andamento");
-      setShowDatePicker(false);
-      setShowTimePicker(false);
+    if (!visivel) {
+      setTitulo("");
+      setDescricao("");
+      setDataVencimento(new Date());
+      setEstado("em-andamento");
+      setSeletorDataAberto(false);
+      setSeletorHoraAberto(false);
     }
-  }, [visible]);
+  }, [visivel]);
 
-  function handleSave() {
-    if (!title.trim()) {
+  function handleSalvar() {
+    if (!titulo.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite um título");
       } else {
@@ -65,7 +65,7 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
       return;
     }
 
-    if (!description.trim()) {
+    if (!descricao.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite uma descrição");
       } else {
@@ -74,33 +74,33 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
       return;
     }
 
-    onCreate(title.trim(), description.trim(), dueDate, state);
+    aoCriar(titulo.trim(), descricao.trim(), dataVencimento, estado);
   }
 
   function handleDateChange(_event: any, selectedDate?: Date) {
     if (selectedDate) {
-      setDueDate((current) => mergeTaskDateTime(current, selectedDate));
+      setDataVencimento((atual) => mesclarDataHora(atual, selectedDate));
     }
 
-    if (Platform.OS === "android") setShowDatePicker(false);
+    if (Platform.OS === "android") setSeletorDataAberto(false);
   }
 
   function handleTimeChange(_event: any, selectedDate?: Date) {
     if (selectedDate) {
-      setDueDate((current) => updateTaskTime(current, selectedDate));
+      setDataVencimento((atual) => atualizarHora(atual, selectedDate));
     }
 
-    if (Platform.OS === "android") setShowTimePicker(false);
+    if (Platform.OS === "android") setSeletorHoraAberto(false);
   }
 
   return (
     <Modal
-      visible={visible}
+      visible={visivel}
       transparent
       animationType="fade"
-      onRequestClose={onClose}
+      onRequestClose={aoFechar}
     >
-      <Pressable style={globalStyles.modalBackdrop} onPress={onClose}>
+      <Pressable style={globalStyles.modalBackdrop} onPress={aoFechar}>
         <Pressable style={styles.card} onPress={() => null}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -108,15 +108,15 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
             <Text style={styles.title}>Nova tarefa</Text>
             <TextInput
               placeholder="Título"
-              value={title}
-              onChangeText={setTitle}
+              value={titulo}
+              onChangeText={setTitulo}
               style={styles.input}
             />
 
             <TextInput
               placeholder="Descrição"
-              value={description}
-              onChangeText={setDescription}
+              value={descricao}
+              onChangeText={setDescricao}
               style={[styles.input, styles.descriptionInput]}
               multiline
             />
@@ -126,12 +126,12 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               <View style={styles.webDateRow}>
                 <input
                   type="date"
-                  value={toDateInputValue(dueDate)}
+                  value={formatarDataParaInput(dataVencimento)}
                   onChange={(event: any) => {
-                    setDueDate((current) =>
-                      mergeTaskDateTime(
-                        current,
-                        fromDateInputValue(event.target.value, current),
+                    setDataVencimento((atual) =>
+                      mesclarDataHora(
+                        atual,
+                        obterDataDoInput(event.target.value, atual),
                       ),
                     );
                   }}
@@ -139,12 +139,12 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
                 />
                 <input
                   type="time"
-                  value={toTimeInputValue(dueDate)}
+                  value={formatarHoraParaInput(dataVencimento)}
                   onChange={(event: any) => {
-                    setDueDate((current) =>
-                      updateTaskTime(
-                        current,
-                        fromTimeInputValue(event.target.value, current),
+                    setDataVencimento((atual) =>
+                      atualizarHora(
+                        atual,
+                        obterHoraDoInput(event.target.value, atual),
                       ),
                     );
                   }}
@@ -155,18 +155,18 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               <View style={styles.dateRow}>
                 <Pressable
                   style={styles.dateButton}
-                  onPress={() => setShowDatePicker(true)}
+                  onPress={() => setSeletorDataAberto(true)}
                 >
                   <Text style={styles.dateText}>
-                    {dueDate.toLocaleDateString("pt-BR")}
+                    {dataVencimento.toLocaleDateString("pt-BR")}
                   </Text>
                 </Pressable>
                 <Pressable
                   style={styles.dateButton}
-                  onPress={() => setShowTimePicker(true)}
+                  onPress={() => setSeletorHoraAberto(true)}
                 >
                   <Text style={styles.dateText}>
-                    {dueDate.toLocaleTimeString("pt-BR", {
+                    {dataVencimento.toLocaleTimeString("pt-BR", {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
@@ -175,18 +175,18 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               </View>
             )}
 
-            {showDatePicker && Platform.OS !== "web" ? (
+            {seletorDataAberto && Platform.OS !== "web" ? (
               <DateTimePicker
-                value={dueDate}
+                value={dataVencimento}
                 mode="date"
                 display="default"
                 onChange={handleDateChange}
               />
             ) : null}
 
-            {showTimePicker && Platform.OS !== "web" ? (
+            {seletorHoraAberto && Platform.OS !== "web" ? (
               <DateTimePicker
-                value={dueDate}
+                value={dataVencimento}
                 mode="time"
                 display="default"
                 onChange={handleTimeChange}
@@ -198,15 +198,15 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               <Pressable
                 style={[
                   globalStyles.pill,
-                  state === "em-andamento" && {
+                  estado === "em-andamento" && {
                     backgroundColor: colors.azul_em_progresso,
                   },
                 ]}
-                onPress={() => setState("em-andamento")}
+                onPress={() => setEstado("em-andamento")}
               >
                 <Text
                   style={
-                    state === "em-andamento"
+                    estado === "em-andamento"
                       ? globalStyles.pillTextActive
                       : globalStyles.pillText
                   }
@@ -217,13 +217,13 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               <Pressable
                 style={[
                   globalStyles.pill,
-                  state === "concluida" && { backgroundColor: colors.verde },
+                  estado === "concluida" && { backgroundColor: colors.verde },
                 ]}
-                onPress={() => setState("concluida")}
+                onPress={() => setEstado("concluida")}
               >
                 <Text
                   style={
-                    state === "concluida"
+                    estado === "concluida"
                       ? globalStyles.pillTextActive
                       : globalStyles.pillText
                   }
@@ -234,15 +234,15 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
               <Pressable
                 style={[
                   globalStyles.pill,
-                  state === "atrasada" && {
+                  estado === "atrasada" && {
                     backgroundColor: colors.vermelho_atrasado,
                   },
                 ]}
-                onPress={() => setState("atrasada")}
+                onPress={() => setEstado("atrasada")}
               >
                 <Text
                   style={
-                    state === "atrasada"
+                    estado === "atrasada"
                       ? globalStyles.pillTextActive
                       : globalStyles.pillText
                   }
@@ -254,10 +254,10 @@ export default function NovaTaskCard({ visible, onClose, onCreate }: Props) {
 
             <View style={styles.actions}>
               <View style={styles.actionItem}>
-                <BotaoCancelar text="Cancelar" action={onClose} />
+                <BotaoCancelar texto="Cancelar" acao={aoFechar} />
               </View>
               <View style={styles.actionItem}>
-                <BotaoAzulEscuro text="Salvar" action={handleSave} />
+                <BotaoAzulEscuro texto="Salvar" acao={handleSalvar} />
               </View>
             </View>
           </KeyboardAvoidingView>

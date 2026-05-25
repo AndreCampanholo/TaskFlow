@@ -1,22 +1,21 @@
 import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
-import { colors, globalStyles } from "@/src/styles/global";
+import { globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import { useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  useWindowDimensions,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+    useWindowDimensions,
 } from "react-native";
 
 export default function AlterarSenha() {
   const [novaSenha, setNovaSenha] = useState("");
-  const [confirmarNovaSenha, setConfirmarNovaSenha] = useState("");
+  const [confirmacaoNovaSenha, setConfirmacaoNovaSenha] = useState("");
 
   const { width } = useWindowDimensions();
-  const cardWidth = Math.max(180, Math.min(380, width - 32));
+  const larguraCard = Math.max(180, Math.min(380, width - 32));
 
   const handleAlterarSenha = () => {
     console.log("Senha alterada.");
@@ -25,7 +24,7 @@ export default function AlterarSenha() {
   return (
     <View style={globalStyles.screen}>
       <View style={styles.content}>
-        <View style={[styles.container, { width: cardWidth }]}>
+        <View style={[styles.container, { width: larguraCard }]}>
           <MaterialCommunityIcons
             name="lock"
             size={64}
@@ -45,13 +44,13 @@ export default function AlterarSenha() {
 
           <TextInput
             style={styles.textinput}
-            value={confirmarNovaSenha}
-            onChangeText={setConfirmarNovaSenha}
+            value={confirmacaoNovaSenha}
+            onChangeText={setConfirmacaoNovaSenha}
             placeholder="Confirmar nova senha"
             placeholderTextColor="rgba(0, 0, 0, 0.3)"
           />
 
-          <BotaoAzulClaro text="Alterar senha" action={handleAlterarSenha} />
+          <BotaoAzulClaro texto="Alterar senha" acao={handleAlterarSenha} />
         </View>
       </View>
     </View>

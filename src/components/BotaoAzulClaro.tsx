@@ -3,23 +3,23 @@ import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { colors, globalStyles } from "../styles/global";
 
 export default function BotaoAzulClaro({
-  text,
-  action,
+  texto,
+  acao,
 }: {
-  text: string;
-  action: RelativePathString | (() => void);
+  texto: string;
+  acao: RelativePathString | (() => void);
 }) {
   const handlePress = () => {
-    if (typeof action === "string") {
-      router.push(action);
+    if (typeof acao === "string") {
+      router.push(acao);
     } else {
-      action();
+      acao();
     }
   };
 
   return (
     <TouchableOpacity style={styles.buttonStyle} onPress={handlePress}>
-      <Text style={globalStyles.primaryButtonText}>{text}</Text>
+      <Text style={globalStyles.primaryButtonText}>{texto}</Text>
     </TouchableOpacity>
   );
 }

@@ -1,45 +1,47 @@
 import { colors, globalStyles } from "@/src/styles/global";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+type FiltroTarefa = "all" | "em-andamento" | "concluida" | "atrasada";
+
 type Props = {
-  filter: "all" | "em-andamento" | "concluida" | "atrasada";
-  setFilter: (f: Props["filter"]) => void;
+  filtro: FiltroTarefa;
+  setFiltro: (filtro: FiltroTarefa) => void;
 };
 
-export default function FilterBar({ filter, setFilter }: Props) {
+export default function BarraFiltro({ filtro, setFiltro }: Props) {
   return (
     <View style={styles.container}>
       <Pressable
-        onPress={() => setFilter("all")}
-        style={[globalStyles.pill, filter === "all" && styles.TodasActive]}
+        onPress={() => setFiltro("all")}
+        style={[globalStyles.pill, filtro === "all" && styles.todasAtivas]}
       >
-        <Text style={filter === "all" ? globalStyles.pillTextActive : globalStyles.pillText}>
+        <Text style={filtro === "all" ? globalStyles.pillTextActive : globalStyles.pillText}>
           Todas
         </Text>
       </Pressable>
       <Pressable
-        onPress={() => setFilter("em-andamento")}
-        style={[globalStyles.pill, filter === "em-andamento" && styles.EmAndamentoActive]}
+        onPress={() => setFiltro("em-andamento")}
+        style={[globalStyles.pill, filtro === "em-andamento" && styles.emAndamentoAtivas]}
       >
         <Text
-          style={filter === "em-andamento" ? globalStyles.pillTextActive : globalStyles.pillText}
+          style={filtro === "em-andamento" ? globalStyles.pillTextActive : globalStyles.pillText}
         >
           Em andamento
         </Text>
       </Pressable>
       <Pressable
-        onPress={() => setFilter("concluida")}
-        style={[globalStyles.pill, filter === "concluida" && styles.ConcluidasActive]}
+        onPress={() => setFiltro("concluida")}
+        style={[globalStyles.pill, filtro === "concluida" && styles.concluidasAtivas]}
       >
-        <Text style={filter === "concluida" ? globalStyles.pillTextActive : globalStyles.pillText}>
+        <Text style={filtro === "concluida" ? globalStyles.pillTextActive : globalStyles.pillText}>
           Concluídas
         </Text>
       </Pressable>
       <Pressable
-        onPress={() => setFilter("atrasada")}
-        style={[globalStyles.pill, filter === "atrasada" && styles.AtrasadasActive]}
+        onPress={() => setFiltro("atrasada")}
+        style={[globalStyles.pill, filtro === "atrasada" && styles.atrasadasAtivas]}
       >
-        <Text style={filter === "atrasada" ? globalStyles.pillTextActive : globalStyles.pillText}>
+        <Text style={filtro === "atrasada" ? globalStyles.pillTextActive : globalStyles.pillText}>
           Atrasadas
         </Text>
       </Pressable>
@@ -49,8 +51,8 @@ export default function FilterBar({ filter, setFilter }: Props) {
 
 const styles = StyleSheet.create({
   container: { flexDirection: "row", gap: 8, marginBottom: 10 },
-  TodasActive: { backgroundColor: colors.azul_escuro },
-  EmAndamentoActive: { backgroundColor: colors.azul_em_progresso },
-  ConcluidasActive: { backgroundColor: colors.verde },
-  AtrasadasActive: { backgroundColor: colors.vermelho_atrasado },
+  todasAtivas: { backgroundColor: colors.azul_escuro },
+  emAndamentoAtivas: { backgroundColor: colors.azul_em_progresso },
+  concluidasAtivas: { backgroundColor: colors.verde },
+  atrasadasAtivas: { backgroundColor: colors.vermelho_atrasado },
 });

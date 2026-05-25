@@ -1,5 +1,5 @@
 import { colors } from "@/src/styles/global";
-import { formatTaskDate, formatTaskTime } from "@/src/utils/taskDates";
+import { formatarData, formatarHora } from "@/src/utils/taskDates";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -8,19 +8,19 @@ type Props = {
   dueDate?: Date | null;
 };
 
-export default function TaskPrazoDisplay({ dueDate }: Props) {
+export default function ExibicaoPrazoTarefa({ dueDate }: Props): JSX.Element | null {
   if (!dueDate) return null;
 
   return (
     <View style={styles.row}>
       <View style={styles.item}>
         <MaterialCommunityIcons name="calendar-outline" size={20} color="rgba(0,0,0,0.55)" />
-        <Text style={styles.text}>{formatTaskDate(dueDate)}</Text>
+        <Text style={styles.text}>{formatarData(dueDate)}</Text>
       </View>
 
       <View style={styles.item}>
         <MaterialCommunityIcons name="clock-outline" size={20} color="rgba(0,0,0,0.55)" />
-        <Text style={styles.text}>{formatTaskTime(dueDate)}</Text>
+        <Text style={styles.text}>{formatarHora(dueDate)}</Text>
       </View>
     </View>
   );

@@ -1,53 +1,57 @@
-export function formatTaskDate(date: Date) {
+export function formatarData(date: Date) {
   return date.toLocaleDateString("pt-BR");
 }
 
-export function formatTaskTime(date: Date) {
+export function formatarHora(date: Date) {
   return date.toLocaleTimeString("pt-BR", {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
-export function formatTaskDueLabel(date: Date) {
-  return `${formatTaskDate(date)} · ${formatTaskTime(date)}`;
+export function formatarPrazo(date: Date) {
+  return `${formatarData(date)} · ${formatarHora(date)}`;
 }
 
-export function isTaskOverdue(dueDate: Date) {
-  return dueDate.getTime() < Date.now();
+export function estaAtrasada(dataVencimento: Date) {
+  return dataVencimento.getTime() < Date.now();
 }
 
-export function mergeTaskDateTime(baseDate: Date, datePart: Date) {
-  const next = new Date(baseDate);
-  next.setFullYear(datePart.getFullYear(), datePart.getMonth(), datePart.getDate());
-  return next;
+export function mesclarDataHora(dataBase: Date, parteData: Date) {
+  const proximaData = new Date(dataBase);
+  proximaData.setFullYear(
+    parteData.getFullYear(),
+    parteData.getMonth(),
+    parteData.getDate(),
+  );
+  return proximaData;
 }
 
-export function updateTaskTime(baseDate: Date, timePart: Date) {
-  const next = new Date(baseDate);
-  next.setHours(timePart.getHours(), timePart.getMinutes(), 0, 0);
-  return next;
+export function atualizarHora(dataBase: Date, parteHora: Date) {
+  const proximaData = new Date(dataBase);
+  proximaData.setHours(parteHora.getHours(), parteHora.getMinutes(), 0, 0);
+  return proximaData;
 }
 
-export function fromDateInputValue(value: string, fallback: Date) {
-  if (!value) return fallback;
-  const parsed = new Date(`${value}T00:00:00`);
-  return isNaN(parsed.getTime()) ? fallback : parsed;
+export function obterDataDoInput(valor: string, fallback: Date) {
+  if (!valor) return fallback;
+  const dataParseada = new Date(`${valor}T00:00:00`);
+  return isNaN(dataParseada.getTime()) ? fallback : dataParseada;
 }
 
-export function fromTimeInputValue(value: string, fallback: Date) {
-  if (!value) return fallback;
-  const [hours, minutes] = value.split(":").map((part) => Number(part));
-  if (Number.isNaN(hours) || Number.isNaN(minutes)) return fallback;
-  const next = new Date(fallback);
-  next.setHours(hours, minutes, 0, 0);
-  return next;
+export function obterHoraDoInput(valor: string, fallback: Date) {
+  if (!valor) return fallback;
+  const [horas, minutos] = valor.split(":").map((parte) => Number(parte));
+  if (Number.isNaN(horas) || Number.isNaN(minutos)) return fallback;
+  const proximaData = new Date(fallback);
+  proximaData.setHours(horas, minutos, 0, 0);
+  return proximaData;
 }
 
-export function toDateInputValue(date: Date) {
-  return date.toISOString().slice(0, 10);
+export function formatarDataParaInput(data: Date) {
+  return data.toISOString().slice(0, 10);
 }
 
-export function toTimeInputValue(date: Date) {
-  return date.toTimeString().slice(0, 5);
+export function formatarHoraParaInput(data: Date) {
+  return data.toTimeString().slice(0, 5);
 }

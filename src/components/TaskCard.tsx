@@ -2,32 +2,33 @@ import { colors } from "@/src/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import type { EstadoTarefa } from "@/src/hooks/useTasks";
 
 type Props = {
   id: string;
-  title: string;
-  dueLabel: string;
-  state: "em-andamento" | "concluida" | "atrasada";
-  completed: boolean;
-  onToggle: (id: string) => void;
-  onPressTask?: (id: string) => void;
-  onLongPressTask?: (id: string) => void;
+  titulo: string;
+  prazo: string;
+  estado: EstadoTarefa;
+  concluida: boolean;
+  alternarConclusao: (id: string) => void;
+  aoPressionarTarefa?: (id: string) => void;
+  aoManterPressionado?: (id: string) => void;
 };
 
-export default function TaskCard({
+export default function CartaoTarefa({
   id,
-  title,
-  dueLabel,
-  state,
-  completed,
-  onToggle,
-  onPressTask,
-  onLongPressTask,
+  titulo,
+  prazo,
+  estado,
+  concluida,
+  alternarConclusao,
+  aoPressionarTarefa,
+  aoManterPressionado,
 }: Props) {
   const accent =
-    state === "concluida"
+    estado === "concluida"
       ? colors.verde
-      : state === "atrasada"
+      : estado === "atrasada"
         ? colors.vermelho_atrasado
         : colors.azul_claro;
 
@@ -38,22 +39,22 @@ export default function TaskCard({
         { borderLeftColor: accent },
         pressed && styles.cardPressed,
       ]}
-      onPress={() => onPressTask?.(id)}
-      onLongPress={() => onLongPressTask?.(id)}
+      onPress={() => aoPressionarTarefa?.(id)}
+      onLongPress={() => aoManterPressionado?.(id)}
       delayLongPress={400}
       accessibilityRole="button"
     >
-      <TouchableOpacity onPress={() => onToggle(id)} style={styles.checkWrapper}>
-        <View style={[styles.checkCircle, completed && styles.checkCircleChecked]}>
-          {completed ? <Ionicons name="checkmark" size={12} color={colors.verde} /> : null}
+      <TouchableOpacity onPress={() => alternarConclusao(id)} style={styles.checkWrapper}>
+        <View style={[styles.checkCircle, concluida && styles.checkCircleChecked]}>
+          {concluida ? <Ionicons name="checkmark" size={12} color={colors.verde} /> : null}
         </View>
       </TouchableOpacity>
 
       <View style={styles.body}>
-        <Text style={[styles.title, completed && styles.titleDone]} numberOfLines={2}>
-          {title}
+        <Text style={[styles.title, concluida && styles.titleDone]} numberOfLines={2}>
+          {titulo}
         </Text>
-        <Text style={styles.due}>{dueLabel}</Text>
+        <Text style={styles.due}>{prazo}</Text>
       </View>
     </Pressable>
   );

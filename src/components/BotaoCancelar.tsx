@@ -1,25 +1,29 @@
+import { globalStyles } from "@/src/styles/global";
 import { RelativePathString, router } from "expo-router";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { globalStyles } from "@/src/styles/global";
 
 export default function BotaoCancelar({
-  text,
-  action,
+  texto,
+  acao,
 }: {
-  text: string;
-  action: RelativePathString | (() => void);
+  texto: string;
+  acao: RelativePathString | (() => void);
 }) {
   const handlePress = () => {
-    if (typeof action === "string") {
-      router.push(action);
+    if (typeof acao === "string") {
+      router.push(acao);
     } else {
-      action();
+      acao();
     }
   };
 
   return (
     <TouchableOpacity style={styles.buttonStyle} onPress={handlePress}>
-      <Text style={[globalStyles.primaryButtonText, globalStyles.neutralButtonText]}>{text}</Text>
+      <Text
+        style={[globalStyles.primaryButtonText, globalStyles.neutralButtonText]}
+      >
+        {texto}
+      </Text>
     </TouchableOpacity>
   );
 }

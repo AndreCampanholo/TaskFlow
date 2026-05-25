@@ -1,31 +1,31 @@
 import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
-import { colors, globalStyles } from "@/src/styles/global";
+import { globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  useWindowDimensions,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    useWindowDimensions,
 } from "react-native";
 
 export default function RecuperarSenha() {
-  const [email, setEmail] = useState("");
+  const [emailRecuperacao, setEmailRecuperacao] = useState("");
 
   const { width } = useWindowDimensions();
-  const cardWidth = Math.max(180, Math.min(380, width - 32));
+  const larguraCard = Math.max(180, Math.min(380, width - 32));
 
-  const handleRecuperarSenha = () => {
+  const handleSolicitarRecuperacao = () => {
     console.log("Protocolo de recuperação de senha iniciado.");
   };
 
   return (
     <View style={globalStyles.screen}>
       <View style={styles.content}>
-        <View style={[styles.container, { width: cardWidth }]}>
+        <View style={[styles.container, { width: larguraCard }]}>
           <MaterialCommunityIcons
             name="lock"
             size={64}
@@ -42,15 +42,15 @@ export default function RecuperarSenha() {
 
           <TextInput
             style={styles.textinput}
-            value={email}
-            onChangeText={setEmail}
+            value={emailRecuperacao}
+            onChangeText={setEmailRecuperacao}
             placeholder="email@exemplo.com"
             placeholderTextColor="rgba(0, 0, 0, 0.3)"
           />
 
           <BotaoAzulClaro
-            text="Enviar link de recuperação"
-            action={handleRecuperarSenha}
+            texto="Enviar link de recuperação"
+            acao={handleSolicitarRecuperacao}
           />
 
           <TouchableOpacity

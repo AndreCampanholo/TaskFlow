@@ -4,23 +4,23 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  Alert,
-  Pressable,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
+    Alert,
+    Platform,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ExcluirConta() {
   const insets = useSafeAreaInsets();
 
-  const [password, setPassword] = useState("");
+  const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
 
-  function handleDeleteAccount() {
-    if (!password.trim()) {
+  function handleExcluirConta() {
+    if (!senhaConfirmacao.trim()) {
       if (Platform.OS === "web") {
         window.alert("Insira a senha para excluir sua conta!");
         return;
@@ -62,7 +62,10 @@ export default function ExcluirConta() {
 
   return (
     <Pressable
-      style={[styles.overlay, { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 }]}
+      style={[
+        styles.overlay,
+        { paddingTop: insets.top + 16, paddingBottom: insets.bottom + 16 },
+      ]}
       onPress={() => router.back()}
     >
       <Pressable style={styles.card} onPress={() => null}>
@@ -79,20 +82,20 @@ export default function ExcluirConta() {
 
         <Text style={styles.label}>Senha de confirmação</Text>
         <TextInput
-          value={password}
-          onChangeText={setPassword}
+          value={senhaConfirmacao}
+          onChangeText={setSenhaConfirmacao}
           placeholder="Digite sua senha"
           secureTextEntry
           style={styles.input}
         />
 
         <View style={styles.actions}>
-          <Pressable style={styles.deleteButton} onPress={handleDeleteAccount}>
+          <Pressable style={styles.deleteButton} onPress={handleExcluirConta}>
             <Ionicons name="trash-outline" size={16} color={colors.branco} />
             <Text style={styles.deleteButtonText}>Excluir minha conta</Text>
           </Pressable>
 
-          <BotaoCancelar text="Cancelar" action={() => router.back()} />
+          <BotaoCancelar texto="Cancelar" acao={() => router.back()} />
         </View>
       </Pressable>
     </Pressable>
