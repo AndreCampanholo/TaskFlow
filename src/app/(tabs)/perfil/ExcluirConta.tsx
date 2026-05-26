@@ -70,7 +70,7 @@ export default function ExcluirConta() {
     >
       <Pressable style={styles.card} onPress={() => null}>
         <View style={styles.iconWrap}>
-          <Ionicons name="warning" size={28} color={colors.vermelho_atrasado} />
+          <Ionicons name="warning" size={28} color={colors.vermelho} />
         </View>
 
         <Text style={styles.title}>Excluir conta?</Text>
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   deleteButton: {
-    backgroundColor: colors.vermelho_atrasado,
+    backgroundColor: colors.vermelho,
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 14,

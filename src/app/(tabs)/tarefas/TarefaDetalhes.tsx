@@ -103,7 +103,7 @@ export default function TarefaDetalhes() {
       <Pressable style={styles.card} onPress={() => null}>
         <View style={styles.headerRow}>
           <View style={styles.iconWrap}>
-            <MaterialCommunityIcons name="clipboard-text-outline" size={42} color={colors.azul_em_progresso} />
+            <MaterialCommunityIcons name="clipboard-text-outline" size={42} color={colors.azul_claro} />
           </View>
 
           <View style={styles.headerCopy}>

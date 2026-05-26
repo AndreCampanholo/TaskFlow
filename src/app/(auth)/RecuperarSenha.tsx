@@ -1,15 +1,15 @@
-import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import { colors, globalStyles } from "@/src/styles/global";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    useWindowDimensions,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  useWindowDimensions,
 } from "react-native";
 
 export default function RecuperarSenha() {
@@ -58,7 +58,7 @@ export default function RecuperarSenha() {
             placeholderTextColor="rgba(0, 0, 0, 0.3)"
           />
 
-          <BotaoAzulClaro
+          <BotaoAzulEscuro
             texto="Enviar link de recuperação"
             acao={handleSolicitarRecuperacao}
           />

@@ -199,7 +199,7 @@ export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) 
                 style={[
                   globalStyles.pill,
                   estado === "em-andamento" && {
-                    backgroundColor: colors.azul_em_progresso,
+                    backgroundColor: colors.azul_claro,
                   },
                 ]}
                 onPress={() => setEstado("em-andamento")}
@@ -235,7 +235,7 @@ export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) 
                 style={[
                   globalStyles.pill,
                   estado === "atrasada" && {
-                    backgroundColor: colors.vermelho_atrasado,
+                    backgroundColor: colors.vermelho,
                   },
                 ]}
                 onPress={() => setEstado("atrasada")}

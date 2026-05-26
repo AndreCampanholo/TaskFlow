@@ -2,10 +2,9 @@ import { StyleSheet } from "react-native";
 
 export const colors = {
   azul_escuro: "#1E3A8A",
-  azul_claro: "#2563EB",
-  azul_em_progresso: "#1F62EB",
+  azul_claro: "#1F62EB",
   verde: "#10B981",
-  vermelho_atrasado: "#BA1A1A",
+  vermelho: "#BA1A1A",
   preto: "#000000",
   branco: "#FFFFFF",
   background: "#C5C5D3",

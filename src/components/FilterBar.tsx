@@ -52,7 +52,7 @@ export default function BarraFiltro({ filtro, setFiltro }: Props) {
 const styles = StyleSheet.create({
   container: { flexDirection: "row", gap: 8, marginBottom: 10 },
   todasAtivas: { backgroundColor: colors.azul_escuro },
-  emAndamentoAtivas: { backgroundColor: colors.azul_em_progresso },
+  emAndamentoAtivas: { backgroundColor: colors.azul_claro },
   concluidasAtivas: { backgroundColor: colors.verde },
-  atrasadasAtivas: { backgroundColor: colors.vermelho_atrasado },
+  atrasadasAtivas: { backgroundColor: colors.vermelho },
 });

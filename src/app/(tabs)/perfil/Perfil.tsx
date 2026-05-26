@@ -80,11 +80,11 @@ export default function Perfil() {
                 <MaterialCommunityIcons
                   name="logout"
                   size={20}
-                  color={colors.vermelho_atrasado}
+                  color={colors.vermelho}
                   style={{ marginRight: 12 }}
                 />
                 <Text
-                  style={[styles.rowText, { color: colors.vermelho_atrasado }]}
+                  style={[styles.rowText, { color: colors.vermelho}]}
                 >
                   Sair
                 </Text>
@@ -92,7 +92,7 @@ export default function Perfil() {
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={colors.vermelho_atrasado}
+                color={colors.vermelho}
               />
             </TouchableOpacity>
 
@@ -104,11 +104,11 @@ export default function Perfil() {
                 <MaterialCommunityIcons
                   name="trash-can-outline"
                   size={20}
-                  color={colors.vermelho_atrasado}
+                  color={colors.vermelho}
                   style={{ marginRight: 12 }}
                 />
                 <Text
-                  style={[styles.rowText, { color: colors.vermelho_atrasado }]}
+                  style={[styles.rowText, { color: colors.vermelho }]}
                 >
                   Excluir conta
                 </Text>
@@ -116,7 +116,7 @@ export default function Perfil() {
               <Ionicons
                 name="chevron-forward"
                 size={20}
-                color={colors.vermelho_atrasado}
+                color={colors.vermelho}
               />
             </TouchableOpacity>
           </View>

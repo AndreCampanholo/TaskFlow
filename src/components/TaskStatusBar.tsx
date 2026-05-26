@@ -20,7 +20,7 @@ const ESTILOS_STATUS: Record<
   "em-andamento": {
     backgroundColor: "rgba(235,185,42,0.28)",
     textColor: "#1f2937",
-    dotColor: colors.azul_em_progresso,
+    dotColor: colors.azul_claro,
   },
   concluida: {
     backgroundColor: "rgba(16,185,129,0.16)",
@@ -30,7 +30,7 @@ const ESTILOS_STATUS: Record<
   atrasada: {
     backgroundColor: "rgba(186,26,26,0.14)",
     textColor: "#991b1b",
-    dotColor: colors.vermelho_atrasado,
+    dotColor: colors.vermelho,
   },
 };
 

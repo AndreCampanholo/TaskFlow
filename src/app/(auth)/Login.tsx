@@ -55,7 +55,7 @@ export default function Login() {
 
   return (
     <LinearGradient
-      colors={["#4F83FF", "#F8F8FA", "#52D6B5"]}
+      colors={[colors.azul_claro, colors.branco, colors.verde]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={styles.screen}

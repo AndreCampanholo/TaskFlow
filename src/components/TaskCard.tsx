@@ -29,7 +29,7 @@ export default function CartaoTarefa({
     estado === "concluida"
       ? colors.verde
       : estado === "atrasada"
-        ? colors.vermelho_atrasado
+        ? colors.vermelho
         : colors.azul_claro;
 
   return (

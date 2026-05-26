@@ -180,7 +180,7 @@ export default function AvatarPerfil({
             { marginTop: 8, opacity: pressed ? 0.7 : 1 },
           ]}
         >
-          <Text style={{ color: colors.vermelho_atrasado }}>Remover foto</Text>
+          <Text style={{ color: colors.vermelho}}>Remover foto</Text>
         </Pressable>
       ) : (
         <Text style={{ marginTop: 8, color: "rgba(0,0,0,0.6)" }}>

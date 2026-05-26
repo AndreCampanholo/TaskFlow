@@ -29,9 +29,9 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const OPCOES_STATUS: { value: EstadoTarefa; label: string; color: string }[] = [
-  { value: "em-andamento", label: "Em andamento", color: colors.azul_em_progresso },
+  { value: "em-andamento", label: "Em andamento", color: colors.azul_claro },
   { value: "concluida",    label: "Concluída",    color: colors.verde },
-  { value: "atrasada",     label: "Atrasada",     color: colors.vermelho_atrasado },
+  { value: "atrasada",     label: "Atrasada",     color: colors.vermelho },
 ];
 
 const estiloInputWeb = {
