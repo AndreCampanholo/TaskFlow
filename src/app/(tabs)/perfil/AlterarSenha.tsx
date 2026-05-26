@@ -1,4 +1,4 @@
-import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import { globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -109,9 +109,8 @@ export default function AlterarSenha() {
             placeholder="Confirmar nova senha"
             placeholderTextColor="rgba(0, 0, 0, 0.3)"
           />
-
           {/* Botão para confirmar a alteração da senha */}
-          <BotaoAzulClaro texto="Alterar senha" acao={handleAlterarSenha} />
+          <BotaoAzulEscuro texto="Alterar senha" acao={handleAlterarSenha} />
         </View>
       </View>
     </View>

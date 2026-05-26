@@ -22,7 +22,7 @@ const ESTILOS_STATUS: Record<
   "em-andamento": {
     backgroundColor: "rgba(235,185,42,0.28)",
     textColor: "#1f2937",
-    dotColor: colors.amarelo_em_andamento,
+    dotColor: colors.azul_em_progresso,
   },
   concluida: {
     backgroundColor: "rgba(16,185,129,0.16)",

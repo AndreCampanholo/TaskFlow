@@ -4,12 +4,12 @@ export const colors = {
   azul_escuro: "#1E3A8A",
   azul_claro: "#2563EB",
   azul_em_progresso: "#1F62EB",
-  amarelo_em_andamento: "#EBB92A",
   verde: "#10B981",
   vermelho_atrasado: "#BA1A1A",
   preto: "#000000",
   branco: "#FFFFFF",
   background: "#C5C5D3",
+  fundo: "#EDEDF6",
 };
 
 export const globalStyles = StyleSheet.create({
@@ -17,6 +17,7 @@ export const globalStyles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: colors.fundo,
   },
   fullScreen: {
     flex: 1,
@@ -34,8 +35,8 @@ export const globalStyles = StyleSheet.create({
     minWidth: 0,
     padding: 30,
     borderStyle: "solid",
-    borderColor: colors.preto,
-    borderWidth: 2,
+    borderColor: "rgba(0, 0, 0, 0.2)",
+    borderWidth: 1,
     borderRadius: 10,
     alignItems: "center",
   },

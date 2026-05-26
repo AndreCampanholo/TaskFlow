@@ -1,5 +1,6 @@
-import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import AvatarPerfil from "@/src/components/ProfileAvatar";
+import { colors } from "@/src/styles/global";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -80,11 +81,15 @@ export default function EditarPerfil() {
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <View style={styles.avatarWrap}>
-        <AvatarPerfil uri={uriAvatar} aoAlterar={setUriAvatar} tamanho={110} />
-      </View>
+      <View style={styles.card}>
+        <View style={styles.avatarWrap}>
+          <AvatarPerfil
+            uri={uriAvatar}
+            aoAlterar={setUriAvatar}
+            tamanho={110}
+          />
+        </View>
 
-      <View style={styles.form}>
         {/* Input para o novo nome do usuário */}
         <Text style={styles.label}>Nome completo</Text>
         <TextInput
@@ -160,23 +165,22 @@ export default function EditarPerfil() {
           style={styles.input}
           value={cpf}
           onChangeText={setCpf}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
           placeholder="000.000.000-00"
+          placeholderTextColor={"rgba(0,0,0,0.45)"}
         />
 
-        {/* Input para o novo email */}
+        {/* Input para o novo E-mail */}
         <Text style={styles.label}>E-mail</Text>
         <TextInput
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
           placeholder="email@exemplo.com"
+          placeholderTextColor={"rgba(0,0,0,0.45)"}
           keyboardType="email-address"
         />
 
-        {/* Botão para salvar as alterações e chamar a função de validação da edição */}
-        <BotaoAzulClaro texto="Salvar Alterações" acao={handleEditarPerfil} />
+        <BotaoAzulEscuro texto="Salvar Alterações" acao={handleEditarPerfil} />
       </View>
     </ScrollView>
   );
@@ -184,44 +188,69 @@ export default function EditarPerfil() {
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
+    backgroundColor: colors.fundo,
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 48,
-    backgroundColor: "#fff",
+    paddingBottom: 32,
     alignItems: "center",
   },
+
+  card: {
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.08)",
+  },
+
   avatarWrap: {
-    marginTop: 4,
-    marginBottom: 12,
     alignItems: "center",
+    marginBottom: 20,
+  },
+
+  form: {
     width: "100%",
   },
-  form: { width: "100%", maxWidth: 380 },
-  label: { color: "rgba(0,0,0,0.6)", marginBottom: 6 },
+
+  label: {
+    fontSize: 14,
+    color: "rgba(0,0,0,0.65)",
+    marginBottom: 6,
+    fontWeight: "500",
+  },
+
   input: {
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.15)",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 12,
-    backgroundColor: "#fff",
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
+    fontSize: 15,
+    color: "rgba(0,0,0,0.9)",
   },
+
   dateButton: {
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.15)",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 12,
-    backgroundColor: "#fff",
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
     justifyContent: "center",
   },
+
   dateButtonText: {
-    color: "rgba(0,0,0,0.6)",
-    fontWeight: "400",
+    fontSize: 15,
+    color: "rgba(0,0,0,0.85)",
   },
+
   datePlaceholder: {
-    color: "rgba(0,0,0,0.6)",
+    color: "rgba(0,0,0,0.45)",
   },
 });

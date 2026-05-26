@@ -12,7 +12,7 @@ import {
   TextInput,
   TouchableOpacity,
   useWindowDimensions,
-  View,
+  View
 } from "react-native";
 
 // Tela/Componente de cadastro
@@ -30,8 +30,8 @@ export default function Cadastro() {
   const [confirmacaoSenha, setConfirmacaoSenha] = useState("");
 
   // Valida as entradas do usuário (posteriormente criará a conta para o usuário caso entradas sejam válidas)
-  const handleCadastro = () => {
-    // Usuário deve preencher todos os campos para efetuar o cadastro
+  function handleCadastro() {
+    // O usuário deve preencher todos os campos para validar o cadastro
     if (
       !nome.trim() ||
       !cpf.trim() ||
@@ -79,9 +79,8 @@ export default function Cadastro() {
     }
 
     // Verifica se o email e o CPF informados são válidos
-    const emailInformado = email.trim();
     const emailRegex = /^\S+@\S+\.\S+$/;
-    const emailValido = emailRegex.test(emailInformado);
+    const emailValido = emailRegex.test(email);
     const cpfInformado = cpf.trim();
     const cpfNumeros = cpfInformado.replace(/\D/g, "");
     const cpfValido = /^\d{11}$/.test(cpfNumeros);
@@ -120,7 +119,7 @@ export default function Cadastro() {
 
     // Redireciona para a telas de tasks do usuário
     router.replace("/tarefas/Tasks" as any);
-  };
+  }
 
   // Atualiza a data de nascimento (fecha o seletor para dispositivos android)
   const handleDateChange = (_event: any, selectedDate?: Date) => {
@@ -144,6 +143,7 @@ export default function Cadastro() {
       <View style={styles.content}>
         <View style={[styles.container, { width: larguraCard }]}>
           <Text style={styles.title}>Crie sua conta</Text>
+
           <Text style={styles.subtitle}>Preencha os campos com seus dados</Text>
 
           {/* Input para nome completo do usuário */}
@@ -151,7 +151,7 @@ export default function Cadastro() {
             value={nome}
             onChangeText={setNome}
             placeholder="Nome completo"
-            placeholderTextColor="rgba(0, 0, 0, 0.3)"
+            placeholderTextColor="rgba(0,0,0,0.35)"
             style={styles.textinput}
           />
 
@@ -168,20 +168,18 @@ export default function Cadastro() {
                 )
               }
               max={new Date().toISOString().slice(0, 10)}
-              placeholder="dd/mm/aaaa"
               style={{
-                borderWidth: 1,
-                borderColor: "rgba(0, 0, 0, 0.3)",
-                borderRadius: 5,
-                padding: 8,
-                marginTop: 10,
-                marginBottom: 10,
-                background: "transparent",
-                color: dataNascimento ? "rgba(0,0,0,1)" : "rgba(0,0,0,0.3)",
-                fontSize: 16,
-                fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI'",
+                border: "1px solid rgba(0,0,0,0.15)",
+                borderRadius: "8px",
+                padding: "10px 12px",
+                marginBottom: "14px",
+                background: "#fff",
+                color: "rgba(0,0,0,0.85)",
+                fontSize: "15px",
                 width: "100%",
                 boxSizing: "border-box",
+                outline: "none",
+                fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI'",
               }}
             />
           ) : (
@@ -198,7 +196,7 @@ export default function Cadastro() {
                   ]}
                 >
                   {dataNascimento
-                    ? dataNascimento.toLocaleDateString()
+                    ? dataNascimento.toLocaleDateString("pt-BR")
                     : "dd/mm/aaaa"}
                 </Text>
               </TouchableOpacity>
@@ -220,7 +218,7 @@ export default function Cadastro() {
             onChangeText={setCpf}
             keyboardType="numeric"
             placeholder="CPF"
-            placeholderTextColor="rgba(0, 0, 0, 0.3)"
+            placeholderTextColor="rgba(0,0,0,0.35)"
             style={styles.textinput}
           />
 
@@ -231,7 +229,7 @@ export default function Cadastro() {
             keyboardType="email-address"
             autoCapitalize="none"
             placeholder="E-mail"
-            placeholderTextColor="rgba(0, 0, 0, 0.3)"
+            placeholderTextColor="rgba(0,0,0,0.35)"
             style={styles.textinput}
           />
 
@@ -240,7 +238,7 @@ export default function Cadastro() {
             value={senha}
             onChangeText={setSenha}
             placeholder="Senha"
-            placeholderTextColor="rgba(0, 0, 0, 0.3)"
+            placeholderTextColor="rgba(0,0,0,0.35)"
             secureTextEntry
             style={styles.textinput}
           />
@@ -250,7 +248,7 @@ export default function Cadastro() {
             value={confirmacaoSenha}
             onChangeText={setConfirmacaoSenha}
             placeholder="Confirmar senha"
-            placeholderTextColor="rgba(0, 0, 0, 0.3)"
+            placeholderTextColor="rgba(0,0,0,0.35)"
             secureTextEntry
             style={styles.textinput}
           />
@@ -261,6 +259,7 @@ export default function Cadastro() {
           {/* Botão para retornar à tela de login */}
           <View style={styles.loginLine}>
             <Text style={styles.loginLineText}>Já tem uma conta?</Text>
+
             <TouchableOpacity onPress={() => router.push("/Login")}>
               <Text style={styles.entrarText}>Entrar</Text>
             </TouchableOpacity>
@@ -273,54 +272,96 @@ export default function Cadastro() {
 
 const styles = StyleSheet.create({
   screen: {
-    ...globalStyles.fullScreen,
-    paddingHorizontal: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    flex: 1,
+    backgroundColor: colors.fundo,
   },
+
   headerContainer: {
     width: "100%",
+    height: 64,
+    backgroundColor: colors.branco,
+    justifyContent: "center",
     paddingHorizontal: 16,
-    paddingTop: 8,
+
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
   },
+
   content: {
-    ...globalStyles.centeredContent,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 16,
   },
+
   container: {
-    ...globalStyles.screenContainer,
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: colors.branco,
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.08)",
   },
+
   title: {
     ...globalStyles.sectionTitle,
+    fontSize: 28,
     marginBottom: 8,
   },
+
   subtitle: {
     ...globalStyles.sectionSubtitle,
-    marginBottom: 20,
+    marginBottom: 22,
   },
+
   textinput: {
-    ...globalStyles.textInput,
-    ...globalStyles.field,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.15)",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
+    fontSize: 15,
+    color: "rgba(0,0,0,0.9)",
   },
+
   datePickerButton: {
-    ...globalStyles.textInput,
-    ...globalStyles.field,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.15)",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
   },
+
   dateText: {
-    color: "rgba(0,0,0,1)",
-    fontSize: 16,
+    color: "rgba(0,0,0,0.9)",
+    fontSize: 15,
   },
+
   datePlaceholder: {
-    color: "rgba(0,0,0,0.3)",
+    color: "rgba(0,0,0,0.45)",
   },
+
   loginLine: {
-    ...globalStyles.linkRow,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 18,
+    gap: 4,
   },
+
   loginLineText: {
     fontSize: 14,
     color: "rgba(0,0,0,0.7)",
   },
+
   entrarText: {
     ...globalStyles.linkText,
-    marginLeft: 4,
+    marginLeft: 2,
   },
 });

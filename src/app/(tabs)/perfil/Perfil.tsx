@@ -40,7 +40,6 @@ export default function Perfil() {
   return (
     <View style={globalStyles.fullScreen}>
       <View style={styles.content}>
-        <Text style={globalStyles.sectionTitle}>Minha conta</Text>
 
         <View style={[globalStyles.cardSurface, styles.card]}>
           {/* Exibe o avatar/foto de perfil do usuário sem possibilidade de alteração */}
@@ -149,6 +148,7 @@ const styles = StyleSheet.create({
   content: {
     ...globalStyles.centeredContent,
     paddingHorizontal: 16,
+    backgroundColor: colors.fundo
   },
   card: {
     width: "100%",

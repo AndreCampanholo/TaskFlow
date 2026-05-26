@@ -1,6 +1,7 @@
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -60,7 +61,12 @@ export default function Login() {
   }
 
   return (
-    <View style={styles.screen}>
+    <LinearGradient
+      colors={["#4F83FF", "#F8F8FA", "#52D6B5"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.screen}
+    >
       <View style={[styles.container, { width: larguraCard }]}>
         <MaterialCommunityIcons
           name="check-circle"
@@ -105,7 +111,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -118,6 +124,13 @@ const styles = StyleSheet.create({
   },
   container: {
     ...globalStyles.screenContainer,
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.08)",
   },
   icon: {
     marginBottom: 16,

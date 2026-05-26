@@ -1,5 +1,5 @@
 import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
-import { globalStyles } from "@/src/styles/global";
+import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -26,7 +26,17 @@ export default function RecuperarSenha() {
   };
 
   return (
-    <View style={globalStyles.screen}>
+    <View style={styles.screen}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <MaterialCommunityIcons
+            name="arrow-left"
+            size={24}
+            color={colors.azul_escuro}
+          />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.content}>
         <View style={[styles.container, { width: larguraCard }]}>
           <MaterialCommunityIcons
@@ -59,10 +69,7 @@ export default function RecuperarSenha() {
           />
 
           {/* Botão para retornar à tela de login */}
-          <TouchableOpacity
-            style={styles.loginLine}
-            onPress={() => router.back()}
-          >
+          <TouchableOpacity onPress={() => router.replace("/Login")}>
             <Text style={styles.loginLineText}>Voltar para login</Text>
           </TouchableOpacity>
         </View>
@@ -72,11 +79,34 @@ export default function RecuperarSenha() {
 }
 
 const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: colors.fundo,
+  },
+  headerContainer: {
+    width: "100%",
+    height: 64,
+    backgroundColor: colors.branco,
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(0,0,0,0.05)",
+  },
   content: {
-    ...globalStyles.centeredContent,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 16,
   },
   container: {
     ...globalStyles.screenContainer,
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: colors.branco,
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.08)",
   },
   title: {
     ...globalStyles.sectionTitle,

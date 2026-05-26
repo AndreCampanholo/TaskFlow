@@ -4,7 +4,7 @@ import ListaVazia from "@/src/components/ListaVazia";
 import CartaoNovaTarefa from "@/src/components/NovaTaskCard";
 import CartaoTarefa from "@/src/components/TaskCard";
 import useTarefas from "@/src/hooks/useTarefas";
-import { globalStyles } from "@/src/styles/global";
+import { colors, globalStyles } from "@/src/styles/global";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -50,6 +50,40 @@ export default function Tarefas() {
         window.alert("Digite uma descrição");
       } else {
         Alert.alert("Erro", "Digite uma descrição");
+      }
+      return;
+    }
+
+    if (
+      stateFromModal === "atrasada" &&
+      dueDate.getTime() > new Date().getTime()
+    ) {
+      if (Platform.OS === "web") {
+        window.alert(
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
+      } else {
+        Alert.alert(
+          "Erro",
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
+      }
+      return;
+    }
+
+    if (
+      stateFromModal === "atrasada" &&
+      dueDate.getTime() > new Date().getTime()
+    ) {
+      if (Platform.OS === "web") {
+        window.alert(
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
+      } else {
+        Alert.alert(
+          "Erro",
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
       }
       return;
     }
@@ -127,7 +161,7 @@ export default function Tarefas() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#EDEDF6" },
+  container: { flex: 1, padding: 16, backgroundColor: colors.fundo },
   header: { ...globalStyles.headerText, fontSize: 22, marginBottom: 12 },
   card: {
     flex: 1,

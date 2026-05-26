@@ -33,7 +33,7 @@ const OPCOES_STATUS: { value: EstadoTarefa; label: string; color: string }[] = [
   {
     value: "em-andamento",
     label: "Em andamento",
-    color: colors.amarelo_em_andamento,
+    color: colors.azul_em_progresso,
   },
   { value: "concluida", label: "Concluída", color: colors.verde },
   { value: "atrasada", label: "Atrasada", color: colors.vermelho_atrasado },
@@ -106,6 +106,22 @@ export default function TarefaEditar() {
       }
       return;
     }
+    if (
+      estado === "atrasada" &&
+      dataVencimento.getTime() > new Date().getTime()
+    ) {
+      if (Platform.OS === "web") {
+        window.alert(
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
+      } else {
+        Alert.alert(
+          "Erro",
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
+      }
+      return;
+    }
     // Atualiza a tarefa com as novas informações
     atualizarTarefa(tarefaId!, {
       title: titulo.trim(),
@@ -114,7 +130,7 @@ export default function TarefaEditar() {
       state: estado,
       completed: estado === "concluida",
     });
-    router.navigate("/(tabs)/tarefas/Tasks"); // Redireciona para a tela de todas as tarefas
+    router.navigate("/(tabs)/tarefas/Tasks"); // Redireciona para a página principal de tarefas
   }
 
   // Handler para excluir a tarefa atual com confirmação do usuário
@@ -370,7 +386,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
-    maxWidth: 360,
+    maxWidth: 600,
     backgroundColor: colors.branco,
     borderRadius: 16,
     padding: 20,
