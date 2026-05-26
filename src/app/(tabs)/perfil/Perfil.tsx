@@ -29,7 +29,6 @@ export default function Perfil() {
   return (
     <View style={globalStyles.fullScreen}>
       <View style={styles.content}>
-        <Text style={globalStyles.sectionTitle}>Minha conta</Text>
 
         <View style={[globalStyles.cardSurface, styles.card]}>
           <ProfileAvatar editable={false} />
@@ -131,6 +130,7 @@ const styles = StyleSheet.create({
   content: {
     ...globalStyles.centeredContent,
     paddingHorizontal: 16,
+    backgroundColor: colors.fundo
   },
   card: {
     width: "100%",

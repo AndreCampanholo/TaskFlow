@@ -4,11 +4,11 @@ import TaskPrazoDisplay from "@/src/components/TaskPrazoDisplay";
 import TaskStatusBar from "@/src/components/TaskStatusBar";
 import useTasks from "@/src/hooks/useTasks";
 import { colors, globalStyles } from "@/src/styles/global";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { Alert, Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 export default function TarefaDetalhes() {
   const insets = useSafeAreaInsets();
@@ -79,7 +79,7 @@ export default function TarefaDetalhes() {
       <Pressable style={styles.card} onPress={() => null}>
         <View style={styles.headerRow}>
           <View style={styles.iconWrap}>
-            <MaterialCommunityIcons name="clipboard-text-outline" size={42} color={colors.amarelo_em_andamento} />
+            <MaterialCommunityIcons name="clipboard-text-outline" size={42} color={colors.azul_em_progresso} />
           </View>
 
           <View style={styles.headerCopy}>
@@ -106,7 +106,7 @@ export default function TarefaDetalhes() {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    backgroundColor: "#F7F7FB",
+    backgroundColor: colors.fundo,
     paddingHorizontal: 16,
     alignItems: "center",
   },
@@ -130,10 +130,10 @@ const styles = StyleSheet.create({
     height: 52,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "rgba(235,185,42,0.35)",
+    borderColor: colors.fundo,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(235,185,42,0.08)",
+    backgroundColor: colors.fundo,
   },
   headerCopy: {
     flex: 1,

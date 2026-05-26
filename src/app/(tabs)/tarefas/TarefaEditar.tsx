@@ -1,3 +1,19 @@
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
+import BotaoCancelar from "@/src/components/BotaoCancelar";
+import BotaoVermelho from "@/src/components/BotaoVermelho";
+import useTasks, { TaskState } from "@/src/hooks/useTasks";
+import { colors, globalStyles } from "@/src/styles/global";
+import {
+  fromDateInputValue,
+  fromTimeInputValue,
+  mergeTaskDateTime,
+  toDateInputValue,
+  toTimeInputValue,
+  updateTaskTime,
+} from "@/src/utils/taskDates";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import {
   Alert,
@@ -10,26 +26,10 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { colors, globalStyles } from "@/src/styles/global";
-import useTasks, { TaskState } from "@/src/hooks/useTasks";
-import BotaoCancelar from "@/src/components/BotaoCancelar";
-import BotaoVermelho from "@/src/components/BotaoVermelho";
-import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
-import {
-  fromDateInputValue,
-  fromTimeInputValue,
-  mergeTaskDateTime,
-  toDateInputValue,
-  toTimeInputValue,
-  updateTaskTime,
-} from "@/src/utils/taskDates";
 
 const STATUS_OPTIONS: { value: TaskState; label: string; color: string }[] = [
-  { value: "em-andamento", label: "Em andamento", color: colors.amarelo_em_andamento },
+  { value: "em-andamento", label: "Em andamento", color: colors.azul_em_progresso },
   { value: "concluida",    label: "Concluída",    color: colors.verde },
   { value: "atrasada",     label: "Atrasada",     color: colors.vermelho_atrasado },
 ];
@@ -82,6 +82,14 @@ export default function TarefaEditar() {
       }
       return;
     }
+    if (status === "atrasada" && dueDate.getTime() > new Date().getTime()) {
+          if (Platform.OS === "web") {
+            window.alert("A tarefa só pode ser marcada como atrasada após o prazo.");
+          } else {
+            Alert.alert("Erro", "A tarefa só pode ser marcada como atrasada após o prazo.");
+          }
+          return;
+        }
     updateTask(taskId!, { title: title.trim(), description: description.trim(), dueDate, state: status, completed: status === "concluida" });
     router.navigate("/(tabs)/tarefas/Tasks");
   }
@@ -273,7 +281,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
-    maxWidth: 360,
+    maxWidth: 600,
     backgroundColor: colors.branco,
     borderRadius: 16,
     padding: 20,

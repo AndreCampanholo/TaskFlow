@@ -1,6 +1,7 @@
 import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
 import ProfileAvatar from "@/src/components/ProfileAvatar";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { colors, globalStyles } from "@/src/styles/global";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -39,28 +40,27 @@ export default function EditarPerfil() {
       const emailInformado = email.trim();
       const emailRegex = /^\S+@\S+\.\S+$/;
       const isEmail = emailRegex.test(emailInformado);
+
       if (!isEmail) {
         if (Platform.OS === "web") {
           window.alert("Informe um E-mail válido.");
         } else {
-          Alert.alert("Erro", "Informe um E-mail válido.", [
-            { text: "Ok", style: "cancel" },
-          ]);
+          Alert.alert("Erro", "Informe um E-mail válido.");
         }
         return;
       }
     }
+
     if (cpf.trim()) {
       const cpfInformado = cpf.trim();
       const digits = cpfInformado.replace(/\D/g, "");
       const isCpf = /^\d{11}$/.test(digits);
+
       if (!isCpf) {
         if (Platform.OS === "web") {
           window.alert("Informe CPF válido com 11 dígitos.");
         } else {
-          Alert.alert("Erro", "Informe CPF válido com 11 dígitos.", [
-            { text: "Ok", style: "cancel" },
-          ]);
+          Alert.alert("Erro", "Informe CPF válido com 11 dígitos.");
         }
         return;
       }
@@ -71,102 +71,114 @@ export default function EditarPerfil() {
 
   function handleDateChange(_event: any, selectedDate?: Date) {
     if (selectedDate) setDataNascimento(selectedDate);
-    if (Platform.OS === "android") setShowDatePicker(false);
+
+    if (Platform.OS === "android") {
+      setShowDatePicker(false);
+    }
   }
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <View style={styles.avatarWrap}>
-        <ProfileAvatar uri={avatarUri} onChange={setAvatarUri} size={110} />
-      </View>
-
-      <View style={styles.form}>
-        <Text style={styles.label}>Nome completo</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
-          placeholder="Nome completo"
-        />
-
-        <Text style={styles.label}>Data de Nascimento</Text>
-        {Platform.OS === "web" ? (
-          <input
-            type="date"
-            value={
-              dataNascimento ? dataNascimento.toISOString().slice(0, 10) : ""
-            }
-            onChange={(e: any) =>
-              setDataNascimento(
-                e.target.value ? new Date(e.target.value) : null,
-              )
-            }
-            max={new Date().toISOString().slice(0, 10)}
-            placeholder="dd/mm/aaaa"
-            style={{
-              borderWidth: 1,
-              borderColor: "rgba(0, 0, 0, 0.3)",
-              borderRadius: 5,
-              padding: 8,
-              marginTop: 0,
-              marginBottom: 12,
-              background: "transparent",
-              color: dataNascimento ? "rgba(0,0,0,1)" : "rgba(0,0,0,0.3)",
-              fontSize: 16,
-              fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI'",
-              width: "100%",
-              boxSizing: "border-box",
-            }}
+      <View style={styles.card}>
+        <View style={styles.avatarWrap}>
+          <ProfileAvatar
+            uri={avatarUri}
+            onChange={setAvatarUri}
+            size={110}
           />
-        ) : (
-          <Pressable
-            style={styles.dateButton}
-            onPress={() => setShowDatePicker(true)}
-          >
-            <Text
-              style={[
-                styles.dateButtonText,
-                !dataNascimento && styles.datePlaceholder,
-              ]}
+        </View>
+
+        <View style={styles.form}>
+          <Text style={styles.label}>Nome completo</Text>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder="Nome completo"
+            placeholderTextColor={"rgba(0,0,0,0.45)"}
+          />
+
+          <Text style={styles.label}>Data de nascimento</Text>
+
+          {Platform.OS === "web" ? (
+            <input
+              type="date"
+              value={
+                dataNascimento
+                  ? dataNascimento.toISOString().slice(0, 10)
+                  : ""
+              }
+              onChange={(e: any) =>
+                setDataNascimento(
+                  e.target.value ? new Date(e.target.value) : null
+                )
+              }
+              max={new Date().toISOString().slice(0, 10)}
+              style={{
+                border: "1px solid rgba(0,0,0,0.15)",
+                borderRadius: "8px",
+                padding: "10px 12px",
+                marginBottom: "14px",
+                background: "#fff",
+                color: "rgba(0,0,0,0.85)",
+                fontSize: "15px",
+                width: "100%",
+                boxSizing: "border-box",
+                outline: "none",
+              }}
+            />
+          ) : (
+            <Pressable
+              style={styles.dateButton}
+              onPress={() => setShowDatePicker(true)}
             >
-              {dataNascimento
-                ? dataNascimento.toLocaleDateString("pt-BR")
-                : "dd/mm/aaaa"}
-            </Text>
-          </Pressable>
-        )}
+              <Text
+                style={[
+                  styles.dateButtonText,
+                  !dataNascimento && styles.datePlaceholder,
+                ]}
+              >
+                {dataNascimento
+                  ? dataNascimento.toLocaleDateString("pt-BR")
+                  : "dd/mm/aaaa"}
+              </Text>
+            </Pressable>
+          )}
 
-        {showDatePicker && Platform.OS !== "web" ? (
-          <DateTimePicker
-            value={dataNascimento ?? new Date()}
-            mode="date"
-            display="default"
-            maximumDate={new Date()}
-            onChange={handleDateChange}
+          {showDatePicker && Platform.OS !== "web" && (
+            <DateTimePicker
+              value={dataNascimento ?? new Date()}
+              mode="date"
+              display="default"
+              maximumDate={new Date()}
+              onChange={handleDateChange}
+            />
+          )}
+
+          <Text style={styles.label}>CPF</Text>
+          <TextInput
+            style={styles.input}
+            value={cpf}
+            onChangeText={setCpf}
+            placeholder="000.000.000-00"
+            placeholderTextColor={"rgba(0,0,0,0.45)"}
           />
-        ) : null}
 
-        <Text style={styles.label}>CPF</Text>
-        <TextInput
-          style={styles.input}
-          value={cpf}
-          onChangeText={setCpf}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
-          placeholder="000.000.000-00"
-        />
+          <Text style={styles.label}>E-mail</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="email@exemplo.com"
+            placeholderTextColor={"rgba(0,0,0,0.45)"}
+            keyboardType="email-address"
+          />
 
-        <Text style={styles.label}>E-mail</Text>
-        <TextInput
-          style={styles.input}
-          value={email}
-          onChangeText={setEmail}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
-          placeholder="email@exemplo.com"
-          keyboardType="email-address"
-        />
-
-        <BotaoAzulClaro text="Salvar Alterações" action={handleEditarPerfil} />
+          <BotaoAzulClaro
+            text="Salvar alterações"
+            action={handleEditarPerfil}
+          />
+        </View>
       </View>
     </ScrollView>
   );
@@ -174,44 +186,69 @@ export default function EditarPerfil() {
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
+    backgroundColor: colors.fundo,
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 48,
-    backgroundColor: "#fff",
+    paddingBottom: 32,
     alignItems: "center",
   },
+
+  card: {
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.08)",
+  },
+
   avatarWrap: {
-    marginTop: 4,
-    marginBottom: 12,
     alignItems: "center",
+    marginBottom: 20,
+  },
+
+  form: {
     width: "100%",
   },
-  form: { width: "100%", maxWidth: 380 },
-  label: { color: "rgba(0,0,0,0.6)", marginBottom: 6 },
+
+  label: {
+    fontSize: 14,
+    color: "rgba(0,0,0,0.65)",
+    marginBottom: 6,
+    fontWeight: "500",
+  },
+
   input: {
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.15)",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 12,
-    backgroundColor: "#fff",
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
+    fontSize: 15,
+    color: "rgba(0,0,0,0.9)",
   },
+
   dateButton: {
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.15)",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 12,
-    backgroundColor: "#fff",
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
     justifyContent: "center",
   },
+
   dateButtonText: {
-    color: "rgba(0,0,0,0.6)",
-    fontWeight: "400",
+    fontSize: 15,
+    color: "rgba(0,0,0,0.85)",
   },
+
   datePlaceholder: {
-    color: "rgba(0,0,0,0.6)",
+    color: "rgba(0,0,0,0.45)",
   },
 });

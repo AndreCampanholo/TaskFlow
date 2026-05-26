@@ -4,7 +4,7 @@ import ListaVazia from "@/src/components/ListaVazia";
 import NovaTaskCard from "@/src/components/NovaTaskCard";
 import TaskCard from "@/src/components/TaskCard";
 import useTasks from "@/src/hooks/useTasks";
-import { globalStyles } from "@/src/styles/global";
+import { colors, globalStyles } from "@/src/styles/global";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
@@ -17,7 +17,6 @@ import {
 } from "react-native";
 
 export default function Tasks() {
-  // Keep UI focused on rendering. Task logic is in `useTasks`.
   const { tasks, createTask, toggleTask, getFiltered } = useTasks();
   const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<
@@ -44,6 +43,15 @@ export default function Tasks() {
         window.alert("Digite uma descrição");
       } else {
         Alert.alert("Erro", "Digite uma descrição");
+      }
+      return;
+    }
+
+    if (stateFromModal === "atrasada" && dueDate.getTime() > new Date().getTime()) {
+      if (Platform.OS === "web") {
+        window.alert("A tarefa só pode ser marcada como atrasada após o prazo.");
+      } else {
+        Alert.alert("Erro", "A tarefa só pode ser marcada como atrasada após o prazo.");
       }
       return;
     }
@@ -113,7 +121,7 @@ export default function Tasks() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: "#EDEDF6" },
+  container: { flex: 1, padding: 16, backgroundColor: colors.fundo },
   header: { ...globalStyles.headerText, fontSize: 22, marginBottom: 12 },
   card: {
     flex: 1,

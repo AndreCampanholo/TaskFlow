@@ -1,7 +1,7 @@
+import type { TaskState } from "@/src/hooks/useTasks";
 import { colors } from "@/src/styles/global";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import type { TaskState } from "@/src/hooks/useTasks";
 
 type Props = {
   status: TaskState;
@@ -20,7 +20,7 @@ const STATUS_STYLES: Record<
   "em-andamento": {
     backgroundColor: "rgba(235,185,42,0.28)",
     textColor: "#1f2937",
-    dotColor: colors.amarelo_em_andamento,
+    dotColor: colors.azul_em_progresso,
   },
   concluida: {
     backgroundColor: "rgba(16,185,129,0.16)",
