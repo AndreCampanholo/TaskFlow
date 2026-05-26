@@ -1,5 +1,6 @@
-import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import AvatarPerfil from "@/src/components/ProfileAvatar";
+import { colors } from "@/src/styles/global";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -16,6 +17,7 @@ import {
   View,
 } from "react-native";
 
+// Função auxiliar para exibir um alerta
 function exibirAlerta(titulo: string, mensagem: string) {
   if (Platform.OS === "web") {
     window.alert(`${titulo}\n\n${mensagem}`);
@@ -25,55 +27,70 @@ function exibirAlerta(titulo: string, mensagem: string) {
   Alert.alert(titulo, mensagem, [{ text: "Ok", style: "cancel" }]);
 }
 
+// Tela/Componente de Edição de perfil
 export default function EditarPerfil() {
-  const [uriAvatar, setUriAvatar] = useState<string | null>(null);
+  // Campos variáveis declarados com useState
+  const [uriAvatar, setUriAvatar] = useState<string | null>(null); // foto de perfil como string (uri)
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState<Date | null>(null);
-  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false); // determina se o seletor de data deve ser visível ou não
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
 
+  // Booleano que armazena se alguma alteração foi feita
   const temAlteracao = Boolean(
     nome.trim() || dataNascimento || cpf.trim() || email.trim(),
   );
 
+  // Valida as alterações feitas pelo usuário (futuramente efetivará as mudanças no back-end/banco de dados)
   function handleEditarPerfil() {
+    // Se nenhuma edição foi feita (nenhum campo foi preenchido) exibe alerta e retorna para a tela de perfil
     if (!temAlteracao) {
       exibirAlerta("Aviso", "Nenhuma alteração feita.");
       router.back();
       return;
     }
 
+    // Verifica se o email é valido
     if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
       exibirAlerta("Erro", "Informe um e-mail válido.");
       return;
     }
 
+    // Verifica se o CPF é válido
     if (cpf.trim() && !/^\d{11}$/.test(cpf.replace(/\D/g, ""))) {
       exibirAlerta("Erro", "Informe um CPF válido com 11 dígitos.");
       return;
     }
 
-    router.back();
+    // O usuário não é obrigado a preencher todos os campos, somente os que ele deseja modificar!!
+
+    router.back(); // Retorna para a tela de perfil do usuário
   }
 
+  // Altera a data de nascimento
   function handleDateChange(_event: DateTimePickerEvent, selectedDate?: Date) {
     if (selectedDate) {
       setDataNascimento(selectedDate);
     }
 
     if (Platform.OS === "android") {
-      setSeletorDataAberto(false);
+      setSeletorDataAberto(false); // fecha o seletor em dispositivos android
     }
   }
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <View style={styles.avatarWrap}>
-        <AvatarPerfil uri={uriAvatar} aoAlterar={setUriAvatar} tamanho={110} />
-      </View>
+      <View style={styles.card}>
+        <View style={styles.avatarWrap}>
+          <AvatarPerfil
+            uri={uriAvatar}
+            aoAlterar={setUriAvatar}
+            tamanho={110}
+          />
+        </View>
 
-      <View style={styles.form}>
+        {/* Input para o novo nome do usuário */}
         <Text style={styles.label}>Nome completo</Text>
         <TextInput
           style={styles.input}
@@ -83,8 +100,9 @@ export default function EditarPerfil() {
           placeholder="Nome completo"
         />
 
+        {/* Seletor da data de nascimento */}
         <Text style={styles.label}>Data de Nascimento</Text>
-        {Platform.OS === "web" ? (
+        {Platform.OS === "web" ? ( // p/ web
           <input
             type="date"
             value={
@@ -113,6 +131,7 @@ export default function EditarPerfil() {
             }}
           />
         ) : (
+          // p/ mobile
           <Pressable
             style={styles.dateButton}
             onPress={() => setSeletorDataAberto(true)}
@@ -140,26 +159,28 @@ export default function EditarPerfil() {
           />
         ) : null}
 
+        {/* Input para o novo CPF */}
         <Text style={styles.label}>CPF</Text>
         <TextInput
           style={styles.input}
           value={cpf}
           onChangeText={setCpf}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
           placeholder="000.000.000-00"
+          placeholderTextColor={"rgba(0,0,0,0.45)"}
         />
 
+        {/* Input para o novo E-mail */}
         <Text style={styles.label}>E-mail</Text>
         <TextInput
           style={styles.input}
           value={email}
           onChangeText={setEmail}
-          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
           placeholder="email@exemplo.com"
+          placeholderTextColor={"rgba(0,0,0,0.45)"}
           keyboardType="email-address"
         />
 
-        <BotaoAzulClaro texto="Salvar Alterações" acao={handleEditarPerfil} />
+        <BotaoAzulEscuro texto="Salvar Alterações" acao={handleEditarPerfil} />
       </View>
     </ScrollView>
   );
@@ -167,44 +188,69 @@ export default function EditarPerfil() {
 
 const styles = StyleSheet.create({
   screen: {
+    flex: 1,
+    backgroundColor: colors.fundo,
     paddingHorizontal: 16,
     paddingTop: 16,
-    paddingBottom: 48,
-    backgroundColor: "#fff",
+    paddingBottom: 32,
     alignItems: "center",
   },
+
+  card: {
+    width: "100%",
+    maxWidth: 380,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 18,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.08)",
+  },
+
   avatarWrap: {
-    marginTop: 4,
-    marginBottom: 12,
     alignItems: "center",
+    marginBottom: 20,
+  },
+
+  form: {
     width: "100%",
   },
-  form: { width: "100%", maxWidth: 380 },
-  label: { color: "rgba(0,0,0,0.6)", marginBottom: 6 },
+
+  label: {
+    fontSize: 14,
+    color: "rgba(0,0,0,0.65)",
+    marginBottom: 6,
+    fontWeight: "500",
+  },
+
   input: {
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.15)",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 12,
-    backgroundColor: "#fff",
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
+    fontSize: 15,
+    color: "rgba(0,0,0,0.9)",
   },
+
   dateButton: {
     borderWidth: 1,
     borderColor: "rgba(0,0,0,0.15)",
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    marginBottom: 12,
-    backgroundColor: "#fff",
+    marginBottom: 14,
+    backgroundColor: "#FFFFFF",
     justifyContent: "center",
   },
+
   dateButtonText: {
-    color: "rgba(0,0,0,0.6)",
-    fontWeight: "400",
+    fontSize: 15,
+    color: "rgba(0,0,0,0.85)",
   },
+
   datePlaceholder: {
-    color: "rgba(0,0,0,0.6)",
+    color: "rgba(0,0,0,0.45)",
   },
 });

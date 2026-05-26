@@ -1,6 +1,7 @@
 import { globalStyles } from "@/src/styles/global";
 import { StyleSheet, Text, View } from "react-native";
 
+// Componente de lista vazia, isto é, da tela de tarefas sem nenhuma tarefa
 export default function ListaVazia({
   title,
   subtitle,

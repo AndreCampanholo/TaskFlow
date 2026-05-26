@@ -1,7 +1,7 @@
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import BotaoCancelar from "@/src/components/BotaoCancelar";
 import BotaoVermelho from "@/src/components/BotaoVermelho";
-import useTarefas, { EstadoTarefa } from "@/src/hooks/useTasks";
+import useTarefas, { EstadoTarefa } from "@/src/hooks/useTarefas";
 import { colors, globalStyles } from "@/src/styles/global";
 import {
   atualizarHora,
@@ -28,16 +28,18 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Opções disponíveis para o status da tarefa exibidas na interface
 const OPCOES_STATUS: { value: EstadoTarefa; label: string; color: string }[] = [
   {
     value: "em-andamento",
     label: "Em andamento",
-    color: colors.amarelo_em_andamento,
+    color: colors.azul_em_progresso,
   },
   { value: "concluida", label: "Concluída", color: colors.verde },
   { value: "atrasada", label: "Atrasada", color: colors.vermelho_atrasado },
 ];
 
+// Estilo aplicado aos campos nativos de data/hora no ambiente web
 const estiloInputWeb = {
   border: "1px solid rgba(0,0,0,0.2)",
   borderRadius: "8px",
@@ -51,14 +53,20 @@ const estiloInputWeb = {
   outline: "none",
 };
 
+// Tela/Componente de edição de tarefas
 export default function TarefaEditar() {
+  // Delimita a área segura superior (notch/status bar) para posicionamento correto
   const insets = useSafeAreaInsets();
+
+  // Obtém o parâmetro `id` passado pela rota (pode ser string ou array)
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { obterTarefaPorId, atualizarTarefa, excluirTarefa } = useTarefas();
 
+  // Normaliza o parâmetro de rota para uma string simples e busca a tarefa
   const tarefaId = Array.isArray(id) ? id[0] : id;
   const tarefa = tarefaId ? obterTarefaPorId(tarefaId) : null;
 
+  // Variáveis modificáveis declaradas com useState
   const [titulo, setTitulo] = useState(tarefa?.title ?? "");
   const [descricao, setDescricao] = useState(tarefa?.description ?? "");
   const [dataVencimento, setDataVencimento] = useState<Date>(
@@ -67,9 +75,10 @@ export default function TarefaEditar() {
   const [estado, setEstado] = useState<EstadoTarefa>(
     tarefa?.state ?? "em-andamento",
   );
-  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
-  const [seletorHoraAberto, setSeletorHoraAberto] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false); // Determina se o seletor de data é visível ou não
+  const [seletorHoraAberto, setSeletorHoraAberto] = useState(false); // Determina se o seletor de hora é visível ou não
 
+  // Render alternativo quando a tarefa não existe
   if (!tarefa) {
     return (
       <View
@@ -86,7 +95,9 @@ export default function TarefaEditar() {
     );
   }
 
+  // Valida as novas informações da tarefa, salvando as alterações
   function handleSalvar() {
+    // Exige que o usuário digite um título
     if (!titulo.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite um título");
@@ -95,6 +106,23 @@ export default function TarefaEditar() {
       }
       return;
     }
+    if (
+      estado === "atrasada" &&
+      dataVencimento.getTime() > new Date().getTime()
+    ) {
+      if (Platform.OS === "web") {
+        window.alert(
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
+      } else {
+        Alert.alert(
+          "Erro",
+          "A tarefa só pode ser marcada como atrasada após o prazo.",
+        );
+      }
+      return;
+    }
+    // Atualiza a tarefa com as novas informações
     atualizarTarefa(tarefaId!, {
       title: titulo.trim(),
       description: descricao.trim(),
@@ -102,36 +130,41 @@ export default function TarefaEditar() {
       state: estado,
       completed: estado === "concluida",
     });
-    router.navigate("/(tabs)/tarefas/Tasks");
+    router.navigate("/(tabs)/tarefas/Tasks"); // Redireciona para a página principal de tarefas
   }
 
+  // Handler para excluir a tarefa atual com confirmação do usuário
   function handleExcluir() {
+    // p/ web
     if (Platform.OS === "web") {
       if (window.confirm("Deseja excluir esta tarefa?")) {
-        excluirTarefa(tarefaId!);
-        router.navigate("/(tabs)/tarefas/Tasks");
+        excluirTarefa(tarefaId!); // Exclui a tarefa
+        router.navigate("/(tabs)/tarefas/Tasks"); // Redireciona para a tela das tarefas
       }
       return;
     }
+    // p/ mobile
     Alert.alert("Excluir tarefa", "Deseja excluir esta tarefa?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Excluir",
         style: "destructive",
         onPress: () => {
-          excluirTarefa(tarefaId!);
-          router.navigate("/(tabs)/tarefas/Tasks");
+          excluirTarefa(tarefaId!); // Exclui a tarefa
+          router.navigate("/(tabs)/tarefas/Tasks"); // Redireciona para a tela das tarefas
         },
       },
     ]);
   }
 
+  // Altera a data de vencimento da tarefa (data + hora)
   function handleDateChange(_event: any, selectedDate?: Date) {
     if (selectedDate)
       setDataVencimento((atual) => mesclarDataHora(atual, selectedDate));
     if (Platform.OS === "android") setSeletorDataAberto(false);
   }
 
+  // Atualiza a hora de vencimento da tarefa
   function handleTimeChange(_event: any, selectedDate?: Date) {
     if (selectedDate)
       setDataVencimento((atual) => atualizarHora(atual, selectedDate));
@@ -152,7 +185,6 @@ export default function TarefaEditar() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.card}>
-          {/* Header */}
           <View style={styles.header}>
             <View style={styles.iconWrap}>
               <MaterialCommunityIcons
@@ -164,7 +196,7 @@ export default function TarefaEditar() {
             <Text style={styles.headerTitle}>Editar tarefa</Text>
           </View>
 
-          {/* Nome */}
+          {/* Input para o nome da tarefa */}
           <Text style={styles.fieldLabel}>Nome</Text>
           <TextInput
             style={styles.input}
@@ -174,7 +206,7 @@ export default function TarefaEditar() {
             placeholderTextColor="rgba(0,0,0,0.35)"
           />
 
-          {/* Descrição */}
+          {/* Input para a descrição da tarefa */}
           <Text style={styles.fieldLabel}>Descrição</Text>
           <TextInput
             style={[styles.input, styles.descriptionInput]}
@@ -186,9 +218,10 @@ export default function TarefaEditar() {
             textAlignVertical="top"
           />
 
-          {/* Prazo */}
+          {/* Input para o prazo */}
           <Text style={styles.fieldLabel}>Prazo</Text>
 
+          {/* p/ web */}
           {Platform.OS === "web" ? (
             <View style={styles.dateRow}>
               <View style={styles.dateFieldWrap}>
@@ -225,6 +258,7 @@ export default function TarefaEditar() {
               </View>
             </View>
           ) : (
+            // p/ mobile
             <View style={styles.dateRow}>
               <View style={styles.dateFieldWrap}>
                 <Text style={styles.dateSubLabel}>Data</Text>
@@ -281,7 +315,7 @@ export default function TarefaEditar() {
             />
           )}
 
-          {/* Status */}
+          {/* Modificador do status da tarefa */}
           <Text style={styles.fieldLabel}>Status</Text>
           <View style={styles.statusRow}>
             {OPCOES_STATUS.map((opcao) => {
@@ -321,15 +355,17 @@ export default function TarefaEditar() {
             })}
           </View>
 
-          {/* Ações */}
           <View style={styles.actions}>
             <View style={[styles.actionItem, { flex: 1.3 }]}>
+              {/* Botão para cancelar as alterações */}
               <BotaoCancelar texto="Cancelar" acao={() => router.back()} />
             </View>
             <View style={styles.actionItem}>
+              {/* Botão para excluir a tarefa */}
               <BotaoVermelho texto="Excluir tarefa" acao={handleExcluir} />
             </View>
             <View style={[styles.actionItem, { flex: 1.5 }]}>
+              {/* Botão para salvar as alterações */}
               <BotaoAzulEscuro texto="Salvar alterações" acao={handleSalvar} />
             </View>
           </View>
@@ -350,7 +386,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "100%",
-    maxWidth: 360,
+    maxWidth: 600,
     backgroundColor: colors.branco,
     borderRadius: 16,
     padding: 20,

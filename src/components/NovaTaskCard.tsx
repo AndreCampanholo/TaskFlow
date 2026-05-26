@@ -23,6 +23,7 @@ import {
   View,
 } from "react-native";
 
+// Define as props recebidas pela caixa de criação de nova tarefa
 type Props = {
   visivel: boolean;
   aoFechar: () => void;
@@ -34,16 +35,23 @@ type Props = {
   ) => void;
 };
 
-export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) {
+// Componente de criação de nova tarefa
+export default function CartaoNovaTarefa({
+  visivel,
+  aoFechar,
+  aoCriar,
+}: Props) {
+  // Variáveis modificáveis declaradas com useState
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
   const [dataVencimento, setDataVencimento] = useState<Date>(new Date());
-  const [estado, setEstado] = useState<"em-andamento" | "concluida" | "atrasada">(
-    "em-andamento",
-  );
+  const [estado, setEstado] = useState<
+    "em-andamento" | "concluida" | "atrasada"
+  >("em-andamento");
   const [seletorDataAberto, setSeletorDataAberto] = useState(false);
   const [seletorHoraAberto, setSeletorHoraAberto] = useState(false);
 
+  // Sempre que o modal fecha, limpa os campos para a próxima abertura
   useEffect(() => {
     if (!visivel) {
       setTitulo("");
@@ -55,7 +63,9 @@ export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) 
     }
   }, [visivel]);
 
+  // Valida as informações da nova tarefa e chama a criação no componente pai
   function handleSalvar() {
+    // A tarefa deve possuir um título
     if (!titulo.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite um título");
@@ -65,6 +75,7 @@ export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) 
       return;
     }
 
+    // A tarefa deve ter uma descrição
     if (!descricao.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite uma descrição");
@@ -73,10 +84,11 @@ export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) 
       }
       return;
     }
-
+    // Envia os dados validados para o pai, que salva a tarefa na lista
     aoCriar(titulo.trim(), descricao.trim(), dataVencimento, estado);
   }
 
+  // Salva a data de vencimento da tarefa (data + hora)
   function handleDateChange(_event: any, selectedDate?: Date) {
     if (selectedDate) {
       setDataVencimento((atual) => mesclarDataHora(atual, selectedDate));
@@ -85,6 +97,7 @@ export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) 
     if (Platform.OS === "android") setSeletorDataAberto(false);
   }
 
+  // Atualiza a hora de vencimento da tarefa
   function handleTimeChange(_event: any, selectedDate?: Date) {
     if (selectedDate) {
       setDataVencimento((atual) => atualizarHora(atual, selectedDate));
@@ -94,6 +107,7 @@ export default function CartaoNovaTarefa({ visivel, aoFechar, aoCriar }: Props) 
   }
 
   return (
+    // Modal que aparece sobre a tela anterior; tocar fora do card fecha a janela
     <Modal
       visible={visivel}
       transparent

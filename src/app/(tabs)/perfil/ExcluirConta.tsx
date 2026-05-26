@@ -4,22 +4,27 @@ import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Platform,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Tela/Componente de exclusão de conta
 export default function ExcluirConta() {
+  // Delimita uma faixa superior da tela que não deve ser usada (espaço reservado para camera, horário, bateria do celular)
   const insets = useSafeAreaInsets();
 
+  // Campo variável declarado com useState
   const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
 
+  // Valida a entrada do usuário para exclusão da conta (futuramente comparará com a senha do usuário para validar exclusão e apagará conta do banco de dados)
   function handleExcluirConta() {
+    // Se a senha não for informada exibe alerta e não efetua exclusão
     if (!senhaConfirmacao.trim()) {
       if (Platform.OS === "web") {
         window.alert("Insira a senha para excluir sua conta!");
@@ -32,35 +37,12 @@ export default function ExcluirConta() {
       return;
     }
 
-    if (Platform.OS === "web") {
-      const shouldDelete = window.confirm(
-        "Esta ação é irreversível. Tem certeza que deseja excluir sua conta?",
-      );
-
-      if (shouldDelete) {
-        router.replace("/Login");
-      }
-
-      return;
-    }
-
-    Alert.alert(
-      "Confirmar exclusão",
-      "Esta ação é irreversível. Tem certeza que deseja excluir sua conta?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Excluir",
-          style: "destructive",
-          onPress: () => {
-            router.replace("/Login");
-          },
-        },
-      ],
-    );
+    router.replace("/Login"); // Redireciona para a tela de login
+    return;
   }
 
   return (
+    // Tela feita como um "overlay" (aparece sobre a tela anterior com fundo transparente). Clicar ao redor da tela retorna à tela de perfil
     <Pressable
       style={[
         styles.overlay,
@@ -80,6 +62,7 @@ export default function ExcluirConta() {
           serão permanentemente removidos. Para prosseguir, confirme sua senha.
         </Text>
 
+        {/* Input para a senha do usuário */}
         <Text style={styles.label}>Senha de confirmação</Text>
         <TextInput
           value={senhaConfirmacao}
@@ -90,11 +73,13 @@ export default function ExcluirConta() {
         />
 
         <View style={styles.actions}>
+          {/* Botão que exclui a conta do usuário */}
           <Pressable style={styles.deleteButton} onPress={handleExcluirConta}>
             <Ionicons name="trash-outline" size={16} color={colors.branco} />
             <Text style={styles.deleteButtonText}>Excluir minha conta</Text>
           </Pressable>
 
+          {/* Botão para cancelar a exclusão da conta */}
           <BotaoCancelar texto="Cancelar" acao={() => router.back()} />
         </View>
       </Pressable>

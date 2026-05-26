@@ -2,6 +2,7 @@ import { colors } from "@/src/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
+// Define o layout/stack das abas ("tabs")
 export default function TabLayout() {
   return (
     <Tabs
@@ -9,12 +10,13 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           backgroundColor: colors.branco,
-          borderTopColor: colors.preto,
+          borderTopColor: colors.branco,
         },
         tabBarActiveTintColor: colors.azul_escuro,
         tabBarInactiveTintColor: colors.background,
       }}
     >
+      {/* Telas de manipulação e visualização das tarefas */}
       <Tabs.Screen
         name="tarefas"
         options={{
@@ -24,6 +26,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* Telas de manipulação e visualização do perfil */}
       <Tabs.Screen
         name="perfil"
         options={{

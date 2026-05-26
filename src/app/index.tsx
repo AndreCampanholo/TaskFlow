@@ -1,9 +1,9 @@
-
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { colors } from "../styles/global";
 
+// Index do projeto: redireciona para a tela de Login
 export default function Index() {
   const router = useRouter();
 
@@ -17,7 +17,6 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-
       <View style={styles.center}>
         <View style={styles.brandRow}>
           <Text style={styles.title}>TaskFlow</Text>
@@ -31,7 +30,6 @@ export default function Index() {
         <View style={styles.dot} />
         <View style={styles.dot} />
       </View>
-
     </View>
   );
 }

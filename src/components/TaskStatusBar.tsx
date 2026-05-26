@@ -1,18 +1,20 @@
+import type { EstadoTarefa } from "@/src/hooks/useTarefas";
 import { colors } from "@/src/styles/global";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import type { EstadoTarefa } from "@/src/hooks/useTasks";
 
 type Props = {
   status: EstadoTarefa;
 };
 
+// Rótulos exibidos na interface para cada status possível
 const ROTULOS_STATUS: Record<EstadoTarefa, string> = {
   "em-andamento": "Em andamento",
   concluida: "Concluída",
   atrasada: "Atrasada",
 };
 
+// Define a cor de fundo, do texto e do ponto para cada status
 const ESTILOS_STATUS: Record<
   EstadoTarefa,
   { backgroundColor: string; textColor: string; dotColor: string }
@@ -20,7 +22,7 @@ const ESTILOS_STATUS: Record<
   "em-andamento": {
     backgroundColor: "rgba(235,185,42,0.28)",
     textColor: "#1f2937",
-    dotColor: colors.amarelo_em_andamento,
+    dotColor: colors.azul_em_progresso,
   },
   concluida: {
     backgroundColor: "rgba(16,185,129,0.16)",
@@ -34,7 +36,9 @@ const ESTILOS_STATUS: Record<
   },
 };
 
+// Componente visual que mostra o status atual da tarefa
 export default function BarraStatusTarefa({ status }: Props) {
+  // Seleciona o estilo correspondente ao status informado
   const estilo = ESTILOS_STATUS[status];
 
   return (
