@@ -2,7 +2,7 @@ import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import BotaoVermelho from "@/src/components/BotaoVermelho";
 import ExibicaoPrazoTarefa from "@/src/components/TaskPrazoDisplay";
 import TaskStatusBar from "@/src/components/TaskStatusBar";
-import useTarefas from "@/src/hooks/useTasks";
+import useTarefas from "@/src/hooks/useTarefas";
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -17,29 +17,38 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Tela/Componente de exibição dos detalhes das tarefas
 export default function TarefaDetalhes() {
+  // Delimita a área segura superior (notch/status bar) para posicionamento correto
   const insets = useSafeAreaInsets();
+
+  // Obtém o parâmetro `id` passado pela rota (pode ser string ou array)
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { obterTarefaPorId, excluirTarefa } = useTarefas();
 
+  // Normaliza o parâmetro de rota para uma string simples e busca a tarefa
   const tarefaId = Array.isArray(id) ? id[0] : id;
   const tarefa = tarefaId ? obterTarefaPorId(tarefaId) : null;
 
+  // Se a rota tem id mas a tarefa não existe (ex: foi removida), volta automaticamente
   useEffect(() => {
     if (tarefaId && !tarefa) {
       router.back();
     }
   }, [tarefa, tarefaId]);
 
+  // Handler para excluir a tarefa atual com confirmação do usuário
   function handleExcluirTarefa() {
     if (!tarefa) return;
 
+    // Armazena true ou false (p/ web)
     const confirmarExclusao =
       Platform.OS === "web"
         ? window.confirm("Deseja excluir esta tarefa?")
         : false;
 
     if (Platform.OS === "web") {
+      // Se confirmou, remove e volta para a lista
       if (confirmarExclusao) {
         excluirTarefa(tarefa.id);
         router.back();
@@ -47,6 +56,7 @@ export default function TarefaDetalhes() {
       return;
     }
 
+    // Verifica se o usuário deseja realmente excluir a tarefa (p/ mobile)
     Alert.alert("Excluir tarefa", "Deseja excluir esta tarefa?", [
       { text: "Cancelar", style: "cancel" },
       {
@@ -60,6 +70,7 @@ export default function TarefaDetalhes() {
     ]);
   }
 
+  // Redireciona para a tela de edição, passando o id da tarefa
   function handleEditarTarefa() {
     if (!tarefa) return;
     router.push({
@@ -68,6 +79,7 @@ export default function TarefaDetalhes() {
     });
   }
 
+  // Render alternativo quando a tarefa não existe
   if (!tarefa) {
     return (
       <View
@@ -107,20 +119,26 @@ export default function TarefaDetalhes() {
           </View>
 
           <View style={styles.headerCopy}>
+            {/* Exibe o título da tarefa */}
             <Text style={styles.title} numberOfLines={2}>
               {tarefa.title}
             </Text>
+            {/* Exibe o status da tarefa (em-andamento, concluido, atrasado) */}
             <TaskStatusBar status={tarefa.state} />
           </View>
         </View>
 
+        {/* Exibe a descrição da tarefa */}
         <Text style={styles.description}>{tarefa.description}</Text>
 
+        {/* Exibe o prazo da tarefa */}
         <ExibicaoPrazoTarefa dueDate={tarefa.dueDate} />
       </Pressable>
 
       <View style={styles.actions}>
+        {/* Botão para acessar a tela de edição da tarefa */}
         <BotaoAzulEscuro texto="Editar tarefa" acao={handleEditarTarefa} />
+        {/* Botão para excluir a tarefa */}
         <BotaoVermelho texto="Excluir tarefa" acao={handleExcluirTarefa} />
       </View>
     </Pressable>

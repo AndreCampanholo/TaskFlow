@@ -1,8 +1,14 @@
+import type { EstadoTarefa } from "@/src/hooks/useTarefas";
 import { colors } from "@/src/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
-import { Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import type { EstadoTarefa } from "@/src/hooks/useTasks";
+import {
+    Pressable,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 type Props = {
   id: string;
@@ -15,6 +21,7 @@ type Props = {
   aoManterPressionado?: (id: string) => void;
 };
 
+// Componente de exibição de uma tarefa na lista
 export default function CartaoTarefa({
   id,
   titulo,
@@ -25,6 +32,7 @@ export default function CartaoTarefa({
   aoPressionarTarefa,
   aoManterPressionado,
 }: Props) {
+  // Define a cor lateral de acordo com o status da tarefa
   const accent =
     estado === "concluida"
       ? colors.verde
@@ -39,19 +47,32 @@ export default function CartaoTarefa({
         { borderLeftColor: accent },
         pressed && styles.cardPressed,
       ]}
+      // Toque simples abre a tela de detalhes, se a função existir
       onPress={() => aoPressionarTarefa?.(id)}
+      // Pressão longa abre a tela de edição, se a função existir
       onLongPress={() => aoManterPressionado?.(id)}
       delayLongPress={400}
       accessibilityRole="button"
     >
-      <TouchableOpacity onPress={() => alternarConclusao(id)} style={styles.checkWrapper}>
-        <View style={[styles.checkCircle, concluida && styles.checkCircleChecked]}>
-          {concluida ? <Ionicons name="checkmark" size={12} color={colors.verde} /> : null}
+      <TouchableOpacity
+        // Alterna a conclusão sem abrir outra tela
+        onPress={() => alternarConclusao(id)}
+        style={styles.checkWrapper}
+      >
+        <View
+          style={[styles.checkCircle, concluida && styles.checkCircleChecked]}
+        >
+          {concluida ? (
+            <Ionicons name="checkmark" size={12} color={colors.verde} />
+          ) : null}
         </View>
       </TouchableOpacity>
 
       <View style={styles.body}>
-        <Text style={[styles.title, concluida && styles.titleDone]} numberOfLines={2}>
+        <Text
+          style={[styles.title, concluida && styles.titleDone]}
+          numberOfLines={2}
+        >
           {titulo}
         </Text>
         <Text style={styles.due}>{prazo}</Text>

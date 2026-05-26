@@ -2,7 +2,8 @@ import { colors } from "@/src/styles/global";
 import { Stack } from "expo-router";
 import React from "react";
 
-export default function PerfilLayout() {
+// Define o layout/stack das telas de tarefas
+export default function TarefasLayout() {
   return (
     <Stack
       screenOptions={{
@@ -17,15 +18,15 @@ export default function PerfilLayout() {
         },
       }}
     >
+      {/* Tela principal (onde são dispostas as tarefas criadas) */}
       <Stack.Screen name="Tasks" options={{ title: "Tarefas" }} />
+      {/* Tela de detalhes das tarefas */}
       <Stack.Screen
         name="TarefaDetalhes"
         options={{ title: "Detalhes da Tarefa" }}
       />
-      <Stack.Screen
-        name="TarefaEditar"
-        options={{ title: "Editar Tarefa" }}
-      />
+      {/* Tela de edição de tarefa */}
+      <Stack.Screen name="TarefaEditar" options={{ title: "Editar Tarefa" }} />
     </Stack>
   );
 }

@@ -3,7 +3,10 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity } from "react-native";
 
+// Componente do botão de nova tarefa
+// Params: função que deve ser executada ao pressioná-lo
 export default function BotaoNovaTarefa({ onPress }: { onPress: () => void }) {
+  // Visual do componente
   return (
     <TouchableOpacity style={styles.fab} onPress={onPress} activeOpacity={0.85}>
       <Ionicons name="add" size={24} color={colors.branco} />

@@ -12,6 +12,7 @@ import {
   View,
 } from "react-native";
 
+// Define um Props para o avatar do usuário
 type Props = {
   uri?: string | null;
   tamanho?: number;
@@ -19,6 +20,7 @@ type Props = {
   editavel?: boolean;
 };
 
+// Componente de visualização do avatar do usuário
 export default function AvatarPerfil({
   uri: uriInicial,
   tamanho = 88,
@@ -27,6 +29,7 @@ export default function AvatarPerfil({
 }: Props) {
   const [uriImagem, setUriImagem] = useState<string | null>(uriInicial ?? null);
 
+  // Solicita permissão para acessar a galeria quando necessário
   async function solicitarPermissao() {
     if (Platform.OS !== "web") {
       const { status } =
@@ -42,6 +45,7 @@ export default function AvatarPerfil({
     return true;
   }
 
+  // Abre a galeria e atualiza o avatar com a imagem escolhida
   async function escolherImagem() {
     const permitido = await solicitarPermissao();
     if (!permitido) return;
@@ -62,6 +66,7 @@ export default function AvatarPerfil({
     }
   }
 
+  // Abre a câmera para tirar uma nova foto de perfil
   async function tirarFoto() {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
@@ -87,6 +92,7 @@ export default function AvatarPerfil({
     }
   }
 
+  // Mostra as opções para alterar a foto do perfil
   function handlePress() {
     Alert.alert(
       "Alterar foto",
@@ -100,6 +106,7 @@ export default function AvatarPerfil({
     );
   }
 
+  // Remove a imagem atual e avisa o componente pai
   function handleRemoverFoto() {
     Alert.alert("Remover foto", "Deseja remover sua foto de perfil?", [
       { text: "Cancelar", style: "cancel" },
@@ -114,6 +121,7 @@ export default function AvatarPerfil({
     ]);
   }
 
+  // Quando o avatar é apenas exibido, não permite interação
   if (!editavel) {
     return (
       <View style={{ alignItems: "center" }}>
@@ -143,6 +151,7 @@ export default function AvatarPerfil({
     );
   }
 
+  // Quando é editável, o avatar vira um botão para alterar a imagem
   return (
     <View style={{ alignItems: "center" }}>
       <Pressable

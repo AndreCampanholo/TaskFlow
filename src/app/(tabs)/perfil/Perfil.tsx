@@ -2,26 +2,37 @@ import AvatarPerfil from "@/src/components/ProfileAvatar";
 import { colors, globalStyles } from "@/src/styles/global";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
+// Tela/Componente de exebição do perfil e das opções do usuário
 export default function Perfil() {
+  // Função que executa a lógica de logout
   const handleSair = () => {
+    // Exige a confirmação do usuário via alerta
     if (Platform.OS === "web") {
+      // p/ web
       const shouldLogout = window.confirm("Quer sair de sua conta?");
 
       if (shouldLogout) {
-        router.replace("/Login");
+        router.replace("/Login"); // Redireciona o usuário para a tela de login, caso confirme
       }
 
       return;
     }
-
+    // p/ mobile
     Alert.alert("Sair", "Quer sair de sua conta?", [
       { text: "Cancelar", style: "cancel" },
       {
         text: "Sair",
         style: "destructive",
-        onPress: () => router.replace("/Login"),
+        onPress: () => router.replace("/Login"), // Redireciona o usuário para a tela de login, caso confirme
       },
     ]);
   };
@@ -31,16 +42,20 @@ export default function Perfil() {
       <View style={styles.content}>
 
         <View style={[globalStyles.cardSurface, styles.card]}>
+          {/* Exibe o avatar/foto de perfil do usuário sem possibilidade de alteração */}
           <AvatarPerfil editavel={false} />
 
           <View style={styles.info}>
+            {/* Exibe o nome completo do usuário */}
             <Text style={globalStyles.sectionTitle}>Usuário Exemplo</Text>
+            {/* Exibe o email do usuário */}
             <Text style={globalStyles.sectionSubtitle}>
               usuario@exemplo.com
             </Text>
           </View>
 
           <View style={styles.listCard}>
+            {/* Botão para acessar tela de edição de perfil */}
             <TouchableOpacity
               style={styles.row}
               onPress={() => router.push("/(tabs)/perfil/EditarPerfil")}
@@ -57,6 +72,7 @@ export default function Perfil() {
               <Ionicons name="chevron-forward" size={20} color="#999" />
             </TouchableOpacity>
 
+            {/* Botão para acessar tela de alteração de senha */}
             <TouchableOpacity
               style={styles.row}
               onPress={() => router.push("/(tabs)/perfil/AlterarSenha")}
@@ -74,6 +90,7 @@ export default function Perfil() {
             </TouchableOpacity>
           </View>
 
+          {/* Botão para deslogar da conta */}
           <View style={styles.listCard}>
             <TouchableOpacity style={styles.row} onPress={handleSair}>
               <View style={styles.rowLeft}>
@@ -96,6 +113,7 @@ export default function Perfil() {
               />
             </TouchableOpacity>
 
+            {/* Botão para acessar a tela de exclusão de conta */}
             <TouchableOpacity
               style={styles.row}
               onPress={() => router.push("/(tabs)/perfil/ExcluirConta")}

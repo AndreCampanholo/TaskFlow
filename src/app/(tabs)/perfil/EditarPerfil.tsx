@@ -1,6 +1,6 @@
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import AvatarPerfil from "@/src/components/ProfileAvatar";
-import { colors, globalStyles } from "@/src/styles/global";
+import { colors } from "@/src/styles/global";
 import DateTimePicker, {
   type DateTimePickerEvent,
 } from "@react-native-community/datetimepicker";
@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 
+// Função auxiliar para exibir um alerta
 function exibirAlerta(titulo: string, mensagem: string) {
   if (Platform.OS === "web") {
     window.alert(`${titulo}\n\n${mensagem}`);
@@ -26,45 +27,55 @@ function exibirAlerta(titulo: string, mensagem: string) {
   Alert.alert(titulo, mensagem, [{ text: "Ok", style: "cancel" }]);
 }
 
+// Tela/Componente de Edição de perfil
 export default function EditarPerfil() {
-  const [uriAvatar, setUriAvatar] = useState<string | null>(null);
+  // Campos variáveis declarados com useState
+  const [uriAvatar, setUriAvatar] = useState<string | null>(null); // foto de perfil como string (uri)
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState<Date | null>(null);
-  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false); // determina se o seletor de data deve ser visível ou não
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
 
+  // Booleano que armazena se alguma alteração foi feita
   const temAlteracao = Boolean(
     nome.trim() || dataNascimento || cpf.trim() || email.trim(),
   );
 
+  // Valida as alterações feitas pelo usuário (futuramente efetivará as mudanças no back-end/banco de dados)
   function handleEditarPerfil() {
+    // Se nenhuma edição foi feita (nenhum campo foi preenchido) exibe alerta e retorna para a tela de perfil
     if (!temAlteracao) {
       exibirAlerta("Aviso", "Nenhuma alteração feita.");
       router.back();
       return;
     }
 
+    // Verifica se o email é valido
     if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
       exibirAlerta("Erro", "Informe um e-mail válido.");
       return;
     }
 
+    // Verifica se o CPF é válido
     if (cpf.trim() && !/^\d{11}$/.test(cpf.replace(/\D/g, ""))) {
       exibirAlerta("Erro", "Informe um CPF válido com 11 dígitos.");
       return;
     }
 
-    router.back();
+    // O usuário não é obrigado a preencher todos os campos, somente os que ele deseja modificar!!
+
+    router.back(); // Retorna para a tela de perfil do usuário
   }
 
+  // Altera a data de nascimento
   function handleDateChange(_event: DateTimePickerEvent, selectedDate?: Date) {
     if (selectedDate) {
       setDataNascimento(selectedDate);
     }
 
     if (Platform.OS === "android") {
-      setSeletorDataAberto(false);
+      setSeletorDataAberto(false); // fecha o seletor em dispositivos android
     }
   }
 
@@ -72,9 +83,14 @@ export default function EditarPerfil() {
     <ScrollView contentContainerStyle={styles.screen}>
       <View style={styles.card}>
         <View style={styles.avatarWrap}>
-          <AvatarPerfil uri={uriAvatar} aoAlterar={setUriAvatar} tamanho={110} />
+          <AvatarPerfil
+            uri={uriAvatar}
+            aoAlterar={setUriAvatar}
+            tamanho={110}
+          />
         </View>
 
+        {/* Input para o novo nome do usuário */}
         <Text style={styles.label}>Nome completo</Text>
         <TextInput
           style={styles.input}
@@ -84,8 +100,9 @@ export default function EditarPerfil() {
           placeholder="Nome completo"
         />
 
+        {/* Seletor da data de nascimento */}
         <Text style={styles.label}>Data de Nascimento</Text>
-        {Platform.OS === "web" ? (
+        {Platform.OS === "web" ? ( // p/ web
           <input
             type="date"
             value={
@@ -114,6 +131,7 @@ export default function EditarPerfil() {
             }}
           />
         ) : (
+          // p/ mobile
           <Pressable
             style={styles.dateButton}
             onPress={() => setSeletorDataAberto(true)}
@@ -141,24 +159,26 @@ export default function EditarPerfil() {
           />
         ) : null}
 
-          <Text style={styles.label}>CPF</Text>
-          <TextInput
-            style={styles.input}
-            value={cpf}
-            onChangeText={setCpf}
-            placeholder="000.000.000-00"
-            placeholderTextColor={"rgba(0,0,0,0.45)"}
-          />
+        {/* Input para o novo CPF */}
+        <Text style={styles.label}>CPF</Text>
+        <TextInput
+          style={styles.input}
+          value={cpf}
+          onChangeText={setCpf}
+          placeholder="000.000.000-00"
+          placeholderTextColor={"rgba(0,0,0,0.45)"}
+        />
 
-          <Text style={styles.label}>E-mail</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="email@exemplo.com"
-            placeholderTextColor={"rgba(0,0,0,0.45)"}
-            keyboardType="email-address"
-          />
+        {/* Input para o novo E-mail */}
+        <Text style={styles.label}>E-mail</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="email@exemplo.com"
+          placeholderTextColor={"rgba(0,0,0,0.45)"}
+          keyboardType="email-address"
+        />
 
         <BotaoAzulEscuro texto="Salvar Alterações" acao={handleEditarPerfil} />
       </View>

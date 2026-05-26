@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
+=======
+import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
+>>>>>>> ca41cdb0a72aa11cc7342dd1952a3742c54f2dbf
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -12,30 +16,33 @@ import {
   useWindowDimensions,
 } from "react-native";
 
+// Tela/Componente de recuperação de senha
 export default function RecuperarSenha() {
+  // Campo modificável declarado com useState
   const [emailRecuperacao, setEmailRecuperacao] = useState("");
 
-  const { width } = useWindowDimensions();
-  const larguraCard = Math.max(180, Math.min(380, width - 32));
+  const { width } = useWindowDimensions(); // Define a largura como a largura da janela aberta
+  const larguraCard = Math.max(180, Math.min(380, width - 32)); // estabelece limites inferiores e superiores para a largura da caixa de login
 
+  // Executará o protocolo de recuperação de senha
   const handleSolicitarRecuperacao = () => {
     console.log("Protocolo de recuperação de senha iniciado.");
   };
 
   return (
-  <View style={styles.screen}>
-    <View style={styles.headerContainer}>
-      <TouchableOpacity onPress={() => router.back()}>
-        <MaterialCommunityIcons
-          name="arrow-left"
-          size={24}
-          color={colors.azul_escuro}
-        />
-      </TouchableOpacity>
-    </View>
+    <View style={styles.screen}>
+      <View style={styles.headerContainer}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <MaterialCommunityIcons
+            name="arrow-left"
+            size={24}
+            color={colors.azul_escuro}
+          />
+        </TouchableOpacity>
+      </View>
 
-    <View style={styles.content}>
-      <View style={[styles.container, { width: larguraCard }]}>
+      <View style={styles.content}>
+        <View style={[styles.container, { width: larguraCard }]}>
           <MaterialCommunityIcons
             name="lock"
             size={64}
@@ -50,6 +57,7 @@ export default function RecuperarSenha() {
             redefinir sua senha.
           </Text>
 
+          {/* Input para o email do usuário */}
           <TextInput
             style={styles.textinput}
             value={emailRecuperacao}
@@ -58,11 +66,17 @@ export default function RecuperarSenha() {
             placeholderTextColor="rgba(0, 0, 0, 0.3)"
           />
 
+<<<<<<< HEAD
           <BotaoAzulEscuro
+=======
+          {/* Botão para enviar o link e iniciar o protocolo de recuperação */}
+          <BotaoAzulClaro
+>>>>>>> ca41cdb0a72aa11cc7342dd1952a3742c54f2dbf
             texto="Enviar link de recuperação"
             acao={handleSolicitarRecuperacao}
           />
 
+          {/* Botão para retornar à tela de login */}
           <TouchableOpacity onPress={() => router.replace("/Login")}>
             <Text style={styles.loginLineText}>Voltar para login</Text>
           </TouchableOpacity>
