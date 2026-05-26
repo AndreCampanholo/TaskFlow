@@ -24,7 +24,7 @@ npm install
 ## Rodar o projeto
 Para iniciar o projeto, execute: 
 ```bash
-`npx expo start`
+npx expo start
 ```  
 ### Navegador
 Pressione `w` no terminal para abrir a aplicação no navegador.
