@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
-=======
-import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
->>>>>>> ca41cdb0a72aa11cc7342dd1952a3742c54f2dbf
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -66,12 +62,8 @@ export default function RecuperarSenha() {
             placeholderTextColor="rgba(0, 0, 0, 0.3)"
           />
 
-<<<<<<< HEAD
-          <BotaoAzulEscuro
-=======
           {/* Botão para enviar o link e iniciar o protocolo de recuperação */}
-          <BotaoAzulClaro
->>>>>>> ca41cdb0a72aa11cc7342dd1952a3742c54f2dbf
+          <BotaoAzulEscuro
             texto="Enviar link de recuperação"
             acao={handleSolicitarRecuperacao}
           />

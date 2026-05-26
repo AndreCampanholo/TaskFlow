@@ -30,19 +30,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Opções disponíveis para o status da tarefa exibidas na interface
 const OPCOES_STATUS: { value: EstadoTarefa; label: string; color: string }[] = [
-<<<<<<< HEAD
   { value: "em-andamento", label: "Em andamento", color: colors.azul_claro },
   { value: "concluida",    label: "Concluída",    color: colors.verde },
   { value: "atrasada",     label: "Atrasada",     color: colors.vermelho },
-=======
-  {
-    value: "em-andamento",
-    label: "Em andamento",
-    color: colors.azul_em_progresso,
-  },
-  { value: "concluida", label: "Concluída", color: colors.verde },
-  { value: "atrasada", label: "Atrasada", color: colors.vermelho_atrasado },
->>>>>>> ca41cdb0a72aa11cc7342dd1952a3742c54f2dbf
 ];
 
 // Estilo aplicado aos campos nativos de data/hora no ambiente web
