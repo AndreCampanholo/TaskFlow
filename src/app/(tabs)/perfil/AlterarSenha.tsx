@@ -1,4 +1,4 @@
-import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import { globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
@@ -50,7 +50,7 @@ export default function AlterarSenha() {
             placeholderTextColor="rgba(0, 0, 0, 0.3)"
           />
 
-          <BotaoAzulClaro texto="Alterar senha" acao={handleAlterarSenha} />
+          <BotaoAzulEscuro texto="Alterar senha" acao={handleAlterarSenha} />
         </View>
       </View>
     </View>

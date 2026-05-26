@@ -1,4 +1,4 @@
-import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
+import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import AvatarPerfil from "@/src/components/ProfileAvatar";
 import { colors, globalStyles } from "@/src/styles/global";
 import DateTimePicker, {
@@ -70,11 +70,11 @@ export default function EditarPerfil() {
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <View style={styles.avatarWrap}>
-        <AvatarPerfil uri={uriAvatar} aoAlterar={setUriAvatar} tamanho={110} />
-      </View>
+      <View style={styles.card}>
+        <View style={styles.avatarWrap}>
+          <AvatarPerfil uri={uriAvatar} aoAlterar={setUriAvatar} tamanho={110} />
+        </View>
 
-      <View style={styles.form}>
         <Text style={styles.label}>Nome completo</Text>
         <TextInput
           style={styles.input}
@@ -160,7 +160,7 @@ export default function EditarPerfil() {
             keyboardType="email-address"
           />
 
-        <BotaoAzulClaro texto="Salvar Alterações" acao={handleEditarPerfil} />
+        <BotaoAzulEscuro texto="Salvar Alterações" acao={handleEditarPerfil} />
       </View>
     </ScrollView>
   );

@@ -4,7 +4,7 @@ import ListaVazia from "@/src/components/ListaVazia";
 import CartaoNovaTarefa from "@/src/components/NovaTaskCard";
 import CartaoTarefa from "@/src/components/TaskCard";
 import useTarefas from "@/src/hooks/useTasks";
-import { globalStyles } from "@/src/styles/global";
+import { colors, globalStyles } from "@/src/styles/global";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {

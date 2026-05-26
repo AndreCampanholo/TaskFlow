@@ -54,7 +54,12 @@ export default function Login() {
   }
 
   return (
-    <View style={styles.screen}>
+    <LinearGradient
+      colors={["#4F83FF", "#F8F8FA", "#52D6B5"]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.screen}
+    >
       <View style={[styles.container, { width: larguraCard }]}>
         <MaterialCommunityIcons
           name="check-circle"
@@ -100,7 +105,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
