@@ -15,19 +15,23 @@ import {
   View,
 } from "react-native";
 
+// Tela/Componente de cadastro
 export default function Cadastro() {
-  const { width } = useWindowDimensions();
-  const larguraCard = Math.max(180, Math.min(380, width - 32));
+  const { width } = useWindowDimensions(); // Define a largura como a largura da janela aberta
+  const larguraCard = Math.max(180, Math.min(380, width - 32)); // estabelece limites inferiores e superiores para a largura da caixa de login
 
+  // Campos modificáveis declarados com useState()
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState<Date | null>(null);
-  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false); // Determina se o seletor da data deve aparecer ou não
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmacaoSenha, setConfirmacaoSenha] = useState("");
 
+  // Valida as entradas do usuário (posteriormente criará a conta para o usuário caso entradas sejam válidas)
   const handleCadastro = () => {
+    // Usuário deve preencher todos os campos para efetuar o cadastro
     if (
       !nome.trim() ||
       !cpf.trim() ||
@@ -48,6 +52,7 @@ export default function Cadastro() {
       return;
     }
 
+    // A data de nascimento não pode ser no futuro
     if (dataNascimento.getTime() > new Date().setHours(23, 59, 59, 999)) {
       if (Platform.OS === "web") {
         window.alert("Data de nascimento inválida.");
@@ -59,6 +64,7 @@ export default function Cadastro() {
       return;
     }
 
+    // A senha deve equivaler à senha confirmada
     if (senha.trim() !== confirmacaoSenha.trim()) {
       if (Platform.OS === "web") {
         window.alert("A senha confirmada difere da informada.");
@@ -72,6 +78,7 @@ export default function Cadastro() {
       return;
     }
 
+    // Verifica se o email e o CPF informados são válidos
     const emailInformado = email.trim();
     const emailRegex = /^\S+@\S+\.\S+$/;
     const emailValido = emailRegex.test(emailInformado);
@@ -111,9 +118,11 @@ export default function Cadastro() {
       return;
     }
 
+    // Redireciona para a telas de tasks do usuário
     router.replace("/tarefas/Tasks" as any);
   };
 
+  // Atualiza a data de nascimento (fecha o seletor para dispositivos android)
   const handleDateChange = (_event: any, selectedDate?: Date) => {
     if (selectedDate) setDataNascimento(selectedDate);
     if (Platform.OS === "android") setSeletorDataAberto(false);
@@ -122,6 +131,7 @@ export default function Cadastro() {
   return (
     <View style={styles.screen}>
       <View style={styles.headerContainer}>
+        {/* Botão para retornar à tela de login */}
         <TouchableOpacity onPress={() => router.back()}>
           <MaterialCommunityIcons
             name="arrow-left"
@@ -136,6 +146,7 @@ export default function Cadastro() {
           <Text style={styles.title}>Crie sua conta</Text>
           <Text style={styles.subtitle}>Preencha os campos com seus dados</Text>
 
+          {/* Input para nome completo do usuário */}
           <TextInput
             value={nome}
             onChangeText={setNome}
@@ -144,7 +155,8 @@ export default function Cadastro() {
             style={styles.textinput}
           />
 
-          {Platform.OS === "web" ? (
+          {/* Input para data de nascimento do usuário */}
+          {Platform.OS === "web" ? ( // Para web
             <input
               type="date"
               value={
@@ -173,6 +185,7 @@ export default function Cadastro() {
               }}
             />
           ) : (
+            // Para demais dispositivos/sistemas operacionais
             <>
               <TouchableOpacity
                 style={styles.datePickerButton}
@@ -201,6 +214,7 @@ export default function Cadastro() {
             </>
           )}
 
+          {/* Input para o CPF do usuário */}
           <TextInput
             value={cpf}
             onChangeText={setCpf}
@@ -210,6 +224,7 @@ export default function Cadastro() {
             style={styles.textinput}
           />
 
+          {/* Input para o email do usuário */}
           <TextInput
             value={email}
             onChangeText={setEmail}
@@ -220,6 +235,7 @@ export default function Cadastro() {
             style={styles.textinput}
           />
 
+          {/* Input para a senha do usuário */}
           <TextInput
             value={senha}
             onChangeText={setSenha}
@@ -229,6 +245,7 @@ export default function Cadastro() {
             style={styles.textinput}
           />
 
+          {/* Input para a confirmação da senha do usuário */}
           <TextInput
             value={confirmacaoSenha}
             onChangeText={setConfirmacaoSenha}
@@ -238,8 +255,10 @@ export default function Cadastro() {
             style={styles.textinput}
           />
 
+          {/* Botão para efetuar a validar entradas e criar conta */}
           <BotaoAzulEscuro texto="Criar conta →" acao={handleCadastro} />
 
+          {/* Botão para retornar à tela de login */}
           <View style={styles.loginLine}>
             <Text style={styles.loginLineText}>Já tem uma conta?</Text>
             <TouchableOpacity onPress={() => router.push("/Login")}>

@@ -3,7 +3,7 @@ import BarraFiltro from "@/src/components/FilterBar";
 import ListaVazia from "@/src/components/ListaVazia";
 import CartaoNovaTarefa from "@/src/components/NovaTaskCard";
 import CartaoTarefa from "@/src/components/TaskCard";
-import useTarefas from "@/src/hooks/useTasks";
+import useTarefas from "@/src/hooks/useTarefas";
 import { globalStyles } from "@/src/styles/global";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -16,19 +16,25 @@ import {
   View,
 } from "react-native";
 
+// Tela/Componente de exibição das tarefas (tela principal/home do app)
 export default function Tarefas() {
+  // Obtém lista de tarefas e ações disponíveis no estado global do hook
   const { tarefas, criarTarefa, alternarTarefa, obterFiltradas } = useTarefas();
+
+  // Controla abertura/fechamento do modal de criação e o filtro selecionado
   const [modalAberto, setModalAberto] = useState(false);
   const [filtro, setFiltro] = useState<
     "all" | "em-andamento" | "concluida" | "atrasada"
   >("all");
 
+  // Valida os campos e cria uma nova tarefa
   function handleCreate(
     title: string,
     description: string,
     dueDate: Date,
     stateFromModal: "em-andamento" | "concluida" | "atrasada",
   ) {
+    // A tarefa deve ter um título
     if (!title.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite um título");
@@ -38,6 +44,7 @@ export default function Tarefas() {
       return;
     }
 
+    // A tarefa deve ter uma descrição
     if (!description.trim()) {
       if (Platform.OS === "web") {
         window.alert("Digite uma descrição");
@@ -47,10 +54,12 @@ export default function Tarefas() {
       return;
     }
 
+    // Cria a tarefa
     criarTarefa({ title, description, dueDate, stateFromModal });
-    setModalAberto(false);
+    setModalAberto(false); // Fecha o modal (tela de criação de tarefa)
   }
 
+  // Navega para a tela de detalhes da tarefa selecionada
   function handleTaskPress(id: string) {
     router.push({
       pathname: "/(tabs)/tarefas/TarefaDetalhes",
@@ -58,6 +67,7 @@ export default function Tarefas() {
     });
   }
 
+  // Navega para a tela de edição ao manter pressionado
   function handleTaskLongPress(id: string) {
     router.push({
       pathname: "/(tabs)/tarefas/TarefaEditar",
@@ -65,6 +75,7 @@ export default function Tarefas() {
     });
   }
 
+  // Aplica o filtro selecionado para montar a lista visível na tela
   const tarefasVisiveis = obterFiltradas(filtro);
 
   return (
@@ -74,12 +85,14 @@ export default function Tarefas() {
       <BarraFiltro filtro={filtro} setFiltro={setFiltro} />
 
       <View style={styles.card}>
+        {/* Se não existir nenhuma tarefa, exibe o estado vazio */}
         {tarefas.length === 0 ? (
           <ListaVazia
             title="Nenhuma tarefa por aqui"
             subtitle="Toque no + para criar sua primeira tarefa e começar a organizar seu dia."
           />
         ) : (
+          /* Caso exista tarefa, renderiza a lista filtrada */
           <ScrollView contentContainerStyle={styles.list}>
             {tarefasVisiveis.map((tarefa) => (
               <CartaoTarefa
@@ -98,10 +111,12 @@ export default function Tarefas() {
         )}
       </View>
 
+      {/* Botão flutuante para abrir o modal de criação */}
       <View style={styles.fabWrap}>
         <BotaoNovaTarefa onPress={() => setModalAberto(true)} />
       </View>
 
+      {/* Modal responsável por coletar os dados de uma nova tarefa */}
       <CartaoNovaTarefa
         visivel={modalAberto}
         aoFechar={() => setModalAberto(false)}

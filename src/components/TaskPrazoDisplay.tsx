@@ -8,17 +8,21 @@ type Props = {
   dueDate?: Date | null;
 };
 
+// Componente que exibe a data e a hora de vencimento da tarefa
 export default function ExibicaoPrazoTarefa({ dueDate }: Props): JSX.Element | null {
+  // Se não existir prazo, não renderiza nada na tela
   if (!dueDate) return null;
 
   return (
     <View style={styles.row}>
       <View style={styles.item}>
+        {/* Ícone e data formatada do prazo */}
         <MaterialCommunityIcons name="calendar-outline" size={20} color="rgba(0,0,0,0.55)" />
         <Text style={styles.text}>{formatarData(dueDate)}</Text>
       </View>
 
       <View style={styles.item}>
+        {/* Ícone e hora formatada do prazo */}
         <MaterialCommunityIcons name="clock-outline" size={20} color="rgba(0,0,0,0.55)" />
         <Text style={styles.text}>{formatarHora(dueDate)}</Text>
       </View>

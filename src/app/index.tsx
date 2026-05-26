@@ -1,9 +1,10 @@
-import Login from "./(auth)/Login";
+import { Redirect } from "expo-router";
 
+// Index do projeto: redireciona para a tela de Login
 export default function Index() {
   return (
     <>
-      <Login />
+      return <Redirect href="/(auth)/Login" />;{" "}
     </>
   );
 }
