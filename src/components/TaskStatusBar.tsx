@@ -1,20 +1,20 @@
-import type { TaskState } from "@/src/hooks/useTasks";
 import { colors } from "@/src/styles/global";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import type { EstadoTarefa } from "@/src/hooks/useTasks";
 
 type Props = {
-  status: TaskState;
+  status: EstadoTarefa;
 };
 
-const STATUS_LABELS: Record<TaskState, string> = {
+const ROTULOS_STATUS: Record<EstadoTarefa, string> = {
   "em-andamento": "Em andamento",
   concluida: "Concluída",
   atrasada: "Atrasada",
 };
 
-const STATUS_STYLES: Record<
-  TaskState,
+const ESTILOS_STATUS: Record<
+  EstadoTarefa,
   { backgroundColor: string; textColor: string; dotColor: string }
 > = {
   "em-andamento": {
@@ -34,16 +34,16 @@ const STATUS_STYLES: Record<
   },
 };
 
-export default function TaskStatusBar({ status }: Props) {
-  const style = STATUS_STYLES[status];
+export default function BarraStatusTarefa({ status }: Props) {
+  const estilo = ESTILOS_STATUS[status];
 
   return (
     <View
-      style={[styles.container, { backgroundColor: style.backgroundColor }]}
+      style={[styles.container, { backgroundColor: estilo.backgroundColor }]}
     >
-      <View style={[styles.dot, { backgroundColor: style.dotColor }]} />
-      <Text style={[styles.label, { color: style.textColor }]}>
-        {STATUS_LABELS[status]}
+      <View style={[styles.dot, { backgroundColor: estilo.dotColor }]} />
+      <Text style={[styles.label, { color: estilo.textColor }]}>
+        {ROTULOS_STATUS[status]}
       </Text>
     </View>
   );

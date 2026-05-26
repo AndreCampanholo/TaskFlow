@@ -1,4 +1,4 @@
-import ProfileAvatar from "@/src/components/ProfileAvatar";
+import AvatarPerfil from "@/src/components/ProfileAvatar";
 import { colors, globalStyles } from "@/src/styles/global";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -31,7 +31,7 @@ export default function Perfil() {
       <View style={styles.content}>
 
         <View style={[globalStyles.cardSurface, styles.card]}>
-          <ProfileAvatar editable={false} />
+          <AvatarPerfil editavel={false} />
 
           <View style={styles.info}>
             <Text style={globalStyles.sectionTitle}>Usuário Exemplo</Text>

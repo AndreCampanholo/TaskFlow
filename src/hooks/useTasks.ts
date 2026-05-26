@@ -1,15 +1,15 @@
+import { estaAtrasada, formatarPrazo } from "@/src/utils/taskDates";
 import { useEffect, useSyncExternalStore } from "react";
-import { formatTaskDueLabel, isTaskOverdue } from "@/src/utils/taskDates";
 
-export type TaskState = "em-andamento" | "concluida" | "atrasada";
+export type EstadoTarefa = "em-andamento" | "concluida" | "atrasada";
 
-export type Task = {
+export type Tarefa = {
   id: string;
   title: string;
   description: string;
   dueDate: Date;
   dueLabel: string;
-  state: TaskState;
+  state: EstadoTarefa;
   completed: boolean;
 };
 
@@ -17,139 +17,178 @@ type TaskInput = {
   title: string;
   description: string;
   dueDate: Date;
-  stateFromModal: TaskState;
+  stateFromModal: EstadoTarefa;
 };
 
-type TaskUpdate = Partial<Pick<Task, "title" | "description" | "dueDate" | "state" | "completed">>;
+type TaskUpdate = Partial<
+  Pick<Tarefa, "title" | "description" | "dueDate" | "state" | "completed">
+>;
 
-let taskState: Task[] = [];
-const listeners = new Set<() => void>();
+type EntradaTarefa = {
+  title: string;
+  description: string;
+  dueDate: Date;
+  estadoSelecionado: EstadoTarefa;
+};
 
-function notify() {
-  listeners.forEach((listener) => listener());
+type AtualizacaoTarefa = Partial<
+  Pick<Tarefa, "title" | "description" | "dueDate" | "state" | "completed">
+>;
+
+let tarefas: Tarefa[] = [];
+const ouvintes = new Set<() => void>();
+
+function notificar() {
+  ouvintes.forEach((ouvinte) => ouvinte());
 }
 
-function subscribe(listener: () => void) {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+function inscrever(ouvinte: () => void) {
+  ouvintes.add(ouvinte);
+  return () => ouvintes.delete(ouvinte);
 }
 
-function getSnapshot() {
-  return taskState;
+function obterSnapshot() {
+  return tarefas;
 }
 
-function normalizeTask(task: Task): Task {
+function normalizarTarefa(tarefa: Tarefa): Tarefa {
   return {
-    ...task,
-    dueLabel: formatTaskDueLabel(task.dueDate),
+    ...tarefa,
+    dueLabel: formatarPrazo(tarefa.dueDate),
   };
 }
 
-function buildTask({ title, description, dueDate, stateFromModal }: TaskInput): Task {
-  const trimmedTitle = title.trim();
-  const trimmedDescription = description.trim();
-  const completed = stateFromModal === "concluida";
-  const state = completed
+function montarTarefa({
+  title,
+  description,
+  dueDate,
+  stateFromModal,
+}: TaskInput): Tarefa {
+  const titulo = title.trim();
+  const descricao = description.trim();
+  const concluida = stateFromModal === "concluida";
+  const estado = concluida
     ? "concluida"
-    : stateFromModal === "atrasada" || isTaskOverdue(dueDate)
+    : stateFromModal === "atrasada" || estaAtrasada(dueDate)
       ? "atrasada"
       : "em-andamento";
 
-  return normalizeTask({
+  return normalizarTarefa({
     id: String(Date.now()),
-    title: trimmedTitle,
-    description: trimmedDescription,
+    title: titulo,
+    description: descricao,
     dueDate,
-    dueLabel: formatTaskDueLabel(dueDate),
-    state,
-    completed,
+    dueLabel: formatarPrazo(dueDate),
+    state: estado,
+    completed: concluida,
   });
 }
 
-function mutateTask(id: string, updater: (task: Task) => Task) {
-  taskState = taskState.map((task) => (task.id === id ? normalizeTask(updater(task)) : task));
-  notify();
+function alterarTarefa(id: string, atualizar: (tarefa: Tarefa) => Tarefa) {
+  tarefas = tarefas.map((tarefa) =>
+    tarefa.id === id ? normalizarTarefa(atualizar(tarefa)) : tarefa,
+  );
+  notificar();
 }
 
-function createTask({ title, description, dueDate, stateFromModal }: TaskInput) {
-  const nextTask = buildTask({ title, description, dueDate, stateFromModal });
-  taskState = [nextTask, ...taskState];
-  notify();
+function criarTarefa({
+  title,
+  description,
+  dueDate,
+  stateFromModal,
+}: TaskInput) {
+  const novaTarefa = montarTarefa({
+    title,
+    description,
+    dueDate,
+    stateFromModal,
+  });
+  tarefas = [novaTarefa, ...tarefas];
+  notificar();
 }
 
-function updateTask(id: string, updates: TaskUpdate) {
-  mutateTask(id, (task) => {
-    const nextTitle = updates.title?.trim() ?? task.title;
-    const nextDescription = updates.description?.trim() ?? task.description;
-    const nextDueDate = updates.dueDate ?? task.dueDate;
-    const nextCompleted = updates.completed ?? task.completed;
+function atualizarTarefa(id: string, atualizacoes: AtualizacaoTarefa) {
+  alterarTarefa(id, (tarefa) => {
+    const proximoTitulo = atualizacoes.title?.trim() ?? tarefa.title;
+    const proximaDescricao =
+      atualizacoes.description?.trim() ?? tarefa.description;
+    const proximaDataVencimento = atualizacoes.dueDate ?? tarefa.dueDate;
+    const concluida = atualizacoes.completed ?? tarefa.completed;
 
-    let nextState = updates.state ?? task.state;
-    if (nextCompleted) {
-      nextState = "concluida";
-    } else if (nextState === "concluida") {
-      nextState = isTaskOverdue(nextDueDate) ? "atrasada" : "em-andamento";
-    } else if (!updates.state && !updates.completed) {
-      nextState = isTaskOverdue(nextDueDate) ? "atrasada" : "em-andamento";
+    let proximoEstado = atualizacoes.state ?? tarefa.state;
+    if (concluida) {
+      proximoEstado = "concluida";
+    } else if (proximoEstado === "concluida") {
+      proximoEstado = estaAtrasada(proximaDataVencimento)
+        ? "atrasada"
+        : "em-andamento";
+    } else if (!atualizacoes.state && !atualizacoes.completed) {
+      proximoEstado = estaAtrasada(proximaDataVencimento)
+        ? "atrasada"
+        : "em-andamento";
     }
 
     return {
-      ...task,
-      title: nextTitle,
-      description: nextDescription,
-      dueDate: nextDueDate,
-      state: nextState,
-      completed: nextCompleted,
+      ...tarefa,
+      title: proximoTitulo,
+      description: proximaDescricao,
+      dueDate: proximaDataVencimento,
+      state: proximoEstado,
+      completed: concluida,
     };
   });
 }
 
-function deleteTask(id: string) {
-  taskState = taskState.filter((task) => task.id !== id);
-  notify();
+function excluirTarefa(id: string) {
+  tarefas = tarefas.filter((tarefa) => tarefa.id !== id);
+  notificar();
 }
 
-function toggleTask(id: string) {
-  mutateTask(id, (task) => {
-    const willBeCompleted = !task.completed;
-    if (willBeCompleted) {
-      return { ...task, completed: true, state: "concluida" };
+function alternarTarefa(id: string) {
+  alterarTarefa(id, (tarefa) => {
+    const vaiSerConcluida = !tarefa.completed;
+    if (vaiSerConcluida) {
+      return { ...tarefa, completed: true, state: "concluida" };
     }
 
     return {
-      ...task,
+      ...tarefa,
       completed: false,
-      state: isTaskOverdue(task.dueDate) ? "atrasada" : "em-andamento",
+      state: estaAtrasada(tarefa.dueDate) ? "atrasada" : "em-andamento",
     };
   });
 }
 
-function getTaskById(id: string) {
-  return taskState.find((task) => task.id === id) ?? null;
+function obterTarefaPorId(id: string) {
+  return tarefas.find((tarefa) => tarefa.id === id) ?? null;
 }
 
-export default function useTasks(initial: Task[] = []) {
+export default function useTarefas(tarefasIniciais: Tarefa[] = []) {
   useEffect(() => {
-    if (taskState.length === 0 && initial.length > 0) {
-      taskState = initial.map(normalizeTask);
-      notify();
+    if (tarefas.length === 0 && tarefasIniciais.length > 0) {
+      tarefas = tarefasIniciais.map(normalizarTarefa);
+      notificar();
     }
-  }, [initial]);
+  }, [tarefasIniciais]);
 
-  const tasks = useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  const tarefasEmTela = useSyncExternalStore(
+    inscrever,
+    obterSnapshot,
+    obterSnapshot,
+  );
 
-  function getFiltered(filter: "all" | TaskState) {
-    if (filter === "all") return tasks;
-    return tasks.filter((task) => task.state === filter);
+  function obterFiltradas(filtro: "all" | EstadoTarefa) {
+    if (filtro === "all") return tarefasEmTela;
+    return tarefasEmTela.filter((tarefa) => tarefa.state === filtro);
   }
 
   return {
-    tasks,
-    createTask,
-    updateTask,
-    deleteTask,
-    toggleTask,
-    getFiltered,
-    getTaskById,
+    tarefas: tarefasEmTela,
+    criarTarefa,
+    atualizarTarefa,
+    excluirTarefa,
+    alternarTarefa,
+    obterFiltradas,
+    obterTarefaPorId,
   } as const;
 }

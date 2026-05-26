@@ -18,15 +18,15 @@ import {
 
 export default function Cadastro() {
   const { width } = useWindowDimensions();
-  const cardWidth = Math.max(180, Math.min(380, width - 32));
+  const larguraCard = Math.max(180, Math.min(380, width - 32));
 
   const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState<Date | null>(null);
-  const [mostrarSeletor, setMostrarSeletor] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
-  const [confirmSenha, setConfirmSenha] = useState("");
+  const [confirmacaoSenha, setConfirmacaoSenha] = useState("");
 
   function handleCadastro() {
     if (
@@ -34,7 +34,7 @@ export default function Cadastro() {
       !cpf.trim() ||
       !email.trim() ||
       !senha.trim() ||
-      !confirmSenha.trim() ||
+      !confirmacaoSenha.trim() ||
       !dataNascimento
     ) {
       if (Platform.OS === "web") {
@@ -62,7 +62,7 @@ export default function Cadastro() {
       return;
     }
 
-    if (senha.trim() !== confirmSenha.trim()) {
+    if (senha.trim() !== confirmacaoSenha.trim()) {
       if (Platform.OS === "web") {
         window.alert("A senha confirmada difere da informada.");
       } else {
@@ -76,9 +76,23 @@ export default function Cadastro() {
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/;
-    const isEmail = emailRegex.test(email.trim());
-
-    if (!isEmail) {
+    const emailValido = emailRegex.test(email);
+    const cpfInformado = cpf.trim();
+    const cpfNumeros = cpfInformado.replace(/\D/g, "");
+    const cpfValido = /^\d{11}$/.test(cpfNumeros);
+    if (!emailValido && !cpfValido) {
+      if (Platform.OS === "web") {
+        window.alert("Informe um E-mail válido e um CPF com 11 dígitos.");
+      } else {
+        Alert.alert(
+          "Erro",
+          "Informe um E-mail válido e um CPF com 11 dígitos.",
+          [{ text: "Ok", style: "cancel" }],
+        );
+      }
+      return;
+    }
+    if (!emailValido) {
       if (Platform.OS === "web") {
         window.alert("Informe um E-mail válido.");
       } else {
@@ -88,11 +102,7 @@ export default function Cadastro() {
       }
       return;
     }
-
-    const digits = cpf.replace(/\D/g, "");
-    const isCpf = /^\d{11}$/.test(digits);
-
-    if (!isCpf) {
+    if (!cpfValido) {
       if (Platform.OS === "web") {
         window.alert("Informe CPF válido com 11 dígitos.");
       } else {
@@ -106,14 +116,9 @@ export default function Cadastro() {
     router.replace("/tarefas/Tasks" as any);
   }
 
-  const onChange = (_event: any, selectedDate?: Date) => {
-    if (selectedDate) {
-      setDataNascimento(selectedDate);
-    }
-
-    if (Platform.OS === "android") {
-      setMostrarSeletor(false);
-    }
+  const handleDateChange = (_event: any, selectedDate?: Date) => {
+    if (selectedDate) setDataNascimento(selectedDate);
+    if (Platform.OS === "android") setSeletorDataAberto(false);
   };
 
   return (
@@ -128,11 +133,8 @@ export default function Cadastro() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={[styles.container, { width: cardWidth }]}>
+      <View style={styles.content}>
+        <View style={[styles.container, { width: larguraCard }]}>
           <Text style={styles.title}>Crie sua conta</Text>
 
           <Text style={styles.subtitle}>
@@ -180,7 +182,7 @@ export default function Cadastro() {
             <>
               <TouchableOpacity
                 style={styles.datePickerButton}
-                onPress={() => setMostrarSeletor(true)}
+                onPress={() => setSeletorDataAberto(true)}
               >
                 <Text
                   style={[
@@ -193,14 +195,13 @@ export default function Cadastro() {
                     : "dd/mm/aaaa"}
                 </Text>
               </TouchableOpacity>
-
-              {mostrarSeletor && (
+              {seletorDataAberto && (
                 <DateTimePicker
                   value={dataNascimento ?? new Date()}
                   mode="date"
                   display="default"
                   maximumDate={new Date()}
-                  onChange={onChange}
+                  onChange={handleDateChange}
                 />
               )}
             </>
@@ -235,18 +236,15 @@ export default function Cadastro() {
           />
 
           <TextInput
-            value={confirmSenha}
-            onChangeText={setConfirmSenha}
+            value={confirmacaoSenha}
+            onChangeText={setConfirmacaoSenha}
             placeholder="Confirmar senha"
             placeholderTextColor="rgba(0,0,0,0.35)"
             secureTextEntry
             style={styles.textinput}
           />
 
-          <BotaoAzulEscuro
-            text="Criar conta →"
-            action={handleCadastro}
-          />
+          <BotaoAzulEscuro texto="Criar conta →" acao={handleCadastro} />
 
           <View style={styles.loginLine}>
             <Text style={styles.loginLineText}>
@@ -258,7 +256,7 @@ export default function Cadastro() {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }

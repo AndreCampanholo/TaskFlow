@@ -17,12 +17,12 @@ import {
 
 export default function Login() {
   const { width } = useWindowDimensions();
-  const cardWidth = Math.max(180, Math.min(380, width - 32));
-  const [identifier, setIdentifier] = useState("");
+  const larguraCard = Math.max(180, Math.min(380, width - 32));
+  const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
 
   function handleLogin() {
-    if (!identifier.trim() || !senha.trim()) {
+    if (!identificador.trim() || !senha.trim()) {
       if (Platform.OS === "web") {
         window.alert("Todos os campos devem ser preenchidos.");
       } else {
@@ -35,12 +35,12 @@ export default function Login() {
       return;
     }
 
-    const value = identifier.trim();
+    const valorInformado = identificador.trim();
     const emailRegex = /^\S+@\S+\.\S+$/;
-    const isEmail = emailRegex.test(value);
-    const digits = value.replace(/\D/g, "");
-    const isCpf = /^\d{11}$/.test(digits);
-    if (!isEmail && !isCpf) {
+    const emailValido = emailRegex.test(valorInformado);
+    const cpfNumeros = valorInformado.replace(/\D/g, "");
+    const cpfValido = /^\d{11}$/.test(cpfNumeros);
+    if (!emailValido && !cpfValido) {
       const msg = "Informe um E-mail válido ou um CPF com 11 dígitos.";
       if (Platform.OS === "web") {
         window.alert(msg);
@@ -54,13 +54,8 @@ export default function Login() {
   }
 
   return (
-    <LinearGradient
-      colors={["#4F83FF", "#F8F8FA", "#52D6B5"]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.screen}
-    >
-      <View style={[styles.container, { width: cardWidth }]}>
+    <View style={styles.screen}>
+      <View style={[styles.container, { width: larguraCard }]}>
         <MaterialCommunityIcons
           name="check-circle"
           size={64}
@@ -72,8 +67,8 @@ export default function Login() {
         <Text style={styles.subtitle}>Entre na sua conta para continuar</Text>
 
         <TextInput
-          value={identifier}
-          onChangeText={setIdentifier}
+          value={identificador}
+          onChangeText={setIdentificador}
           placeholder="E-mail ou CPF"
           placeholderTextColor="rgba(0, 0, 0, 0.3)"
           autoCapitalize="none"
@@ -96,7 +91,7 @@ export default function Login() {
           <Text style={styles.esqueciSenha}>Esqueci minha senha</Text>
         </TouchableOpacity>
 
-        <BotaoAzulEscuro text="Entrar →" action={handleLogin} />
+        <BotaoAzulEscuro texto="Entrar →" acao={handleLogin} />
 
         <View style={styles.cadastroLine}>
           <Text style={styles.cadastroLineText}>Não tem uma conta?</Text>
@@ -105,7 +100,7 @@ export default function Login() {
           </TouchableOpacity>
         </View>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 

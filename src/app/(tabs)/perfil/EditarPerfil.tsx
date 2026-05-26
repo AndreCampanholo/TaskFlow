@@ -1,9 +1,11 @@
 import BotaoAzulClaro from "@/src/components/BotaoAzulClaro";
-import ProfileAvatar from "@/src/components/ProfileAvatar";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import AvatarPerfil from "@/src/components/ProfileAvatar";
 import { colors, globalStyles } from "@/src/styles/global";
+import DateTimePicker, {
+  type DateTimePickerEvent,
+} from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Alert,
   Platform,
@@ -15,145 +17,129 @@ import {
   View,
 } from "react-native";
 
+function exibirAlerta(titulo: string, mensagem: string) {
+  if (Platform.OS === "web") {
+    window.alert(`${titulo}\n\n${mensagem}`);
+    return;
+  }
+
+  Alert.alert(titulo, mensagem, [{ text: "Ok", style: "cancel" }]);
+}
+
 export default function EditarPerfil() {
-  const [avatarUri, setAvatarUri] = useState<string | null>(null);
-  const [name, setName] = useState("");
+  const [uriAvatar, setUriAvatar] = useState<string | null>(null);
+  const [nome, setNome] = useState("");
   const [dataNascimento, setDataNascimento] = useState<Date | null>(null);
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [seletorDataAberto, setSeletorDataAberto] = useState(false);
   const [cpf, setCpf] = useState("");
   const [email, setEmail] = useState("");
 
+  const temAlteracao = Boolean(
+    nome.trim() || dataNascimento || cpf.trim() || email.trim(),
+  );
+
   function handleEditarPerfil() {
-    if (!name.trim() && !dataNascimento && !cpf.trim() && !email.trim()) {
-      if (Platform.OS === "web") {
-        window.alert("Nenhuma alteração feita.");
-      } else {
-        Alert.alert("Aviso", "Nenhuma alteração feita.", [
-          { text: "Ok", style: "cancel" },
-        ]);
-      }
+    if (!temAlteracao) {
+      exibirAlerta("Aviso", "Nenhuma alteração feita.");
       router.back();
       return;
     }
 
-    if (email.trim()) {
-      const emailInformado = email.trim();
-      const emailRegex = /^\S+@\S+\.\S+$/;
-      const isEmail = emailRegex.test(emailInformado);
-
-      if (!isEmail) {
-        if (Platform.OS === "web") {
-          window.alert("Informe um E-mail válido.");
-        } else {
-          Alert.alert("Erro", "Informe um E-mail válido.");
-        }
-        return;
-      }
+    if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      exibirAlerta("Erro", "Informe um e-mail válido.");
+      return;
     }
 
-    if (cpf.trim()) {
-      const cpfInformado = cpf.trim();
-      const digits = cpfInformado.replace(/\D/g, "");
-      const isCpf = /^\d{11}$/.test(digits);
-
-      if (!isCpf) {
-        if (Platform.OS === "web") {
-          window.alert("Informe CPF válido com 11 dígitos.");
-        } else {
-          Alert.alert("Erro", "Informe CPF válido com 11 dígitos.");
-        }
-        return;
-      }
+    if (cpf.trim() && !/^\d{11}$/.test(cpf.replace(/\D/g, ""))) {
+      exibirAlerta("Erro", "Informe um CPF válido com 11 dígitos.");
+      return;
     }
 
     router.back();
   }
 
-  function handleDateChange(_event: any, selectedDate?: Date) {
-    if (selectedDate) setDataNascimento(selectedDate);
+  function handleDateChange(_event: DateTimePickerEvent, selectedDate?: Date) {
+    if (selectedDate) {
+      setDataNascimento(selectedDate);
+    }
 
     if (Platform.OS === "android") {
-      setShowDatePicker(false);
+      setSeletorDataAberto(false);
     }
   }
 
   return (
     <ScrollView contentContainerStyle={styles.screen}>
-      <View style={styles.card}>
-        <View style={styles.avatarWrap}>
-          <ProfileAvatar
-            uri={avatarUri}
-            onChange={setAvatarUri}
-            size={110}
+      <View style={styles.avatarWrap}>
+        <AvatarPerfil uri={uriAvatar} aoAlterar={setUriAvatar} tamanho={110} />
+      </View>
+
+      <View style={styles.form}>
+        <Text style={styles.label}>Nome completo</Text>
+        <TextInput
+          style={styles.input}
+          value={nome}
+          onChangeText={setNome}
+          placeholderTextColor={"rgb(0, 0, 0, 0.6)"}
+          placeholder="Nome completo"
+        />
+
+        <Text style={styles.label}>Data de Nascimento</Text>
+        {Platform.OS === "web" ? (
+          <input
+            type="date"
+            value={
+              dataNascimento ? dataNascimento.toISOString().slice(0, 10) : ""
+            }
+            onChange={(e: any) =>
+              setDataNascimento(
+                e.target.value ? new Date(e.target.value) : null,
+              )
+            }
+            max={new Date().toISOString().slice(0, 10)}
+            placeholder="dd/mm/aaaa"
+            style={{
+              borderWidth: 1,
+              borderColor: "rgba(0, 0, 0, 0.3)",
+              borderRadius: 5,
+              padding: 8,
+              marginTop: 0,
+              marginBottom: 12,
+              background: "transparent",
+              color: dataNascimento ? "rgba(0,0,0,1)" : "rgba(0,0,0,0.3)",
+              fontSize: 16,
+              fontFamily: "Inter, system-ui, -apple-system, 'Segoe UI'",
+              width: "100%",
+              boxSizing: "border-box",
+            }}
           />
-        </View>
-
-        <View style={styles.form}>
-          <Text style={styles.label}>Nome completo</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Nome completo"
-            placeholderTextColor={"rgba(0,0,0,0.45)"}
-          />
-
-          <Text style={styles.label}>Data de nascimento</Text>
-
-          {Platform.OS === "web" ? (
-            <input
-              type="date"
-              value={
-                dataNascimento
-                  ? dataNascimento.toISOString().slice(0, 10)
-                  : ""
-              }
-              onChange={(e: any) =>
-                setDataNascimento(
-                  e.target.value ? new Date(e.target.value) : null
-                )
-              }
-              max={new Date().toISOString().slice(0, 10)}
-              style={{
-                border: "1px solid rgba(0,0,0,0.15)",
-                borderRadius: "8px",
-                padding: "10px 12px",
-                marginBottom: "14px",
-                background: "#fff",
-                color: "rgba(0,0,0,0.85)",
-                fontSize: "15px",
-                width: "100%",
-                boxSizing: "border-box",
-                outline: "none",
-              }}
-            />
-          ) : (
-            <Pressable
-              style={styles.dateButton}
-              onPress={() => setShowDatePicker(true)}
+        ) : (
+          <Pressable
+            style={styles.dateButton}
+            onPress={() => setSeletorDataAberto(true)}
+          >
+            <Text
+              style={[
+                styles.dateButtonText,
+                !dataNascimento && styles.datePlaceholder,
+              ]}
             >
-              <Text
-                style={[
-                  styles.dateButtonText,
-                  !dataNascimento && styles.datePlaceholder,
-                ]}
-              >
-                {dataNascimento
-                  ? dataNascimento.toLocaleDateString("pt-BR")
-                  : "dd/mm/aaaa"}
-              </Text>
-            </Pressable>
-          )}
+              {dataNascimento
+                ? dataNascimento.toLocaleDateString("pt-BR")
+                : "dd/mm/aaaa"}
+            </Text>
+          </Pressable>
+        )}
 
-          {showDatePicker && Platform.OS !== "web" && (
-            <DateTimePicker
-              value={dataNascimento ?? new Date()}
-              mode="date"
-              display="default"
-              maximumDate={new Date()}
-              onChange={handleDateChange}
-            />
-          )}
+        {seletorDataAberto && Platform.OS !== "web" ? (
+          <DateTimePicker
+            value={dataNascimento ?? new Date()}
+            mode="date"
+            display="default"
+            maximumDate={new Date()}
+            onChange={handleDateChange}
+          />
+        ) : null}
 
           <Text style={styles.label}>CPF</Text>
           <TextInput
@@ -174,11 +160,7 @@ export default function EditarPerfil() {
             keyboardType="email-address"
           />
 
-          <BotaoAzulClaro
-            text="Salvar alterações"
-            action={handleEditarPerfil}
-          />
-        </View>
+        <BotaoAzulClaro texto="Salvar Alterações" acao={handleEditarPerfil} />
       </View>
     </ScrollView>
   );
