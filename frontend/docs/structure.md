@@ -40,7 +40,7 @@ Componentes reutilizáveis da interface:
 
 ## `src/hooks`
 Hooks customizados que encapsulam lógica de negócio e estado global:
-- `useTasks.ts`: armazena a lista de tarefas em memória, expõe funções de criação, edição, exclusão e alternância de estado, e recalcula automaticamente o status (`em-andamento`, `concluida`, `atrasada`) com base na data de vencimento.
+- `useTarefas.ts`: armazena a lista de tarefas em memória, expõe funções de criação, edição, exclusão e alternância de estado, e recalcula automaticamente o status (`em-andamento`, `concluida`, `atrasada`) com base na data de vencimento.
 
 ## `src/utils`
 Contém funções utilitárias reutilizáveis:
