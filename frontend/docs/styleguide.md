@@ -21,13 +21,13 @@ As cores principais do projeto são:
 ## Capturas de tela
 ### Splash Screen  
 Tela inicial da aplicação apresentada durante o carregamento do sistema com gradiente nas cores principais do projeto.  
-![splash screen](image.png)  
+![splash screen](image.jpeg)  
 ### Login  
 Tela de autenticação do usuário com card centralizado, ícone, campos de entrada e botão principal.  
-![login](image-1.png)  
+![login](image-1.jpeg)  
 ### Tarefas  
 Tela principal do sistema responsável pelo gerenciamento das tarefas cadastradas.   
-![tarefas](image-2.png)  
+![tarefas](image-2.jpeg)  
 ### Perfil  
 Tela de gerenciamento do perfil com ícone de avatar e acesso a outras funcionalidades.  
-![perfil](image-3.png)
+![perfil](image-3.jpeg)
