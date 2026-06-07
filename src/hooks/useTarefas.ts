@@ -1,10 +1,14 @@
+import {
+  apiAtualizarTarefa,
+  apiCriarTarefa,
+  apiDeletarTarefa,
+  apiListarTarefas,
+} from "@/src/services/api";
 import { estaAtrasada, formatarPrazo } from "@/src/utils/taskDates";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 
-// Valores possíveis para o status de uma tarefa
 export type EstadoTarefa = "em-andamento" | "concluida" | "atrasada";
 
-// Estrutura completa da tarefa usada pelo app
 export type Tarefa = {
   id: string;
   title: string;
@@ -15,7 +19,6 @@ export type Tarefa = {
   completed: boolean;
 };
 
-// Dados recebidos ao criar uma nova tarefa
 type TaskInput = {
   title: string;
   description: string;
@@ -23,191 +26,122 @@ type TaskInput = {
   stateFromModal: EstadoTarefa;
 };
 
-// Formato parcial usado para atualizar somente alguns campos da tarefa
-type TaskUpdate = Partial<
-  Pick<Tarefa, "title" | "description" | "dueDate" | "state" | "completed">
->;
-
-// Estrutura parecida com os dados do formulário antigo de criação
-type EntradaTarefa = {
-  title: string;
-  description: string;
-  dueDate: Date;
-  estadoSelecionado: EstadoTarefa;
+type AtualizacaoTarefa = {
+  title?: string;
+  description?: string;
+  dueDate?: Date;
+  state?: EstadoTarefa;
+  completed?: boolean;
 };
 
-// Tipo equivalente ao update da tarefa, usado na lógica interna
-type AtualizacaoTarefa = Partial<
-  Pick<Tarefa, "title" | "description" | "dueDate" | "state" | "completed">
->;
-
-// Lista em memória com todas as tarefas do app
-let tarefas: Tarefa[] = [];
-// Conjunto de ouvintes que precisam ser avisados quando a lista mudar
-const ouvintes = new Set<() => void>();
-
-// Notifica todos os componentes inscritos de que o estado mudou
-function notificar() {
-  ouvintes.forEach((ouvinte) => ouvinte());
-}
-
-// Registra um novo ouvinte e devolve a função de cancelamento da inscrição
-function inscrever(ouvinte: () => void) {
-  ouvintes.add(ouvinte);
-  return () => ouvintes.delete(ouvinte);
-}
-
-// Entrega o snapshot atual da lista para o useSyncExternalStore
-function obterSnapshot() {
-  return tarefas;
-}
-
-// Recalcula o texto formatado do prazo para manter a tarefa consistente na UI
-function normalizarTarefa(tarefa: Tarefa): Tarefa {
+// Converte o formato do backend para o formato do frontend
+function converterTarefa(t: any): Tarefa {
+  const dueDate = t.prazo ? new Date(t.prazo) : new Date();
   return {
-    ...tarefa,
-    dueLabel: formatarPrazo(tarefa.dueDate),
+    id: String(t.id),
+    title: t.titulo,
+    description: t.descricao ?? "",
+    dueDate,
+    dueLabel: formatarPrazo(dueDate),
+    state: (t.estado as EstadoTarefa) ?? "em-andamento",
+    completed: t.concluida,
   };
 }
 
-// Monta uma tarefa nova, limpando campos, ajustando o status e preenchendo o rótulo do prazo
-function montarTarefa({
-  title,
-  description,
-  dueDate,
-  stateFromModal,
-}: TaskInput): Tarefa {
-  const titulo = title.trim();
-  const descricao = description.trim();
-  const concluida = stateFromModal === "concluida";
-  const estado = concluida
-    ? "concluida"
-    : stateFromModal === "atrasada" || estaAtrasada(dueDate)
+export default function useTarefas() {
+  const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+
+  // Carrega as tarefas do backend ao montar o componente
+  useEffect(() => {
+    carregarTarefas();
+  }, []);
+
+  async function carregarTarefas() {
+    try {
+      const dados = await apiListarTarefas();
+      setTarefas(dados.map(converterTarefa));
+    } catch (error) {
+      console.error("Erro ao carregar tarefas:", error);
+    }
+  }
+
+  async function criarTarefa({ title, description, dueDate, stateFromModal }: TaskInput) {
+    try {
+      const concluida = stateFromModal === "concluida";
+      const estado = concluida
+        ? "concluida"
+        : stateFromModal === "atrasada" || estaAtrasada(dueDate)
+        ? "atrasada"
+        : "em-andamento";
+
+      const nova = await apiCriarTarefa({
+        titulo: title.trim(),
+        descricao: description.trim(),
+        prazo: dueDate.toISOString(),
+        estado,
+      });
+
+      setTarefas((prev) => [converterTarefa(nova), ...prev]);
+    } catch (error) {
+      console.error("Erro ao criar tarefa:", error);
+    }
+  }
+
+  async function atualizarTarefa(id: string, atualizacoes: AtualizacaoTarefa) {
+    try {
+      const atualizada = await apiAtualizarTarefa(Number(id), {
+        titulo: atualizacoes.title,
+        descricao: atualizacoes.description,
+        prazo: atualizacoes.dueDate?.toISOString(),
+        estado: atualizacoes.state,
+        concluida: atualizacoes.completed,
+      });
+
+      setTarefas((prev) =>
+        prev.map((t) => (t.id === id ? converterTarefa(atualizada) : t))
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar tarefa:", error);
+    }
+  }
+
+  async function excluirTarefa(id: string) {
+    try {
+      await apiDeletarTarefa(Number(id));
+      setTarefas((prev) => prev.filter((t) => t.id !== id));
+    } catch (error) {
+      console.error("Erro ao excluir tarefa:", error);
+    }
+  }
+
+  async function alternarTarefa(id: string) {
+    const tarefa = tarefas.find((t) => t.id === id);
+    if (!tarefa) return;
+
+    const vaiSerConcluida = !tarefa.completed;
+    const novoEstado = vaiSerConcluida
+      ? "concluida"
+      : estaAtrasada(tarefa.dueDate)
       ? "atrasada"
       : "em-andamento";
 
-  return normalizarTarefa({
-    id: String(Date.now()),
-    title: titulo,
-    description: descricao,
-    dueDate,
-    dueLabel: formatarPrazo(dueDate),
-    state: estado,
-    completed: concluida,
-  });
-}
-
-// Atualiza uma tarefa existente usando uma função transformadora
-function alterarTarefa(id: string, atualizar: (tarefa: Tarefa) => Tarefa) {
-  tarefas = tarefas.map((tarefa) =>
-    tarefa.id === id ? normalizarTarefa(atualizar(tarefa)) : tarefa,
-  );
-  notificar();
-}
-
-// Cria uma nova tarefa e a coloca no topo da lista
-function criarTarefa({
-  title,
-  description,
-  dueDate,
-  stateFromModal,
-}: TaskInput) {
-  const novaTarefa = montarTarefa({
-    title,
-    description,
-    dueDate,
-    stateFromModal,
-  });
-  tarefas = [novaTarefa, ...tarefas];
-  notificar();
-}
-
-// Atualiza campos específicos da tarefa e recalcula regras de status/conclusão
-function atualizarTarefa(id: string, atualizacoes: AtualizacaoTarefa) {
-  alterarTarefa(id, (tarefa) => {
-    const proximoTitulo = atualizacoes.title?.trim() ?? tarefa.title;
-    const proximaDescricao =
-      atualizacoes.description?.trim() ?? tarefa.description;
-    const proximaDataVencimento = atualizacoes.dueDate ?? tarefa.dueDate;
-    const concluida = atualizacoes.completed ?? tarefa.completed;
-
-    let proximoEstado = atualizacoes.state ?? tarefa.state;
-    if (concluida) {
-      proximoEstado = "concluida";
-    } else if (proximoEstado === "concluida") {
-      proximoEstado = estaAtrasada(proximaDataVencimento)
-        ? "atrasada"
-        : "em-andamento";
-    } else if (!atualizacoes.state && !atualizacoes.completed) {
-      proximoEstado = estaAtrasada(proximaDataVencimento)
-        ? "atrasada"
-        : "em-andamento";
-    }
-
-    return {
-      ...tarefa,
-      title: proximoTitulo,
-      description: proximaDescricao,
-      dueDate: proximaDataVencimento,
-      state: proximoEstado,
-      completed: concluida,
-    };
-  });
-}
-
-// Remove uma tarefa pelo id
-function excluirTarefa(id: string) {
-  tarefas = tarefas.filter((tarefa) => tarefa.id !== id);
-  notificar();
-}
-
-// Alterna a conclusão da tarefa e ajusta o status correspondente
-function alternarTarefa(id: string) {
-  alterarTarefa(id, (tarefa) => {
-    const vaiSerConcluida = !tarefa.completed;
-    if (vaiSerConcluida) {
-      return { ...tarefa, completed: true, state: "concluida" };
-    }
-
-    return {
-      ...tarefa,
-      completed: false,
-      state: estaAtrasada(tarefa.dueDate) ? "atrasada" : "em-andamento",
-    };
-  });
-}
-
-// Busca uma tarefa específica pelo id; retorna null se não existir
-function obterTarefaPorId(id: string) {
-  return tarefas.find((tarefa) => tarefa.id === id) ?? null;
-}
-
-// Hook principal que expõe a lista e as operações para os componentes
-export default function useTarefas(tarefasIniciais: Tarefa[] = []) {
-  // Inicializa o store em memória com dados de entrada, se ainda estiver vazio
-  useEffect(() => {
-    if (tarefas.length === 0 && tarefasIniciais.length > 0) {
-      tarefas = tarefasIniciais.map(normalizarTarefa);
-      notificar();
-    }
-  }, [tarefasIniciais]);
-
-  // Liga o componente ao store externo em memória
-  const tarefasEmTela = useSyncExternalStore(
-    inscrever,
-    obterSnapshot,
-    obterSnapshot,
-  );
-
-  // Retorna apenas as tarefas que batem com o filtro selecionado
-  function obterFiltradas(filtro: "all" | EstadoTarefa) {
-    if (filtro === "all") return tarefasEmTela;
-    return tarefasEmTela.filter((tarefa) => tarefa.state === filtro);
+    await atualizarTarefa(id, {
+      completed: vaiSerConcluida,
+      state: novoEstado,
+    });
   }
 
-  // Expõe os dados e ações que os componentes da interface usam
+  function obterTarefaPorId(id: string) {
+    return tarefas.find((t) => t.id === id) ?? null;
+  }
+
+  function obterFiltradas(filtro: "all" | EstadoTarefa) {
+    if (filtro === "all") return tarefas;
+    return tarefas.filter((t) => t.state === filtro);
+  }
+
   return {
-    tarefas: tarefasEmTela,
+    tarefas,
     criarTarefa,
     atualizarTarefa,
     excluirTarefa,
