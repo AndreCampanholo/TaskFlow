@@ -28,6 +28,15 @@ export default function Cadastro() {
   const [senha, setSenha] = useState("");
   const [confirmacaoSenha, setConfirmacaoSenha] = useState("");
 
+  function exibirAlerta(titulo: string, mensagem: string, onOk?: () => void) {
+    if (Platform.OS === "web") {
+      window.alert(`${titulo}\n\n${mensagem}`);
+      onOk?.();
+    } else {
+      Alert.alert(titulo, mensagem, [{ text: "Ok", onPress: onOk }]);
+    }
+  }
+
   async function handleCadastro() {
     if (
       !nome.trim() ||
@@ -37,39 +46,39 @@ export default function Cadastro() {
       !confirmacaoSenha.trim() ||
       !dataNascimento
     ) {
-      Alert.alert("Cadastro inválido", "Todos os campos devem ser preenchidos.");
+      exibirAlerta("Cadastro inválido", "Todos os campos devem ser preenchidos.");
       return;
     }
 
     if (dataNascimento.getTime() > new Date().setHours(23, 59, 59, 999)) {
-      Alert.alert("Cadastro inválido", "Data de nascimento inválida.");
+      exibirAlerta("Cadastro inválido", "Data de nascimento inválida.");
       return;
     }
 
     if (senha.trim() !== confirmacaoSenha.trim()) {
-      Alert.alert("Cadastro inválido", "As senhas não coincidem.");
+      exibirAlerta("Cadastro inválido", "As senhas não coincidem.");
       return;
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(email.trim())) {
-      Alert.alert("Erro", "Informe um e-mail válido.");
+      exibirAlerta("Erro", "Informe um e-mail válido.");
       return;
     }
 
     const cpfNumeros = cpf.trim().replace(/\D/g, "");
     if (!/^\d{11}$/.test(cpfNumeros)) {
-      Alert.alert("Erro", "Informe um CPF válido com 11 dígitos.");
+      exibirAlerta("Erro", "Informe um CPF válido com 11 dígitos.");
       return;
     }
 
     try {
       await apiCadastrar(nome.trim(), email.trim(), senha.trim());
-      Alert.alert("Sucesso", "Conta criada! Faça login para continuar.", [
-        { text: "Ok", onPress: () => router.replace("/Login") },
-      ]);
+      exibirAlerta("Sucesso", "Conta criada! Faça login para continuar.", () =>
+        router.replace("/Login")
+      );
     } catch (error: any) {
-      Alert.alert("Erro", error.message || "Não foi possível criar a conta.");
+      exibirAlerta("Erro", error.message || "Não foi possível criar a conta.");
     }
   }
 

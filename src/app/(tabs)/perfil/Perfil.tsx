@@ -1,7 +1,9 @@
 import AvatarPerfil from "@/src/components/ProfileAvatar";
+import { apiGetPerfil, apiLogout } from "@/src/services/api";
 import { colors, globalStyles } from "@/src/styles/global";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   Alert,
   Platform,
@@ -13,6 +15,20 @@ import {
 
 // Tela/Componente de exebição do perfil e das opções do usuário
 export default function Perfil() {
+  const [nomeUsuario, setNomeUsuario] = useState("Carregando...");
+  const [emailUsuario, setEmailUsuario] = useState("");
+
+  useFocusEffect(
+    useCallback(() => {
+      apiGetPerfil()
+        .then((dados) => {
+          setNomeUsuario(dados.nome);
+          setEmailUsuario(dados.email);
+        })
+        .catch(() => {});
+    }, [])
+  );
+
   // Função que executa a lógica de logout
   const handleSair = () => {
     // Exige a confirmação do usuário via alerta
@@ -21,7 +37,7 @@ export default function Perfil() {
       const shouldLogout = window.confirm("Quer sair de sua conta?");
 
       if (shouldLogout) {
-        router.replace("/Login"); // Redireciona o usuário para a tela de login, caso confirme
+        apiLogout().then(() => router.replace("/Login"));
       }
 
       return;
@@ -32,7 +48,7 @@ export default function Perfil() {
       {
         text: "Sair",
         style: "destructive",
-        onPress: () => router.replace("/Login"), // Redireciona o usuário para a tela de login, caso confirme
+        onPress: () => apiLogout().then(() => router.replace("/Login")),
       },
     ]);
   };
@@ -46,12 +62,8 @@ export default function Perfil() {
           <AvatarPerfil editavel={false} />
 
           <View style={styles.info}>
-            {/* Exibe o nome completo do usuário */}
-            <Text style={globalStyles.sectionTitle}>Usuário Exemplo</Text>
-            {/* Exibe o email do usuário */}
-            <Text style={globalStyles.sectionSubtitle}>
-              usuario@exemplo.com
-            </Text>
+            <Text style={globalStyles.sectionTitle}>{nomeUsuario}</Text>
+            <Text style={globalStyles.sectionSubtitle}>{emailUsuario}</Text>
           </View>
 
           <View style={styles.listCard}>

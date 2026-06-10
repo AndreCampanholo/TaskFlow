@@ -1,4 +1,5 @@
 import BotaoCancelar from "@/src/components/BotaoCancelar";
+import { apiExcluirConta, apiLogout } from "@/src/services/api";
 import { colors, globalStyles } from "@/src/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -22,23 +23,31 @@ export default function ExcluirConta() {
   // Campo variável declarado com useState
   const [senhaConfirmacao, setSenhaConfirmacao] = useState("");
 
-  // Valida a entrada do usuário para exclusão da conta (futuramente comparará com a senha do usuário para validar exclusão e apagará conta do banco de dados)
-  function handleExcluirConta() {
-    // Se a senha não for informada exibe alerta e não efetua exclusão
+  async function handleExcluirConta() {
     if (!senhaConfirmacao.trim()) {
       if (Platform.OS === "web") {
         window.alert("Insira a senha para excluir sua conta!");
-        return;
+      } else {
+        Alert.alert("Excluir conta", "Insira a senha para excluir sua conta!", [
+          { text: "Ok", style: "default" },
+        ]);
       }
-
-      Alert.alert("Excluir conta", "Insira a senha para excluir sua conta!", [
-        { text: "Ok", style: "default" },
-      ]);
       return;
     }
 
-    router.replace("/Login"); // Redireciona para a tela de login
-    return;
+    try {
+      await apiExcluirConta(senhaConfirmacao);
+      await apiLogout();
+      router.replace("/Login");
+    } catch (error: any) {
+      if (Platform.OS === "web") {
+        window.alert(error.message || "Não foi possível excluir a conta.");
+      } else {
+        Alert.alert("Erro", error.message || "Não foi possível excluir a conta.", [
+          { text: "Ok", style: "default" },
+        ]);
+      }
+    }
   }
 
   return (

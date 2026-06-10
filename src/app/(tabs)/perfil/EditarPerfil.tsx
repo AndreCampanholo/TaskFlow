@@ -1,5 +1,6 @@
 import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import AvatarPerfil from "@/src/components/ProfileAvatar";
+import { apiEditarPerfil } from "@/src/services/api";
 import { colors } from "@/src/styles/global";
 import DateTimePicker, {
   type DateTimePickerEvent,
@@ -42,30 +43,32 @@ export default function EditarPerfil() {
     nome.trim() || dataNascimento || cpf.trim() || email.trim(),
   );
 
-  // Valida as alterações feitas pelo usuário (futuramente efetivará as mudanças no back-end/banco de dados)
-  function handleEditarPerfil() {
-    // Se nenhuma edição foi feita (nenhum campo foi preenchido) exibe alerta e retorna para a tela de perfil
+  async function handleEditarPerfil() {
     if (!temAlteracao) {
       exibirAlerta("Aviso", "Nenhuma alteração feita.");
       router.back();
       return;
     }
 
-    // Verifica se o email é valido
     if (email.trim() && !/^\S+@\S+\.\S+$/.test(email.trim())) {
       exibirAlerta("Erro", "Informe um e-mail válido.");
       return;
     }
 
-    // Verifica se o CPF é válido
     if (cpf.trim() && !/^\d{11}$/.test(cpf.replace(/\D/g, ""))) {
       exibirAlerta("Erro", "Informe um CPF válido com 11 dígitos.");
       return;
     }
 
-    // O usuário não é obrigado a preencher todos os campos, somente os que ele deseja modificar!!
-
-    router.back(); // Retorna para a tela de perfil do usuário
+    try {
+      await apiEditarPerfil({
+        ...(nome.trim() && { nome: nome.trim() }),
+        ...(email.trim() && { email: email.trim() }),
+      });
+      router.back();
+    } catch (error: any) {
+      exibirAlerta("Erro", error.message || "Não foi possível salvar as alterações.");
+    }
   }
 
   // Altera a data de nascimento

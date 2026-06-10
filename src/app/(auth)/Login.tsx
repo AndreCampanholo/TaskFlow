@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -22,15 +23,23 @@ export default function Login() {
   const [identificador, setIdentificador] = useState("");
   const [senha, setSenha] = useState("");
 
+  function exibirAlerta(titulo: string, mensagem: string) {
+    if (Platform.OS === "web") {
+      window.alert(`${titulo}\n\n${mensagem}`);
+    } else {
+      Alert.alert(titulo, mensagem);
+    }
+  }
+
   async function handleLogin() {
     if (!identificador.trim() || !senha.trim()) {
-      Alert.alert("Erro", "Todos os campos devem ser preenchidos.");
+      exibirAlerta("Erro", "Todos os campos devem ser preenchidos.");
       return;
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/;
     if (!emailRegex.test(identificador.trim())) {
-      Alert.alert("Erro", "Informe um e-mail válido.");
+      exibirAlerta("Erro", "Informe um e-mail válido.");
       return;
     }
 
@@ -38,7 +47,7 @@ export default function Login() {
       await apiLogin(identificador.trim(), senha.trim());
       router.replace("/tarefas/Tasks" as any);
     } catch (error: any) {
-      Alert.alert("Erro", error.message || "Não foi possível fazer login.");
+      exibirAlerta("Erro", error.message || "Não foi possível fazer login.");
     }
   }
 

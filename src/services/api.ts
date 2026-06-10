@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const BASE_URL = "http://192.168.0.251:3000";
+// Para dispositivo físico, troque por http://<IP_DA_SUA_MAQUINA>:3000
+const BASE_URL = "http://localhost:3000";
 
 async function getToken() {
   return await AsyncStorage.getItem("token");
@@ -86,5 +87,30 @@ export async function apiDeletarTarefa(id: number) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  });
+}
+
+export async function apiGetPerfil() {
+  return request("/auth/perfil");
+}
+
+export async function apiEditarPerfil(dados: { nome?: string; email?: string }) {
+  return request("/auth/perfil", {
+    method: "PATCH",
+    body: JSON.stringify(dados),
+  });
+}
+
+export async function apiAlterarSenha(senhaAtual: string, novaSenha: string) {
+  return request("/auth/senha", {
+    method: "PATCH",
+    body: JSON.stringify({ senhaAtual, novaSenha }),
+  });
+}
+
+export async function apiExcluirConta(senha: string) {
+  return request("/auth/conta", {
+    method: "DELETE",
+    body: JSON.stringify({ senha }),
   });
 }
