@@ -14,9 +14,9 @@ cd backend
 ```
 
 ## Configurar variáveis de ambiente 
-Crie um arquivo .env na raiz do projeto e adicione a URL de conexão para o arquivo local do SQLite:  
-```env
-DATABASE_URL="file:./dev.db"
+Execute o comando abaixo para criar o arquivo `.env`:
+```bash
+cp .env.example .env
 ```
 
 ## Instalar dependências 
