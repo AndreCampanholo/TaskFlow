@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 
 const cadastrar = async (req, res) => {
   try {
-    const { nome, email, senha } = req.body;
+    const { nome, cpf, email, dataNascimento, senha } = req.body;
 
-    if (!nome || !email || !senha) {
+    if (!nome || !cpf || !email || !dataNascimento || !senha) {
       return res.status(400).json({ mensagem: "Todos os campos são obrigatórios" });
     }
 
@@ -20,7 +20,7 @@ const cadastrar = async (req, res) => {
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
     const usuario = await prisma.usuario.create({
-      data: { nome, email, senha: senhaCriptografada },
+      data: { nome, cpf, email, dataNascimento, senha: senhaCriptografada },
     });
 
     return res.status(201).json({ mensagem: "Usuário criado", id: usuario.id });
@@ -32,20 +32,28 @@ const cadastrar = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-    const { email, senha } = req.body;
+    const { identificador, senha } = req.body;
 
-    if (!email || !senha) {
-      return res.status(400).json({ mensagem: "Email e senha são obrigatórios" });
+    if (!identificador || !senha) {
+      return res.status(400).json({ mensagem: "Identificador e senha são obrigatórios" });
     }
 
-    const usuario = await prisma.usuario.findUnique({ where: { email } });
+    const usuario = await prisma.usuario.findFirst({
+      where: {
+        OR: [
+          { email: identificador },
+          { cpf: identificador }
+        ]
+      }
+    });
+
     if (!usuario) {
-      return res.status(401).json({ mensagem: "Email ou senha incorretos" });
+      return res.status(401).json({ mensagem: "Identificador ou senha incorretos" });
     }
 
     const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
     if (!senhaCorreta) {
-      return res.status(401).json({ mensagem: "Email ou senha incorretos" });
+      return res.status(401).json({ mensagem: "Identificador ou senha incorretos" });
     }
 
     const token = jwt.sign({ id: usuario.id }, process.env.JWT_SECRET, {
@@ -77,9 +85,9 @@ const perfil = async (req, res) => {
 
 const editarPerfil = async (req, res) => {
   try {
-    const { nome, email } = req.body;
+    const { nome, cpf, email, dataNascimento } = req.body;
 
-    if (!nome && !email) {
+    if (!nome && !email && !cpf && !dataNascimento) {
       return res.status(400).json({ mensagem: "Informe ao menos um campo para atualizar" });
     }
 
@@ -91,14 +99,24 @@ const editarPerfil = async (req, res) => {
         return res.status(400).json({ mensagem: "Email já está em uso" });
       }
     }
+    if(cpf) {
+      const cpfEmUso = await prisma.usuario.findFirst({
+        where: { cpf, NOT: { id: req.usuarioId } },
+      });
+      if (cpfEmUso) {
+        return res.status(400).json({ mensagem: "CPF já está em uso" });
+      }
+    }
 
     const usuario = await prisma.usuario.update({
       where: { id: req.usuarioId },
       data: {
         ...(nome && { nome }),
+        ...(cpf && { cpf}),
         ...(email && { email }),
+        ...(dataNascimento && { dataNascimento: new Date(dataNascimento) }),
       },
-      select: { id: true, nome: true, email: true },
+      select: { id: true, nome: true, cpf: true, email: true, dataNascimento: true },
     });
 
     return res.json(usuario);
