@@ -1,50 +1,108 @@
-# Welcome to your Expo app 👋
+# TaskFlow
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicativo de gerenciamento de tarefas desenvolvido como projeto trainee da **ICMC Jr**. O repositório é um *monorepo*: o aplicativo mobile (frontend) e a API (backend) vivem lado a lado, cada um com sua própria documentação.
 
-## Get started
+## Stack
 
-1. Install dependencies
+| Camada | Tecnologias |
+| --- | --- |
+| **Frontend** | React Native, Expo, TypeScript |
+| **Backend** | Node.js, Express, Prisma ORM, SQLite |
 
-   ```bash
-   npm install
-   ```
+## Estrutura do projeto
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+TaskFlow/
+├── frontend/          # aplicativo mobile (Expo / React Native)
+│   ├── src/
+│   │   ├── app/           # telas e rotas
+│   │   ├── components/    # componentes reutilizáveis
+│   │   ├── hooks/         # custom hooks
+│   │   ├── services/      # chamadas à API
+│   │   ├── styles/        # estilos
+│   │   ├── types/         # tipagens TypeScript
+│   │   └── utils/         # funções utilitárias
+│   ├── assets/
+│   ├── app.json
+│   └── docs/             # documentação do front
+│
+├── backend/           # API REST (Node / Express / Prisma)
+│   ├── src/
+│   ├── prisma/          # schema e migrations
+│   ├── server.js        # ponto de entrada
+│   └── docs/            # documentação do back (database, errors, install, routes)
+│
+├── docs/              # documentação geral do projeto
+│   ├── arquitetura.md   # visão de alto nível e diagrama de componentes
+│   ├── api.md           # especificação dos endpoints
+│   ├── handbook.md      # padrões de código e convenções
+│   └── changelog.md     # histórico de versões
+│
+└── README.md
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Pré-requisitos
 
-## Learn more
+- [Node.js](https://nodejs.org/) (versão LTS recomendada)
+- npm
+- [Expo Go](https://expo.dev/go) instalado no celular (para testar o app)
 
-To learn more about developing your project with Expo, look at the following resources:
+## Como rodar
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Clone o repositório e instale as dependências de cada parte separadamente.
 
-## Join the community
+```bash
+git clone https://github.com/AndreCampanholo/TaskFlow.git
+cd TaskFlow
+```
 
-Join our community of developers creating universal apps.
+### Backend
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+cd backend
+npm install
+
+# copie o arquivo de exemplo de variáveis de ambiente e ajuste os valores
+cp .env.example .env
+
+# aplique as migrations e gere o client do Prisma
+npx prisma migrate dev
+
+# inicia a API
+npm start
+```
+
+A API sobe por padrão em `http://localhost:3000` (confira a porta no `.env`).
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+
+# inicia o Expo
+npx expo start
+```
+
+Escaneie o QR Code com o app **Expo Go** para abrir no celular.
+
+> **Importante:** o app precisa conseguir alcançar a API. Em `frontend/src/services/`, ajuste a URL base para o IP da máquina onde o backend está rodando (ex.: `http://192.168.0.10:3000`), não `localhost` — o celular não enxerga o `localhost` do seu computador.
+
+## Documentação
+
+- Visão geral de arquitetura: [`docs/arquitetura.md`](docs/arquitetura.md)
+- Endpoints da API: [`docs/api.md`](docs/api.md) e [`backend/docs/routes.md`](backend/docs/routes.md)
+- Padrões de código: [`docs/handbook.md`](docs/handbook.md)
+- Instalação detalhada do backend: [`backend/docs/install.md`](backend/docs/install.md)
+
+## Contribuindo
+
+1. Crie uma branch a partir da `main` (`git checkout -b minha-feature`)
+2. Faça seus commits seguindo as convenções do [`docs/handbook.md`](docs/handbook.md)
+3. Abra um Pull Request para a `main`
+
+## Equipe
+
+Projeto trainee da ICMC Jr.
+
+<!-- Preencha com os integrantes e contatos da equipe -->
