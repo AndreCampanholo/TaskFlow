@@ -63,11 +63,16 @@ export default function EditarPerfil() {
     try {
       await apiEditarPerfil({
         ...(nome.trim() && { nome: nome.trim() }),
+        ...(cpf.trim() && { cpf: cpf.trim() }),
         ...(email.trim() && { email: email.trim() }),
+        ...(dataNascimento && { dataNascimento: dataNascimento }),
       });
       router.back();
     } catch (error: any) {
-      exibirAlerta("Erro", error.message || "Não foi possível salvar as alterações.");
+      exibirAlerta(
+        "Erro",
+        error.message || "Não foi possível salvar as alterações.",
+      );
     }
   }
 

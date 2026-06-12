@@ -46,7 +46,10 @@ export default function Cadastro() {
       !confirmacaoSenha.trim() ||
       !dataNascimento
     ) {
-      exibirAlerta("Cadastro inválido", "Todos os campos devem ser preenchidos.");
+      exibirAlerta(
+        "Cadastro inválido",
+        "Todos os campos devem ser preenchidos.",
+      );
       return;
     }
 
@@ -73,9 +76,15 @@ export default function Cadastro() {
     }
 
     try {
-      await apiCadastrar(nome.trim(), email.trim(), senha.trim());
+      await apiCadastrar(
+        nome.trim(),
+        cpf.trim(),
+        email.trim(),
+        dataNascimento,
+        senha.trim(),
+      );
       exibirAlerta("Sucesso", "Conta criada! Faça login para continuar.", () =>
-        router.replace("/Login")
+        router.replace("/Login"),
       );
     } catch (error: any) {
       exibirAlerta("Erro", error.message || "Não foi possível criar a conta.");
@@ -115,9 +124,13 @@ export default function Cadastro() {
           {Platform.OS === "web" ? (
             <input
               type="date"
-              value={dataNascimento ? dataNascimento.toISOString().slice(0, 10) : ""}
+              value={
+                dataNascimento ? dataNascimento.toISOString().slice(0, 10) : ""
+              }
               onChange={(e: any) =>
-                setDataNascimento(e.target.value ? new Date(e.target.value) : null)
+                setDataNascimento(
+                  e.target.value ? new Date(e.target.value) : null,
+                )
               }
               max={new Date().toISOString().slice(0, 10)}
               style={{
@@ -139,7 +152,12 @@ export default function Cadastro() {
                 style={styles.datePickerButton}
                 onPress={() => setSeletorDataAberto(true)}
               >
-                <Text style={[styles.dateText, !dataNascimento && styles.datePlaceholder]}>
+                <Text
+                  style={[
+                    styles.dateText,
+                    !dataNascimento && styles.datePlaceholder,
+                  ]}
+                >
                   {dataNascimento
                     ? dataNascimento.toLocaleDateString("pt-BR")
                     : "dd/mm/aaaa"}

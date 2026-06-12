@@ -13,7 +13,7 @@ import {
   TextInput,
   TouchableOpacity,
   useWindowDimensions,
-  View
+  View,
 } from "react-native";
 
 export default function Login() {
@@ -32,19 +32,38 @@ export default function Login() {
   }
 
   async function handleLogin() {
-    if (!identificador.trim() || !senha.trim()) {
+    const termoFormatado = identificador.trim();
+    const senhaFormatada = senha.trim();
+
+    if (!termoFormatado || !senhaFormatada) {
       exibirAlerta("Erro", "Todos os campos devem ser preenchidos.");
       return;
     }
 
     const emailRegex = /^\S+@\S+\.\S+$/;
-    if (!emailRegex.test(identificador.trim())) {
-      exibirAlerta("Erro", "Informe um e-mail válido.");
+
+    const apenasNumeros = termoFormatado.replace(/\D/g, "");
+
+    let identificadorValido = false;
+    let dadoParaEnviar = termoFormatado;
+
+    if (emailRegex.test(termoFormatado)) {
+      identificadorValido = true;
+    } else if (apenasNumeros.length === 11 && /^\d+$/.test(apenasNumeros)) {
+      identificadorValido = true;
+      dadoParaEnviar = apenasNumeros;
+    }
+
+    if (!identificadorValido) {
+      exibirAlerta(
+        "Erro",
+        "Informe um e-mail válido ou um CPF com 11 dígitos numéricos.",
+      );
       return;
     }
 
     try {
-      await apiLogin(identificador.trim(), senha.trim());
+      await apiLogin(dadoParaEnviar, senhaFormatada);
       router.replace("/tarefas/Tasks" as any);
     } catch (error: any) {
       exibirAlerta("Erro", error.message || "Não foi possível fazer login.");
@@ -70,7 +89,7 @@ export default function Login() {
         <TextInput
           value={identificador}
           onChangeText={setIdentificador}
-          placeholder="E-mail"
+          placeholder="E-mail ou CPF"
           placeholderTextColor="rgba(0, 0, 0, 0.3)"
           autoCapitalize="none"
           style={styles.textinput}

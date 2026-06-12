@@ -43,9 +43,11 @@ export default function ExcluirConta() {
       if (Platform.OS === "web") {
         window.alert(error.message || "Não foi possível excluir a conta.");
       } else {
-        Alert.alert("Erro", error.message || "Não foi possível excluir a conta.", [
-          { text: "Ok", style: "default" },
-        ]);
+        Alert.alert(
+          "Erro",
+          error.message || "Não foi possível excluir a conta.",
+          [{ text: "Ok", style: "default" }],
+        );
       }
     }
   }

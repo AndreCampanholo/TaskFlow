@@ -28,17 +28,23 @@ async function request(path: string, options: RequestInit = {}) {
   return data;
 }
 
-export async function apiCadastrar(nome: string, email: string, senha: string) {
+export async function apiCadastrar(
+  nome: string,
+  cpf: string,
+  email: string,
+  dataNascimento: Date,
+  senha: string,
+) {
   return request("/auth/cadastro", {
     method: "POST",
-    body: JSON.stringify({ nome, email, senha }),
+    body: JSON.stringify({ nome, cpf, email, dataNascimento, senha }),
   });
 }
 
-export async function apiLogin(email: string, senha: string) {
+export async function apiLogin(identificador: string, senha: string) {
   const data = await request("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, senha }),
+    body: JSON.stringify({ identificador, senha }),
   });
   await AsyncStorage.setItem("token", data.token);
   return data;
@@ -72,7 +78,7 @@ export async function apiAtualizarTarefa(
     prazo?: string;
     estado?: string;
     concluida?: boolean;
-  }
+  },
 ) {
   return request(`/tarefas/${id}`, {
     method: "PATCH",
@@ -94,7 +100,12 @@ export async function apiGetPerfil() {
   return request("/auth/perfil");
 }
 
-export async function apiEditarPerfil(dados: { nome?: string; email?: string }) {
+export async function apiEditarPerfil(dados: {
+  nome?: string;
+  cpf?: string;
+  email?: string;
+  dataNascimento?: Date;
+}) {
   return request("/auth/perfil", {
     method: "PATCH",
     body: JSON.stringify(dados),
