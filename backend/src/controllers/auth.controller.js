@@ -4,12 +4,52 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
+const normalizarDataNascimento = (valor) => {
+  if (valor instanceof Date) {
+    return Number.isNaN(valor.getTime()) ? null : valor;
+  }
+
+  if (typeof valor !== "string") {
+    return null;
+  }
+
+  const valorLimpo = valor.trim();
+
+  const partesBrasileiras = valorLimpo.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (partesBrasileiras) {
+    const [, dia, mes, ano] = partesBrasileiras;
+    const data = new Date(Number(ano), Number(mes) - 1, Number(dia));
+
+    const dataValida =
+      data.getFullYear() === Number(ano) &&
+      data.getMonth() === Number(mes) - 1 &&
+      data.getDate() === Number(dia);
+
+    return dataValida ? data : null;
+  }
+
+  const dataIso = new Date(valorLimpo);
+  return Number.isNaN(dataIso.getTime()) ? null : dataIso;
+};
+
 const cadastrar = async (req, res) => {
   try {
     const { nome, cpf, email, dataNascimento, senha } = req.body;
 
     if (!nome || !cpf || !email || !dataNascimento || !senha) {
       return res.status(400).json({ mensagem: "Todos os campos são obrigatórios" });
+    }
+
+    const dataNascimentoFormatada = normalizarDataNascimento(dataNascimento);
+    if (!dataNascimentoFormatada) {
+      return res.status(400).json({ mensagem: "Data de nascimento inválida" });
+    }
+
+    const cpfEmUso = await prisma.usuario.findFirst({
+      where: { cpf, NOT: { id: req.usuarioId } },
+    });
+    if (cpfEmUso) {
+      return res.status(400).json({ mensagem: "CPF já está em uso" });
     }
 
     const usuarioExiste = await prisma.usuario.findUnique({ where: { email } });
@@ -20,7 +60,7 @@ const cadastrar = async (req, res) => {
     const senhaCriptografada = await bcrypt.hash(senha, 10);
 
     const usuario = await prisma.usuario.create({
-      data: { nome, cpf, email, dataNascimento, senha: senhaCriptografada },
+      data: { nome, cpf, email, dataNascimento: dataNascimentoFormatada, senha: senhaCriptografada },
     });
 
     return res.status(201).json({ mensagem: "Usuário criado", id: usuario.id });
@@ -108,13 +148,18 @@ const editarPerfil = async (req, res) => {
       }
     }
 
+    const dataNascimentoFormatada = dataNascimento ? normalizarDataNascimento(dataNascimento) : null;
+    if (dataNascimento && !dataNascimentoFormatada) {
+      return res.status(400).json({ mensagem: "Data de nascimento inválida" });
+    }
+
     const usuario = await prisma.usuario.update({
       where: { id: req.usuarioId },
       data: {
         ...(nome && { nome }),
         ...(cpf && { cpf}),
         ...(email && { email }),
-        ...(dataNascimento && { dataNascimento: new Date(dataNascimento) }),
+        ...(dataNascimentoFormatada && { dataNascimento: dataNascimentoFormatada }),
       },
       select: { id: true, nome: true, cpf: true, email: true, dataNascimento: true },
     });
