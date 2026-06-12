@@ -1,12 +1,13 @@
 {
   "name": "backend-taskflow",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "API de gerenciamento de tarefas - Projeto Trainee ICMC Jr",
+  "main": "server.js",
   "scripts": {
-  "dev": "nodemon server.js",
-  "start": "node server.js"
-},
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "postinstall": "prisma generate"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
