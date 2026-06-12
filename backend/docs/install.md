@@ -9,8 +9,8 @@ Antes de começar, você precisa ter instalado:
 ## Clonar o repositório 
 No terminal, execute os comandos:
 ```bash
-git clone https://github.com/mathbmach/backend-taskflow.git 
-cd backend-taskflow 
+git clone https://github.com/AndreCampanholo/TaskFlow.git
+cd backend
 ```
 
 ## Configurar variáveis de ambiente 
