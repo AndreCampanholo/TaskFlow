@@ -4,6 +4,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useState } from "react";
 import {
+  Alert,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -20,9 +22,22 @@ export default function RecuperarSenha() {
   const { width } = useWindowDimensions(); // Define a largura como a largura da janela aberta
   const larguraCard = Math.max(180, Math.min(380, width - 32)); // estabelece limites inferiores e superiores para a largura da caixa de login
 
+  function exibirAlerta(titulo: string, mensagem: string, onOk?: () => void) {
+    if (Platform.OS === "web") {
+      window.alert(`${titulo}\n\n${mensagem}`);
+      onOk?.();
+    } else {
+      Alert.alert(titulo, mensagem, [{ text: "Ok", onPress: onOk }]);
+    }
+  }
+
   // Executará o protocolo de recuperação de senha
   const handleSolicitarRecuperacao = () => {
-    console.log("Protocolo de recuperação de senha iniciado.");
+    exibirAlerta(
+      "Aviso",
+      "Esta funcionalidade não está habilitada. Voltando para tela de login.",
+    );
+    router.back();
   };
 
   return (
