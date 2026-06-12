@@ -11,7 +11,7 @@ type Props = {
 };
 
 // Componente que permite seleção do filtro desejado
-export default function BarraFiltro({ filtro, setFiltro }: Props) {
+export default function FilterBar({ filtro, setFiltro }: Props) {
   return (
     <View style={styles.container}>
       {/* Filtro: nenhum (aparecem todas as tarefas) */}

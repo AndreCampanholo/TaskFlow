@@ -30,7 +30,7 @@ export default function BotaoVermelho({
 const styles = StyleSheet.create({
   buttonStyle: {
     ...globalStyles.primaryButton,
-    backgroundColor: colors.vermelho_atrasado,
+    backgroundColor: colors.vermelho,
     width: "100%",
     marginTop: 24,
   },

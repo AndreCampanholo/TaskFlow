@@ -37,7 +37,7 @@ const ESTILOS_STATUS: Record<
 };
 
 // Componente visual que mostra o status atual da tarefa
-export default function BarraStatusTarefa({ status }: Props) {
+export default function TaskStatusBar({ status }: Props) {
   // Seleciona o estilo correspondente ao status informado
   const estilo = ESTILOS_STATUS[status];
 

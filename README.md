@@ -1,19 +1,19 @@
 # TaskFlow
 
-Aplicativo de gerenciamento de tarefas desenvolvido como projeto trainee da **ICMC Jr**. O repositório é um *monorepo*: o aplicativo mobile (frontend) e a API (backend) vivem lado a lado, cada um com sua própria documentação.
+Aplicativo de gerenciamento de tarefas desenvolvido como projeto trainee da **ICMC Jr**.
 
 ## Stack
 
-| Camada | Tecnologias |
-| --- | --- |
-| **Frontend** | React Native, Expo, TypeScript |
-| **Backend** | Node.js, Express, Prisma ORM, SQLite |
+| Camada       | Tecnologias                          |
+| ------------ | ------------------------------------ |
+| **Frontend** | React Native, Expo, TypeScript       |
+| **Backend**  | Node.js, Express, Prisma ORM, SQLite |
 
 ## Estrutura do projeto
 
 ```
 TaskFlow/
-├── frontend/          # aplicativo mobile (Expo / React Native)
+├── frontend/          # aplicativo (Expo / React Native)
 │   ├── src/
 │   │   ├── app/           # telas e rotas
 │   │   ├── components/    # componentes reutilizáveis
@@ -95,7 +95,7 @@ Escaneie o QR Code com o app **Expo Go** para abrir no celular.
 - Padrões de código: [`docs/handbook.md`](docs/handbook.md)
 - Instalação detalhada do backend: [`backend/docs/install.md`](backend/docs/install.md)
 
-## Contribuindo
+<!-- ## Contribuindo
 
 1. Crie uma branch a partir da `main` (`git checkout -b minha-feature`)
 2. Faça seus commits seguindo as convenções do [`docs/handbook.md`](docs/handbook.md)
@@ -105,4 +105,4 @@ Escaneie o QR Code com o app **Expo Go** para abrir no celular.
 
 Projeto trainee da ICMC Jr.
 
-<!-- Preencha com os integrantes e contatos da equipe -->
+Preencha com os integrantes e contatos da equipe -->

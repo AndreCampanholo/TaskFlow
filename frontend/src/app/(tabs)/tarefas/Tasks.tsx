@@ -1,5 +1,5 @@
 import BotaoNovaTarefa from "@/src/components/BotaoNovaTask";
-import BarraFiltro from "@/src/components/FilterBar";
+import FilterBar from "@/src/components/FilterBar";
 import ListaVazia from "@/src/components/ListaVazia";
 import CartaoNovaTarefa from "@/src/components/NovaTaskCard";
 import CartaoTarefa from "@/src/components/TaskCard";
@@ -94,7 +94,7 @@ export default function Tarefas() {
     <View style={styles.container}>
       <Text style={styles.header}>TaskFlow</Text>
 
-      <BarraFiltro filtro={filtro} setFiltro={setFiltro} />
+      <FilterBar filtro={filtro} setFiltro={setFiltro} />
 
       <View style={styles.card}>
         {/* Se não existir nenhuma tarefa, exibe o estado vazio */}
