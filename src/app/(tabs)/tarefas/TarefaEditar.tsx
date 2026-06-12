@@ -31,8 +31,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // Opções disponíveis para o status da tarefa exibidas na interface
 const OPCOES_STATUS: { value: EstadoTarefa; label: string; color: string }[] = [
   { value: "em-andamento", label: "Em andamento", color: colors.azul_claro },
-  { value: "concluida",    label: "Concluída",    color: colors.verde },
-  { value: "atrasada",     label: "Atrasada",     color: colors.vermelho },
+  { value: "concluida", label: "Concluída", color: colors.verde },
+  { value: "atrasada", label: "Atrasada", color: colors.vermelho },
 ];
 
 // Estilo aplicado aos campos nativos de data/hora no ambiente web
@@ -91,31 +91,30 @@ export default function TarefaEditar() {
     );
   }
 
+  function exibirAlerta(titulo: string, mensagem: string, onOk?: () => void) {
+    if (Platform.OS === "web") {
+      window.alert(`${titulo}\n\n${mensagem}`);
+      onOk?.();
+    } else {
+      Alert.alert(titulo, mensagem, [{ text: "Ok", onPress: onOk }]);
+    }
+  }
+
   // Valida as novas informações da tarefa, salvando as alterações
   function handleSalvar() {
     // Exige que o usuário digite um título
     if (!titulo.trim()) {
-      if (Platform.OS === "web") {
-        window.alert("Digite um título");
-      } else {
-        Alert.alert("Erro", "Digite um título");
-      }
+      exibirAlerta("Erro", "Digite um título");
       return;
     }
     if (
       estado === "atrasada" &&
       dataVencimento.getTime() > new Date().getTime()
     ) {
-      if (Platform.OS === "web") {
-        window.alert(
-          "A tarefa só pode ser marcada como atrasada após o prazo.",
-        );
-      } else {
-        Alert.alert(
-          "Erro",
-          "A tarefa só pode ser marcada como atrasada após o prazo.",
-        );
-      }
+      exibirAlerta(
+        "Erro",
+        "A tarefa só pode ser marcada como atrasada após o prazo.",
+      );
       return;
     }
     // Atualiza a tarefa com as novas informações

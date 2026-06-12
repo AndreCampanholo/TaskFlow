@@ -27,6 +27,15 @@ export default function Tarefas() {
     "all" | "em-andamento" | "concluida" | "atrasada"
   >("all");
 
+  function exibirAlerta(titulo: string, mensagem: string, onOk?: () => void) {
+    if (Platform.OS === "web") {
+      window.alert(`${titulo}\n\n${mensagem}`);
+      onOk?.();
+    } else {
+      Alert.alert(titulo, mensagem, [{ text: "Ok", onPress: onOk }]);
+    }
+  }
+
   // Valida os campos e cria uma nova tarefa
   function handleCreate(
     title: string,
@@ -36,21 +45,13 @@ export default function Tarefas() {
   ) {
     // A tarefa deve ter um título
     if (!title.trim()) {
-      if (Platform.OS === "web") {
-        window.alert("Digite um título");
-      } else {
-        Alert.alert("Erro", "Digite um título");
-      }
+      exibirAlerta("Erro", "Digite um título");
       return;
     }
 
     // A tarefa deve ter uma descrição
     if (!description.trim()) {
-      if (Platform.OS === "web") {
-        window.alert("Digite uma descrição");
-      } else {
-        Alert.alert("Erro", "Digite uma descrição");
-      }
+      exibirAlerta("Erro", "Digite uma descrição");
       return;
     }
 
@@ -58,33 +59,10 @@ export default function Tarefas() {
       stateFromModal === "atrasada" &&
       dueDate.getTime() > new Date().getTime()
     ) {
-      if (Platform.OS === "web") {
-        window.alert(
-          "A tarefa só pode ser marcada como atrasada após o prazo.",
-        );
-      } else {
-        Alert.alert(
-          "Erro",
-          "A tarefa só pode ser marcada como atrasada após o prazo.",
-        );
-      }
-      return;
-    }
-
-    if (
-      stateFromModal === "atrasada" &&
-      dueDate.getTime() > new Date().getTime()
-    ) {
-      if (Platform.OS === "web") {
-        window.alert(
-          "A tarefa só pode ser marcada como atrasada após o prazo.",
-        );
-      } else {
-        Alert.alert(
-          "Erro",
-          "A tarefa só pode ser marcada como atrasada após o prazo.",
-        );
-      }
+      exibirAlerta(
+        "Erro",
+        "A tarefa só pode ser marcada como atrasada após o prazo.",
+      );
       return;
     }
 
