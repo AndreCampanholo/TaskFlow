@@ -71,19 +71,34 @@ export default function Tarefas() {
     setModalAberto(false); // Fecha o modal (tela de criação de tarefa)
   }
 
-  // Navega para a tela de detalhes da tarefa selecionada
+  // Navega para a tela de detalhes passando os dados da tarefa nos params
   function handleTaskPress(id: string) {
+    const tarefa = tarefas.find((t) => t.id === id);
     router.push({
       pathname: "/(tabs)/tarefas/TarefaDetalhes",
-      params: { id },
+      params: {
+        id,
+        titulo: tarefa?.title ?? "",
+        descricao: tarefa?.description ?? "",
+        prazo: tarefa?.dueDate?.toISOString() ?? new Date().toISOString(),
+        estado: tarefa?.state ?? "em-andamento",
+        concluida: tarefa?.completed ? "true" : "false",
+      },
     });
   }
 
-  // Navega para a tela de edição ao manter pressionado
+  // Navega para a tela de edição passando os dados da tarefa nos params
   function handleTaskLongPress(id: string) {
+    const tarefa = tarefas.find((t) => t.id === id);
     router.push({
       pathname: "/(tabs)/tarefas/TarefaEditar",
-      params: { id },
+      params: {
+        id,
+        titulo: tarefa?.title ?? "",
+        descricao: tarefa?.description ?? "",
+        prazo: tarefa?.dueDate?.toISOString() ?? new Date().toISOString(),
+        estado: tarefa?.state ?? "em-andamento",
+      },
     });
   }
 

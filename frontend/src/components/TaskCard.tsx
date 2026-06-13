@@ -3,11 +3,11 @@ import { colors } from "@/src/styles/global";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
-    Pressable,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 type Props = {
@@ -41,23 +41,15 @@ export default function CartaoTarefa({
         : colors.azul_claro;
 
   return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.card,
-        { borderLeftColor: accent },
-        pressed && styles.cardPressed,
-      ]}
-      // Toque simples abre a tela de detalhes, se a função existir
-      onPress={() => aoPressionarTarefa?.(id)}
-      // Pressão longa abre a tela de edição, se a função existir
-      onLongPress={() => aoManterPressionado?.(id)}
-      delayLongPress={400}
-      accessibilityRole="button"
+    <View
+      style={[styles.card, { borderLeftColor: accent }]}
     >
+      {/* Checkbox — toque isolado, não propaga para o card */}
       <TouchableOpacity
-        // Alterna a conclusão sem abrir outra tela
         onPress={() => alternarConclusao(id)}
         style={styles.checkWrapper}
+        activeOpacity={0.6}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
       >
         <View
           style={[styles.checkCircle, concluida && styles.checkCircleChecked]}
@@ -68,7 +60,14 @@ export default function CartaoTarefa({
         </View>
       </TouchableOpacity>
 
-      <View style={styles.body}>
+      {/* Área do texto — toque abre detalhes, pressão longa abre edição */}
+      <Pressable
+        style={({ pressed }) => [styles.body, pressed && styles.bodyPressed]}
+        onPress={() => aoPressionarTarefa?.(id)}
+        onLongPress={() => aoManterPressionado?.(id)}
+        delayLongPress={400}
+        accessibilityRole="button"
+      >
         <Text
           style={[styles.title, concluida && styles.titleDone]}
           numberOfLines={2}
@@ -76,8 +75,8 @@ export default function CartaoTarefa({
           {titulo}
         </Text>
         <Text style={styles.due}>{prazo}</Text>
-      </View>
-    </Pressable>
+      </Pressable>
+    </View>
   );
 }
 
@@ -91,12 +90,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderLeftWidth: 3,
   },
-  cardPressed: {
-    opacity: 0.9,
-    transform: [{ scale: 0.995 }],
-  },
   checkWrapper: {
     paddingRight: 8,
+    paddingTop: 2,
   },
   checkCircle: {
     width: 20,
@@ -114,6 +110,9 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
+  },
+  bodyPressed: {
+    opacity: 0.7,
   },
   title: {
     fontWeight: "700",

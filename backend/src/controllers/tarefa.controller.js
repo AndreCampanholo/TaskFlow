@@ -2,26 +2,25 @@ const { PrismaClient } = require("@prisma/client");
  
 const prisma = new PrismaClient();
  
-// Regra única de negócio para o estado da tarefa (Requisito 7).
-// O estado NÃO é confiado ao que veio gravado: é sempre recalculado a partir
-// de "concluida" + "prazo" vs. o momento atual. Assim uma tarefa cujo prazo
-// venceu vira "atrasada" automaticamente na próxima leitura.
-function calcularEstado(tarefa) {
+// Recalcula o estado apenas quando nenhum estado explícito foi enviado.
+// Se o frontend enviou um estado (ex: "em-andamento"), ele é respeitado,
+// desde que não conflite com concluida=true.
+function calcularEstado(tarefa, estadoExplicito) {
   if (tarefa.concluida) return "concluida";
+  if (estadoExplicito && estadoExplicito !== "concluida") return estadoExplicito;
   if (tarefa.prazo && new Date(tarefa.prazo).getTime() < Date.now()) {
     return "atrasada";
   }
   return "em-andamento";
 }
  
-// Devolve a tarefa com o campo "estado" já recalculado.
-function comEstado(tarefa) {
-  return { ...tarefa, estado: calcularEstado(tarefa) };
+// Devolve a tarefa com o campo "estado" já calculado.
+function comEstado(tarefa, estadoExplicito) {
+  return { ...tarefa, estado: calcularEstado(tarefa, estadoExplicito) };
 }
  
 const listar = async (req, res) => {
   try {
-    // Filtro opcional: GET /tarefas?estado=em-andamento|concluida|atrasada
     const { estado } = req.query;
  
     const tarefas = await prisma.tarefa.findMany({
@@ -29,7 +28,8 @@ const listar = async (req, res) => {
       orderBy: { criadoEm: "desc" },
     });
  
-    let resultado = tarefas.map(comEstado);
+    // Na listagem, recalcula estado automaticamente (sem estado explícito)
+    let resultado = tarefas.map((t) => comEstado(t, t.estado));
  
     if (estado) {
       const estadosValidos = ["em-andamento", "concluida", "atrasada"];
@@ -60,11 +60,10 @@ const criar = async (req, res) => {
         prazo: prazo ? new Date(prazo) : null,
         concluida: false,
         usuarioId: req.usuarioId,
-        // "estado" não é mais recebido do cliente: é derivado na leitura.
       },
     });
  
-    return res.status(201).json(comEstado(tarefa));
+    return res.status(201).json(comEstado(tarefa, null));
   } catch (error) {
     return res.status(500).json({ mensagem: "Erro ao criar tarefa" });
   }
@@ -73,24 +72,29 @@ const criar = async (req, res) => {
 const atualizar = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { titulo, descricao, prazo, concluida } = req.body;
+    const { titulo, descricao, prazo, concluida, estado } = req.body;
  
     const tarefa = await prisma.tarefa.findUnique({ where: { id } });
     if (!tarefa || tarefa.usuarioId !== req.usuarioId) {
       return res.status(404).json({ mensagem: "Tarefa não encontrada" });
     }
  
+    // Se concluida for enviado explicitamente como false, aceita.
+    // O operador ?? preserva false, diferente de ||.
+    const novaConcluida = concluida ?? tarefa.concluida;
+
     const tarefaAtualizada = await prisma.tarefa.update({
       where: { id },
       data: {
         titulo: titulo ?? tarefa.titulo,
         descricao: descricao ?? tarefa.descricao,
         prazo: prazo ? new Date(prazo) : tarefa.prazo,
-        concluida: concluida ?? tarefa.concluida,
+        concluida: novaConcluida,
       },
     });
  
-    return res.json(comEstado(tarefaAtualizada));
+    // Respeita o estado explícito enviado pelo frontend
+    return res.json(comEstado(tarefaAtualizada, estado));
   } catch (error) {
     return res.status(500).json({ mensagem: "Erro ao atualizar tarefa" });
   }

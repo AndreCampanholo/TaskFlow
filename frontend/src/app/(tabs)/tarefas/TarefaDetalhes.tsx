@@ -2,11 +2,11 @@ import BotaoAzulEscuro from "@/src/components/BotaoAzulEscuro";
 import BotaoVermelho from "@/src/components/BotaoVermelho";
 import ExibicaoPrazoTarefa from "@/src/components/TaskPrazoDisplay";
 import TaskStatusBar from "@/src/components/TaskStatusBar";
-import useTarefas from "@/src/hooks/useTarefas";
+import useTarefas, { EstadoTarefa } from "@/src/hooks/useTarefas";
 import { colors, globalStyles } from "@/src/styles/global";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   Alert,
   Platform,
@@ -22,65 +22,35 @@ export default function TarefaDetalhes() {
   // Delimita a área segura superior (notch/status bar) para posicionamento correto
   const insets = useSafeAreaInsets();
 
-  // Obtém o parâmetro `id` passado pela rota (pode ser string ou array)
-  const { id } = useLocalSearchParams<{ id?: string }>();
-  const { obterTarefaPorId, excluirTarefa } = useTarefas();
+  // Recebe todos os dados da tarefa via params (passados pelo Tasks.tsx)
+  const {
+    id,
+    titulo,
+    descricao,
+    prazo,
+    estado,
+    concluida,
+  } = useLocalSearchParams<{
+    id?: string;
+    titulo?: string;
+    descricao?: string;
+    prazo?: string;
+    estado?: string;
+    concluida?: string;
+  }>();
 
-  // Normaliza o parâmetro de rota para uma string simples e busca a tarefa
+  const { excluirTarefa } = useTarefas();
+
   const tarefaId = Array.isArray(id) ? id[0] : id;
-  const tarefa = tarefaId ? obterTarefaPorId(tarefaId) : null;
+  const tituloStr = Array.isArray(titulo) ? titulo[0] : titulo ?? "";
+  const descricaoStr = Array.isArray(descricao) ? descricao[0] : descricao ?? "";
+  const prazoStr = Array.isArray(prazo) ? prazo[0] : prazo;
+  const estadoStr = (Array.isArray(estado) ? estado[0] : estado ?? "em-andamento") as EstadoTarefa;
+  const concluidaBool = (Array.isArray(concluida) ? concluida[0] : concluida) === "true";
+  const dueDate = prazoStr ? new Date(prazoStr) : new Date();
 
-  // Se a rota tem id mas a tarefa não existe (ex: foi removida), volta automaticamente
-  useEffect(() => {
-    if (tarefaId && !tarefa) {
-      router.back();
-    }
-  }, [tarefa, tarefaId]);
-
-  // Handler para excluir a tarefa atual com confirmação do usuário
-  function handleExcluirTarefa() {
-    if (!tarefa) return;
-
-    // Armazena true ou false (p/ web)
-    const confirmarExclusao =
-      Platform.OS === "web"
-        ? window.confirm("Deseja excluir esta tarefa?")
-        : false;
-
-    if (Platform.OS === "web") {
-      // Se confirmou, remove e volta para a lista
-      if (confirmarExclusao) {
-        excluirTarefa(tarefa.id);
-        router.back();
-      }
-      return;
-    }
-
-    // Verifica se o usuário deseja realmente excluir a tarefa (p/ mobile)
-    Alert.alert("Excluir tarefa", "Deseja excluir esta tarefa?", [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Excluir",
-        style: "destructive",
-        onPress: () => {
-          excluirTarefa(tarefa.id);
-          router.back();
-        },
-      },
-    ]);
-  }
-
-  // Redireciona para a tela de edição, passando o id da tarefa
-  function handleEditarTarefa() {
-    if (!tarefa) return;
-    router.push({
-      pathname: "/(tabs)/tarefas/TarefaEditar",
-      params: { id: tarefa.id },
-    });
-  }
-
-  // Render alternativo quando a tarefa não existe
-  if (!tarefa) {
+  // Render alternativo quando o id não existe nos params
+  if (!tarefaId) {
     return (
       <View
         style={[
@@ -104,6 +74,50 @@ export default function TarefaDetalhes() {
     );
   }
 
+  // Handler para excluir a tarefa atual com confirmação do usuário
+  function handleExcluirTarefa() {
+    // p/ web
+    const confirmarExclusao =
+      Platform.OS === "web"
+        ? window.confirm("Deseja excluir esta tarefa?")
+        : false;
+
+    if (Platform.OS === "web") {
+      if (confirmarExclusao) {
+        excluirTarefa(tarefaId);
+        router.back();
+      }
+      return;
+    }
+
+    // p/ mobile
+    Alert.alert("Excluir tarefa", "Deseja excluir esta tarefa?", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: () => {
+          excluirTarefa(tarefaId);
+          router.back();
+        },
+      },
+    ]);
+  }
+
+  // Redireciona para a tela de edição, passando os dados da tarefa
+  function handleEditarTarefa() {
+    router.push({
+      pathname: "/(tabs)/tarefas/TarefaEditar",
+      params: {
+        id: tarefaId,
+        titulo: tituloStr,
+        descricao: descricaoStr,
+        prazo: prazoStr ?? new Date().toISOString(),
+        estado: estadoStr,
+      },
+    });
+  }
+
   return (
     <Pressable
       style={[
@@ -115,24 +129,28 @@ export default function TarefaDetalhes() {
       <Pressable style={styles.card} onPress={() => null}>
         <View style={styles.headerRow}>
           <View style={styles.iconWrap}>
-            <MaterialCommunityIcons name="clipboard-text-outline" size={42} color={colors.azul_claro} />
+            <MaterialCommunityIcons
+              name="clipboard-text-outline"
+              size={42}
+              color={colors.azul_claro}
+            />
           </View>
 
           <View style={styles.headerCopy}>
             {/* Exibe o título da tarefa */}
             <Text style={styles.title} numberOfLines={2}>
-              {tarefa.title}
+              {tituloStr}
             </Text>
-            {/* Exibe o status da tarefa (em-andamento, concluido, atrasado) */}
-            <TaskStatusBar status={tarefa.state} />
+            {/* Exibe o status da tarefa */}
+            <TaskStatusBar status={estadoStr} />
           </View>
         </View>
 
         {/* Exibe a descrição da tarefa */}
-        <Text style={styles.description}>{tarefa.description}</Text>
+        <Text style={styles.description}>{descricaoStr}</Text>
 
         {/* Exibe o prazo da tarefa */}
-        <ExibicaoPrazoTarefa dueDate={tarefa.dueDate} />
+        <ExibicaoPrazoTarefa dueDate={dueDate} />
       </Pressable>
 
       <View style={styles.actions}>

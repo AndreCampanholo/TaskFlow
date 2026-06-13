@@ -54,28 +54,47 @@ export default function TarefaEditar() {
   // Delimita a área segura superior (notch/status bar) para posicionamento correto
   const insets = useSafeAreaInsets();
 
-  // Obtém o parâmetro `id` passado pela rota (pode ser string ou array)
-  const { id } = useLocalSearchParams<{ id?: string }>();
-  const { obterTarefaPorId, atualizarTarefa, excluirTarefa } = useTarefas();
+  // Obtém todos os parâmetros passados pela rota (id + dados da tarefa)
+  // Os dados vêm do Tasks.tsx para evitar dependência de instância separada do hook
+  const {
+    id,
+    titulo: tituloParam,
+    descricao: descricaoParam,
+    prazo: prazoParam,
+    estado: estadoParam,
+  } = useLocalSearchParams<{
+    id?: string;
+    titulo?: string;
+    descricao?: string;
+    prazo?: string;
+    estado?: string;
+  }>();
 
-  // Normaliza o parâmetro de rota para uma string simples e busca a tarefa
+  const { atualizarTarefa, excluirTarefa } = useTarefas();
+
+  // Normaliza o parâmetro de rota para uma string simples
   const tarefaId = Array.isArray(id) ? id[0] : id;
-  const tarefa = tarefaId ? obterTarefaPorId(tarefaId) : null;
 
-  // Variáveis modificáveis declaradas com useState
-  const [titulo, setTitulo] = useState(tarefa?.title ?? "");
-  const [descricao, setDescricao] = useState(tarefa?.description ?? "");
-  const [dataVencimento, setDataVencimento] = useState<Date>(
-    tarefa?.dueDate ? new Date(tarefa.dueDate) : new Date(),
+  // Variáveis modificáveis declaradas com useState, inicializadas pelos params
+  const [titulo, setTitulo] = useState(
+    Array.isArray(tituloParam) ? tituloParam[0] : tituloParam ?? ""
   );
-  const [estado, setEstado] = useState<EstadoTarefa>(
-    tarefa?.state ?? "em-andamento",
+  const [descricao, setDescricao] = useState(
+    Array.isArray(descricaoParam) ? descricaoParam[0] : descricaoParam ?? ""
   );
+  const [dataVencimento, setDataVencimento] = useState<Date>(() => {
+    const prazoStr = Array.isArray(prazoParam) ? prazoParam[0] : prazoParam;
+    return prazoStr ? new Date(prazoStr) : new Date();
+  });
+  const [estado, setEstado] = useState<EstadoTarefa>(() => {
+    const estadoStr = Array.isArray(estadoParam) ? estadoParam[0] : estadoParam;
+    return (estadoStr as EstadoTarefa) ?? "em-andamento";
+  });
   const [seletorDataAberto, setSeletorDataAberto] = useState(false); // Determina se o seletor de data é visível ou não
   const [seletorHoraAberto, setSeletorHoraAberto] = useState(false); // Determina se o seletor de hora é visível ou não
 
-  // Render alternativo quando a tarefa não existe
-  if (!tarefa) {
+  // Render alternativo quando o id não existe nos params
+  if (!tarefaId) {
     return (
       <View
         style={[
@@ -101,7 +120,7 @@ export default function TarefaEditar() {
   }
 
   // Valida as novas informações da tarefa, salvando as alterações
-  function handleSalvar() {
+  async function handleSalvar() {
     // Exige que o usuário digite um título
     if (!titulo.trim()) {
       exibirAlerta("Erro", "Digite um título");
@@ -118,7 +137,7 @@ export default function TarefaEditar() {
       return;
     }
     // Atualiza a tarefa com as novas informações
-    atualizarTarefa(tarefaId!, {
+    await atualizarTarefa(tarefaId, {
       title: titulo.trim(),
       description: descricao.trim(),
       dueDate: dataVencimento,
@@ -133,7 +152,7 @@ export default function TarefaEditar() {
     // p/ web
     if (Platform.OS === "web") {
       if (window.confirm("Deseja excluir esta tarefa?")) {
-        excluirTarefa(tarefaId!); // Exclui a tarefa
+        excluirTarefa(tarefaId); // Exclui a tarefa
         router.navigate("/(tabs)/tarefas/Tasks"); // Redireciona para a tela das tarefas
       }
       return;
@@ -145,7 +164,7 @@ export default function TarefaEditar() {
         text: "Excluir",
         style: "destructive",
         onPress: () => {
-          excluirTarefa(tarefaId!); // Exclui a tarefa
+          excluirTarefa(tarefaId); // Exclui a tarefa
           router.navigate("/(tabs)/tarefas/Tasks"); // Redireciona para a tela das tarefas
         },
       },

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Para dispositivo físico, troque por http://<IP_DA_SUA_MAQUINA>:3000
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "http://192.168.15.4:3000";
 
 async function getToken() {
   return await AsyncStorage.getItem("token");

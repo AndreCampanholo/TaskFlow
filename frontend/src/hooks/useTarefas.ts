@@ -97,6 +97,7 @@ export default function useTarefas() {
         concluida: atualizacoes.completed,
       });
 
+      // Atualiza o item na lista local com o retorno do backend
       setTarefas((prev) =>
         prev.map((t) => (t.id === id ? converterTarefa(atualizada) : t))
       );
@@ -119,12 +120,22 @@ export default function useTarefas() {
     if (!tarefa) return;
 
     const vaiSerConcluida = !tarefa.completed;
-    const novoEstado = vaiSerConcluida
+    const novoEstado: EstadoTarefa = vaiSerConcluida
       ? "concluida"
       : estaAtrasada(tarefa.dueDate)
       ? "atrasada"
       : "em-andamento";
 
+    // Atualiza localmente de imediato (feedback visual instantâneo)
+    setTarefas((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? { ...t, completed: vaiSerConcluida, state: novoEstado }
+          : t
+      )
+    );
+
+    // Persiste no backend
     await atualizarTarefa(id, {
       completed: vaiSerConcluida,
       state: novoEstado,
@@ -148,5 +159,6 @@ export default function useTarefas() {
     alternarTarefa,
     obterFiltradas,
     obterTarefaPorId,
+    carregarTarefas,
   } as const;
 }
